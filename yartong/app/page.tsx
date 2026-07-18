@@ -1,13 +1,16 @@
+import Link from "next/link";
+import { ROUTES } from "@/lib/constants";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       <nav className="bg-green-700 text-white px-6 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Yartong</h1>
         <div className="space-x-6">
-          <a href="#">Home</a>
-          <a href="#">Find Workers</a>
-          <a href="#">Quick Jobs</a>
-          <a href="#">Login</a>
+          <Link href={ROUTES.home}>Home</Link>
+          <Link href={ROUTES.workers}>Find Workers</Link>
+          <Link href={ROUTES.quickJobs}>Quick Jobs</Link>
+          <Link href={ROUTES.login}>Login</Link>
         </div>
       </nav>
 

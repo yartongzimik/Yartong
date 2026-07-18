@@ -1,5 +1,5 @@
-const pageTitle = "Supplier / Products";
-const routePath = "/supplier/products";
+const pageTitle = "Labourer / Dashboard";
+const routePath = "/labourer/dashboard";
 
 export default function PlaceholderPage() {
   return (
