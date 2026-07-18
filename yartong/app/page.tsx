@@ -1,63 +1,73 @@
-import Link from "next/link";
-import { ROUTES } from "@/lib/constants";
+import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { Section } from "@/components/ui/section";
+import { PublicShell } from "@/components/layout/public-shell";
+import { PLATFORM, ROUTES } from "@/lib/constants";
+
+const categories = ["Mason", "Carpenter", "Electrician", "Plumber", "Painter", "Labour Team"];
+const pathways = [
+  { title: "Find workers & services", text: "Compare skilled providers, labourers and contractors by trust signals before price.", href: ROUTES.workers },
+  { title: "Post construction work", text: "Describe the job once and prepare to receive better-matched local interest.", href: ROUTES.postJob },
+  { title: "Explore quick jobs", text: "Short-duration opportunities for urgent site support and daily work discovery.", href: ROUTES.quickJobs },
+  { title: "Join as a business", text: "Create a foundation for future leads, materials enquiries and growth analytics.", href: ROUTES.join },
+];
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="bg-green-700 text-white px-6 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Yartong</h1>
-        <div className="space-x-6">
-          <Link href={ROUTES.home}>Home</Link>
-          <Link href={ROUTES.workers}>Find Workers</Link>
-          <Link href={ROUTES.quickJobs}>Quick Jobs</Link>
-          <Link href={ROUTES.login}>Login</Link>
-        </div>
-      </nav>
-
-      <section className="text-center py-20 px-6">
-        <h2 className="text-5xl font-bold text-gray-900">
-          Find Trusted Workers Near You
-        </h2>
-
-        <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-          Yartong connects customers with skilled tradespeople, labourers and
-          local service providers in just a few clicks.
-        </p>
-
-        <div className="mt-10">
-          <input
-            type="text"
-            placeholder="Search mason, plumber, carpenter, materials..."
-            className="w-full max-w-2xl rounded-lg border p-4 text-lg"
-          />
-        </div>
-      </section>
-
-      <section className="max-w-6xl mx-auto px-6 pb-20">
-        <h3 className="text-3xl font-bold mb-8">Popular Categories</h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {[
-            "Mason",
-            "Carpenter",
-            "Electrician",
-            "Plumber",
-            "Painter",
-            "Labour",
-          ].map((item) => (
-            <div
-              key={item}
-              className="rounded-xl bg-white shadow p-6 text-center font-semibold hover:shadow-lg transition"
-            >
-              {item}
+    <PublicShell>
+      <section className="hero">
+        <Container className="hero__grid">
+          <div className="hero__content">
+            <Badge tone="trust">Senapati-first construction marketplace</Badge>
+            <h1>Find trusted construction people and suppliers before comparing price.</h1>
+            <p>
+              {PLATFORM.name} connects Customers, Skilled Providers, Labourers, Contractors and Material Suppliers with a premium local marketplace built for trust, business growth and scalable expansion.
+            </p>
+            <div className="hero__actions">
+              <ButtonLink href={ROUTES.workers} size="lg">Find workers</ButtonLink>
+              <ButtonLink href={ROUTES.postJob} variant="outline" size="lg">Post work</ButtonLink>
             </div>
-          ))}
-        </div>
+            <div className="hero__search" role="search" aria-label="Marketplace search preview">
+              <label htmlFor="home-search">Search services, workers or materials</label>
+              <div>
+                <input id="home-search" type="search" placeholder="Mason, plumber, contractor, cement supplier..." />
+                <ButtonLink href={ROUTES.workers} variant="secondary">Search</ButtonLink>
+              </div>
+            </div>
+          </div>
+          <Card className="hero__panel">
+            <p className="eyebrow">Marketplace readiness</p>
+            <h2>Built around trust signals</h2>
+            <ul>
+              <li><strong>Verified profiles</strong><span>Prepared for identity, business and quality indicators.</span></li>
+              <li><strong>Business growth</strong><span>Clear pathways for providers, contractors and suppliers.</span></li>
+              <li><strong>Local expansion</strong><span>Senapati launch model with reusable architecture.</span></li>
+            </ul>
+          </Card>
+        </Container>
       </section>
 
-      <footer className="bg-gray-900 text-white text-center py-8">
-        © 2026 Yartong. All rights reserved.
-      </footer>
-    </main>
+      <Container>
+        <Section eyebrow="Start here" title="Choose the fastest path for your construction need" description="Milestone 1 establishes the public shell and polished design foundation without shipping full marketplace workflows yet.">
+          <div className="pathway-grid">
+            {pathways.map((item) => (
+              <Card interactive key={item.title} className="pathway-card">
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+                <ButtonLink href={item.href} variant="ghost" size="sm">Explore</ButtonLink>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <Section eyebrow="Popular categories" title="Construction services people search for first">
+          <div className="category-grid">
+            {categories.map((item) => <Card interactive key={item} className="category-card">{item}</Card>)}
+          </div>
+        </Section>
+      </Container>
+    </PublicShell>
   );
 }
