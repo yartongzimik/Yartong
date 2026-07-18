@@ -1,0 +1,745 @@
+/* ==========================================================================
+   YARTONG BUTTON SYSTEM
+   Primary actions, navigation actions, icon controls and button states
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base Button
+   -------------------------------------------------------------------------- */
+
+.button,
+.btn {
+  --button-bg: transparent;
+  --button-bg-hover: transparent;
+  --button-bg-active: transparent;
+
+  --button-color: var(--color-text-primary);
+  --button-color-hover: var(--color-text-primary);
+
+  --button-border: var(--color-border);
+  --button-border-hover: var(--color-border-strong);
+
+  position: relative;
+
+  min-width: 0;
+  min-height: var(--button-height-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  padding-inline: var(--space-5);
+
+  color: var(--button-color);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--button-border);
+  border-radius: var(--radius-md);
+
+  background: var(--button-bg);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-normal);
+  text-align: center;
+  white-space: nowrap;
+
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.button:hover,
+.btn:hover {
+  color: var(--button-color-hover);
+
+  border-color: var(--button-border-hover);
+  background: var(--button-bg-hover);
+
+  transform: translateY(-1px);
+}
+
+.button:active,
+.btn:active {
+  background: var(--button-bg-active);
+  transform: translateY(0) scale(0.985);
+}
+
+.button:focus-visible,
+.btn:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+.button:disabled,
+.btn:disabled,
+.button[aria-disabled="true"],
+.btn[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+
+  pointer-events: none;
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Primary Button
+   -------------------------------------------------------------------------- */
+
+.button--primary,
+.btn-primary {
+  --button-bg: var(--gradient-primary);
+  --button-bg-hover: var(--gradient-primary-hover);
+  --button-bg-active:
+    linear-gradient(
+      135deg,
+      var(--color-primary-700),
+      var(--color-secondary-600)
+    );
+
+  --button-border: rgba(255, 255, 255, 0.08);
+  --button-border-hover: rgba(255, 255, 255, 0.18);
+
+  color: var(--color-white);
+
+  box-shadow:
+    0 10px 24px rgba(124, 58, 237, 0.22);
+}
+
+.button--primary:hover,
+.btn-primary:hover {
+  box-shadow:
+    0 14px 34px rgba(124, 58, 237, 0.3),
+    var(--shadow-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Secondary Button
+   -------------------------------------------------------------------------- */
+
+.button--secondary,
+.btn-secondary {
+  --button-bg: rgba(139, 92, 246, 0.1);
+  --button-bg-hover: rgba(139, 92, 246, 0.17);
+  --button-bg-active: rgba(124, 58, 237, 0.22);
+
+  --button-border: rgba(139, 92, 246, 0.28);
+  --button-border-hover: rgba(167, 139, 250, 0.5);
+
+  --button-color: var(--color-primary-200);
+  --button-color-hover: var(--color-white);
+}
+
+/* --------------------------------------------------------------------------
+   Neutral and Ghost Buttons
+   -------------------------------------------------------------------------- */
+
+.button--neutral,
+.btn-neutral {
+  --button-bg: var(--color-surface-2);
+  --button-bg-hover: var(--color-surface-hover);
+  --button-bg-active: var(--color-surface-active);
+
+  --button-border: var(--color-border);
+  --button-border-hover: var(--color-border-strong);
+}
+
+.button--ghost,
+.btn-ghost {
+  --button-bg: transparent;
+  --button-bg-hover: var(--glass-bg);
+  --button-bg-active: var(--glass-bg-strong);
+
+  --button-border: transparent;
+  --button-border-hover: var(--color-border);
+
+  --button-color: var(--color-text-secondary);
+  --button-color-hover: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Outline Button
+   -------------------------------------------------------------------------- */
+
+.button--outline,
+.btn-outline {
+  --button-bg: transparent;
+  --button-bg-hover: rgba(255, 255, 255, 0.035);
+  --button-bg-active: rgba(255, 255, 255, 0.065);
+
+  --button-border: var(--color-border-strong);
+  --button-border-hover: var(--color-primary-400);
+
+  --button-color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Semantic Buttons
+   -------------------------------------------------------------------------- */
+
+.button--success {
+  --button-bg: var(--color-success);
+  --button-bg-hover: var(--color-success-hover);
+  --button-bg-active: #15803d;
+
+  --button-border: transparent;
+  --button-border-hover: transparent;
+
+  color: var(--color-white);
+}
+
+.button--warning {
+  --button-bg: var(--color-warning);
+  --button-bg-hover: var(--color-warning-hover);
+  --button-bg-active: #b45309;
+
+  --button-border: transparent;
+  --button-border-hover: transparent;
+
+  color: #111111;
+}
+
+.button--danger,
+.btn-danger {
+  --button-bg: var(--color-danger);
+  --button-bg-hover: var(--color-danger-hover);
+  --button-bg-active: #b91c1c;
+
+  --button-border: transparent;
+  --button-border-hover: transparent;
+
+  color: var(--color-white);
+}
+
+.button--danger-soft {
+  --button-bg: var(--color-danger-soft);
+  --button-bg-hover: rgba(239, 68, 68, 0.22);
+  --button-bg-active: rgba(239, 68, 68, 0.3);
+
+  --button-border: var(--color-danger-border);
+  --button-border-hover: var(--color-danger);
+
+  --button-color: #fca5a5;
+  --button-color-hover: var(--color-white);
+}
+
+/* --------------------------------------------------------------------------
+   Yartong-Specific Actions
+   -------------------------------------------------------------------------- */
+
+.button--trust {
+  --button-bg: var(--color-trust-soft);
+  --button-bg-hover: rgba(6, 182, 212, 0.22);
+  --button-bg-active: rgba(6, 182, 212, 0.3);
+
+  --button-border: rgba(6, 182, 212, 0.28);
+  --button-border-hover: var(--color-trust);
+
+  --button-color: #67e8f9;
+  --button-color-hover: var(--color-white);
+}
+
+.button--premium {
+  --button-bg:
+    linear-gradient(
+      135deg,
+      #f59e0b,
+      #fbbf24
+    );
+
+  --button-bg-hover:
+    linear-gradient(
+      135deg,
+      #fbbf24,
+      #fde68a
+    );
+
+  --button-bg-active: #d97706;
+
+  --button-border: rgba(255, 255, 255, 0.14);
+  --button-border-hover: rgba(255, 255, 255, 0.28);
+
+  color: #18181b;
+
+  box-shadow:
+    0 12px 28px rgba(251, 191, 36, 0.2);
+}
+
+.button--quick-job {
+  --button-bg: var(--color-quick-job-soft);
+  --button-bg-hover: rgba(249, 115, 22, 0.22);
+  --button-bg-active: rgba(249, 115, 22, 0.3);
+
+  --button-border: rgba(249, 115, 22, 0.28);
+  --button-border-hover: var(--color-quick-job);
+
+  --button-color: #fdba74;
+  --button-color-hover: var(--color-white);
+}
+
+/* --------------------------------------------------------------------------
+   Sizes
+   -------------------------------------------------------------------------- */
+
+.button--sm,
+.btn-sm {
+  min-height: var(--button-height-sm);
+
+  padding-inline: var(--space-4);
+
+  border-radius: var(--radius-sm);
+
+  font-size: var(--font-size-xs);
+}
+
+.button--lg,
+.btn-lg {
+  min-height: var(--button-height-lg);
+
+  padding-inline: var(--space-6);
+
+  border-radius: var(--radius-lg);
+
+  font-size: var(--font-size-md);
+}
+
+.button--xl {
+  min-height: 58px;
+
+  padding-inline: var(--space-8);
+
+  border-radius: var(--radius-lg);
+
+  font-size: var(--font-size-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Width
+   -------------------------------------------------------------------------- */
+
+.button--full,
+.btn-block {
+  width: 100%;
+}
+
+.button--fit {
+  width: fit-content;
+}
+
+/* --------------------------------------------------------------------------
+   Icon Buttons
+   -------------------------------------------------------------------------- */
+
+.icon-button {
+  --icon-button-size: 42px;
+
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+
+  flex: 0 0 auto;
+
+  display: inline-grid;
+  place-items: center;
+
+  color: var(--color-text-secondary);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--glass-bg);
+
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.icon-button:hover {
+  color: var(--color-text-primary);
+
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-hover);
+
+  transform: translateY(-1px);
+}
+
+.icon-button:active {
+  transform: scale(0.96);
+}
+
+.icon-button:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+.icon-button:disabled,
+.icon-button[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+  pointer-events: none;
+}
+
+.icon-button--sm {
+  --icon-button-size: 34px;
+
+  border-radius: var(--radius-sm);
+}
+
+.icon-button--lg {
+  --icon-button-size: 50px;
+
+  border-radius: var(--radius-lg);
+}
+
+.icon-button--round {
+  border-radius: var(--radius-round);
+}
+
+.icon-button--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+.icon-button--danger:hover {
+  color: #fca5a5;
+
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Button Icons
+   -------------------------------------------------------------------------- */
+
+.button__icon,
+.btn-icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+
+  flex: 0 0 auto;
+}
+
+.button--lg .button__icon,
+.button--xl .button__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.button__icon--leading {
+  margin-left: calc(var(--space-1) * -1);
+}
+
+.button__icon--trailing {
+  margin-right: calc(var(--space-1) * -1);
+}
+
+/* --------------------------------------------------------------------------
+   Loading State
+   -------------------------------------------------------------------------- */
+
+.button[data-loading="true"],
+.btn[data-loading="true"] {
+  pointer-events: none;
+}
+
+.button[data-loading="true"] .button__label,
+.btn[data-loading="true"] .button__label {
+  opacity: 0;
+}
+
+.button__spinner {
+  position: absolute;
+
+  width: 18px;
+  height: 18px;
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  border-radius: var(--radius-round);
+
+  animation: button-spin 700ms linear infinite;
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Button Groups
+   -------------------------------------------------------------------------- */
+
+.button-group {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.button-group > .button,
+.button-group > .btn,
+.button-group > .icon-button {
+  border-radius: 0;
+}
+
+.button-group > :first-child {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.button-group > :last-child {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.button-group > * + * {
+  margin-left: -1px;
+}
+
+/* --------------------------------------------------------------------------
+   Segmented Controls
+   -------------------------------------------------------------------------- */
+
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  padding: var(--space-1);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-1);
+}
+
+.segmented-control__item {
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  padding-inline: var(--space-4);
+
+  color: var(--color-text-muted);
+
+  border-radius: var(--radius-md);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  transition: var(--transition-colors);
+}
+
+.segmented-control__item:hover {
+  color: var(--color-text-primary);
+  background: var(--glass-bg);
+}
+
+.segmented-control__item[aria-pressed="true"],
+.segmented-control__item[aria-selected="true"],
+.segmented-control__item[data-active="true"] {
+  color: var(--color-text-primary);
+  background: var(--color-surface-3);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Edit and Profile Actions
+   -------------------------------------------------------------------------- */
+
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  min-height: 38px;
+
+  padding-inline: var(--space-3);
+
+  color: var(--color-text-secondary);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--glass-bg);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  transition:
+    var(--transition-colors),
+    var(--transition-transform);
+}
+
+.edit-button:hover {
+  color: var(--color-text-primary);
+
+  border-color: var(--color-primary-400);
+  background: rgba(124, 58, 237, 0.1);
+
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Floating Action Button
+   -------------------------------------------------------------------------- */
+
+.floating-action-button {
+  position: fixed;
+  z-index: var(--z-fixed);
+  right: max(
+    var(--space-6),
+    env(safe-area-inset-right)
+  );
+  bottom: max(
+    var(--space-6),
+    env(safe-area-inset-bottom)
+  );
+
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-white);
+
+  border:
+    var(--border-width-thin)
+    solid
+    rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-round);
+
+  background: var(--gradient-primary);
+
+  box-shadow:
+    var(--shadow-lg),
+    var(--shadow-primary);
+
+  transition:
+    var(--transition-transform),
+    box-shadow var(--transition-fast);
+}
+
+.floating-action-button:hover {
+  transform:
+    translateY(-3px)
+    scale(1.03);
+
+  box-shadow:
+    var(--shadow-xl),
+    var(--shadow-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Behaviour
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .button--mobile-full {
+    width: 100%;
+  }
+
+  .button-group--mobile-stack {
+    width: 100%;
+
+    flex-direction: column;
+  }
+
+  .button-group--mobile-stack > * {
+    width: 100%;
+
+    margin-left: 0;
+    margin-top: -1px;
+
+    border-radius: 0;
+  }
+
+  .button-group--mobile-stack > :first-child {
+    margin-top: 0;
+
+    border-radius:
+      var(--radius-md)
+      var(--radius-md)
+      0
+      0;
+  }
+
+  .button-group--mobile-stack > :last-child {
+    border-radius:
+      0
+      0
+      var(--radius-md)
+      var(--radius-md);
+  }
+
+  .floating-action-button {
+    right: max(
+      var(--space-4),
+      env(safe-area-inset-right)
+    );
+    bottom: max(
+      var(--space-4),
+      env(safe-area-inset-bottom)
+    );
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .btn,
+  .icon-button,
+  .edit-button,
+  .floating-action-button {
+    transform: none !important;
+  }
+
+  .button__spinner {
+    animation-duration: 1.4s;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print
+   -------------------------------------------------------------------------- */
+
+@media print {
+  .button,
+  .btn,
+  .icon-button,
+  .edit-button,
+  .floating-action-button,
+  .button-group,
+  .segmented-control {
+    display: none !important;
+  }
+}

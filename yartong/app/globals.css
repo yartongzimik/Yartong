@@ -1,26 +1,411 @@
-@import "tailwindcss";
+/* ==========================================================================
+   YARTONG GLOBAL STYLESHEET
+   Loads the complete Yartong Design System
+   ========================================================================== */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Core design tokens must load first. */
+@import "../styles/variables.css";
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Browser normalization and accessibility baseline. */
+@import "../styles/reset.css";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Global typography hierarchy. */
+@import "../styles/typography.css";
+
+/* Containers, sections, grids and page structures. */
+@import "../styles/layout.css";
+
+/* Interactive controls. */
+@import "../styles/buttons.css";
+
+/* Inputs, uploads, validation and editable forms. */
+@import "../styles/forms.css";
+
+/* Marketplace, profile and analytics cards. */
+@import "../styles/cards.css";
+
+/* Role dashboards and business analytics layouts. */
+@import "../styles/dashboard.css";
+
+/* Public homepage, navigation and footer. */
+@import "../styles/homepage.css";
+
+/* Shared motion and loading states. */
+@import "../styles/animations.css";
+
+/* Small reusable helper classes. */
+@import "../styles/utilities.css";
+
+/* ==========================================================================
+   GLOBAL APPLICATION RULES
+   ========================================================================== */
+
+html {
+  background: var(--color-bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body[data-scroll-locked="true"] {
+  overflow: hidden;
+}
+
+main {
+  min-width: 0;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Prevent long user-generated text from breaking layouts. */
+
+p,
+li,
+dd,
+td,
+th,
+blockquote,
+.message-body,
+.review-body,
+.card__description {
+  overflow-wrap: anywhere;
+}
+
+/* Responsive embedded content. */
+
+iframe,
+embed,
+object {
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   APP-LEVEL STATES
+   ========================================================================== */
+
+.app-loading {
+  min-height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  padding: var(--space-6);
+
+  background: var(--color-bg);
+}
+
+.app-loading__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+
+  color: var(--color-text-muted);
+
+  text-align: center;
+}
+
+.app-error {
+  min-height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  padding:
+    var(--page-padding-block)
+    var(--page-padding-inline);
+}
+
+.app-error__content {
+  width: min(100%, 36rem);
+
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+
+  text-align: center;
+}
+
+.app-error__icon {
+  width: 68px;
+  height: 68px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-danger);
+
+  border-radius: var(--radius-xl);
+
+  background: var(--color-danger-soft);
+}
+
+.app-empty {
+  min-height: 20rem;
+
+  display: grid;
+  place-items: center;
+
+  padding: var(--space-8);
+}
+
+/* ==========================================================================
+   SKIP NAVIGATION
+   ========================================================================== */
+
+.skip-link {
+  position: fixed;
+  z-index: var(--z-toast);
+  top: var(--space-3);
+  left: var(--space-3);
+
+  padding:
+    var(--space-3)
+    var(--space-4);
+
+  color: var(--color-white);
+
+  border-radius: var(--radius-md);
+
+  background: var(--color-primary-600);
+  box-shadow: var(--shadow-lg);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  transform: translateY(-200%);
+
+  transition:
+    transform
+    var(--transition-fast)
+    var(--ease-enter);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   PORTAL LAYERS
+   Used later by dialogs, dropdowns, toasts and image previews.
+   ========================================================================== */
+
+#modal-root,
+#popover-root,
+#toast-root {
+  position: relative;
+  z-index: var(--z-base);
+}
+
+#modal-root:empty,
+#popover-root:empty,
+#toast-root:empty {
+  display: none;
+}
+
+/* ==========================================================================
+   ACCESSIBLE STATUS REGIONS
+   ========================================================================== */
+
+.live-region {
+  position: fixed;
+
+  width: 1px;
+  height: 1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   AUTOFILL
+   Keeps browser autofill compatible with the dark design.
+   ========================================================================== */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color:
+    var(--color-text-primary);
+
+  caret-color:
+    var(--color-text-primary);
+
+  box-shadow:
+    0 0 0 1000px
+    var(--color-surface-1)
+    inset;
+
+  transition:
+    background-color
+    9999s
+    ease-in-out
+    0s;
+}
+
+/* ==========================================================================
+   ROUTE PROGRESS
+   A future navigation-progress component can control the width.
+   ========================================================================== */
+
+.route-progress {
+  position: fixed;
+  z-index: var(--z-toast);
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height: 3px;
+
+  pointer-events: none;
+}
+
+.route-progress__bar {
+  width: var(--route-progress, 0%);
+  height: 100%;
+
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-primary);
+
+  transition:
+    width
+    var(--transition-normal)
+    var(--ease-standard);
+}
+
+/* ==========================================================================
+   OFFLINE BANNER
+   ========================================================================== */
+
+.offline-banner {
+  position: fixed;
+  z-index: var(--z-toast);
+  right: var(--space-4);
+  bottom:
+    max(
+      var(--space-4),
+      env(safe-area-inset-bottom)
+    );
+  left: var(--space-4);
+
+  width: fit-content;
+  max-width: calc(100% - var(--space-8));
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  margin-inline: auto;
+  padding:
+    var(--space-3)
+    var(--space-4);
+
+  color: #fcd34d;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-warning-border);
+  border-radius: var(--radius-md);
+
+  background: rgba(39, 29, 7, 0.96);
+  box-shadow: var(--shadow-lg);
+
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================================================
+   NOSCRIPT MESSAGE
+   ========================================================================== */
+
+.noscript-message {
+  width: 100%;
+
+  padding:
+    var(--space-4)
+    var(--page-padding-inline);
+
+  color: #fcd34d;
+
+  border-bottom:
+    var(--border-width-thin)
+    solid
+    var(--color-warning-border);
+
+  background: rgba(245, 158, 11, 0.1);
+
+  text-align: center;
+}
+
+/* ==========================================================================
+   MOBILE SAFE AREAS
+   ========================================================================== */
+
+@supports (
+  padding:
+    max(0px)
+) {
+  .safe-area-inline {
+    padding-left:
+      max(
+        var(--page-padding-inline),
+        env(safe-area-inset-left)
+      );
+
+    padding-right:
+      max(
+        var(--page-padding-inline),
+        env(safe-area-inset-right)
+      );
+  }
+
+  .safe-area-bottom {
+    padding-bottom:
+      max(
+        var(--space-4),
+        env(safe-area-inset-bottom)
+      );
+  }
+}
+
+/* ==========================================================================
+   PRINT
+   ========================================================================== */
+
+@media print {
+  @page {
+    margin: 16mm;
+    size: auto;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .skip-link,
+  .route-progress,
+  .offline-banner,
+  #modal-root,
+  #popover-root,
+  #toast-root {
+    display: none !important;
+  }
 }

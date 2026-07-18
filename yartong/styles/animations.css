@@ -1,0 +1,1493 @@
+/* ==========================================================================
+   YARTONG MOTION SYSTEM
+   Shared animations, transitions, loaders and interaction effects
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Animation Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  --motion-distance-sm: 8px;
+  --motion-distance-md: 18px;
+  --motion-distance-lg: 32px;
+
+  --motion-scale-sm: 0.985;
+  --motion-scale-md: 0.96;
+
+  --motion-duration-fast: 160ms;
+  --motion-duration-normal: 260ms;
+  --motion-duration-slow: 420ms;
+  --motion-duration-slower: 700ms;
+}
+
+/* --------------------------------------------------------------------------
+   General Motion Helpers
+   -------------------------------------------------------------------------- */
+
+.motion-safe {
+  will-change: transform, opacity;
+}
+
+.transition-colors {
+  transition: var(--transition-colors);
+}
+
+.transition-transform {
+  transition: var(--transition-transform);
+}
+
+.transition-all {
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+/* --------------------------------------------------------------------------
+   Fade Animations
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes yartong-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes yartong-fade-up {
+  from {
+    opacity: 0;
+    transform:
+      translateY(var(--motion-distance-md));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yartong-fade-down {
+  from {
+    opacity: 0;
+    transform:
+      translateY(
+        calc(var(--motion-distance-md) * -1)
+      );
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yartong-fade-left {
+  from {
+    opacity: 0;
+    transform:
+      translateX(var(--motion-distance-md));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes yartong-fade-right {
+  from {
+    opacity: 0;
+    transform:
+      translateX(
+        calc(var(--motion-distance-md) * -1)
+      );
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation:
+    yartong-fade-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-fade-out {
+  animation:
+    yartong-fade-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+.animate-fade-up {
+  animation:
+    yartong-fade-up
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-fade-down {
+  animation:
+    yartong-fade-down
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-fade-left {
+  animation:
+    yartong-fade-left
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-fade-right {
+  animation:
+    yartong-fade-right
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Scale Animations
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-scale-in {
+  from {
+    opacity: 0;
+    transform:
+      scale(var(--motion-scale-md));
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes yartong-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      scale(var(--motion-scale-md));
+  }
+}
+
+@keyframes yartong-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.025);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation:
+    yartong-scale-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-scale-out {
+  animation:
+    yartong-scale-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+.animate-pop-in {
+  animation:
+    yartong-pop-in
+    var(--motion-duration-slow)
+    var(--ease-standard)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Slide Animations
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-slide-in-left {
+  from {
+    transform: translateX(-105%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes yartong-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-105%);
+  }
+}
+
+@keyframes yartong-slide-in-right {
+  from {
+    transform: translateX(105%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes yartong-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(105%);
+  }
+}
+
+@keyframes yartong-slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yartong-slide-out-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+}
+
+.animate-slide-in-left {
+  animation:
+    yartong-slide-in-left
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-slide-out-left {
+  animation:
+    yartong-slide-out-left
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-slide-in-right {
+  animation:
+    yartong-slide-in-right
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-slide-out-right {
+  animation:
+    yartong-slide-out-right
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-slide-in-up {
+  animation:
+    yartong-slide-in-up
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-slide-out-down {
+  animation:
+    yartong-slide-out-down
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Dropdown, Popover and Tooltip Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-dropdown-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(-8px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+@keyframes yartong-dropdown-out {
+  from {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translateY(-6px)
+      scale(0.985);
+  }
+}
+
+.animate-dropdown-in {
+  transform-origin: top center;
+
+  animation:
+    yartong-dropdown-in
+    var(--motion-duration-fast)
+    var(--ease-enter)
+    both;
+}
+
+.animate-dropdown-out {
+  transform-origin: top center;
+
+  animation:
+    yartong-dropdown-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Modal and Dialog Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes yartong-modal-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes yartong-modal-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(16px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+@keyframes yartong-modal-out {
+  from {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translateY(10px)
+      scale(0.98);
+  }
+}
+
+.animate-modal-backdrop-in {
+  animation:
+    yartong-modal-backdrop-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-modal-backdrop-out {
+  animation:
+    yartong-modal-backdrop-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+.animate-modal-in {
+  animation:
+    yartong-modal-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-modal-out {
+  animation:
+    yartong-modal-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Sheet Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-bottom-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yartong-bottom-sheet-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+.animate-bottom-sheet-in {
+  animation:
+    yartong-bottom-sheet-in
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+.animate-bottom-sheet-out {
+  animation:
+    yartong-bottom-sheet-out
+    var(--motion-duration-normal)
+    var(--ease-standard)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Toast and Notification Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-toast-in {
+  from {
+    opacity: 0;
+    transform:
+      translateX(24px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+}
+
+@keyframes yartong-toast-out {
+  from {
+    opacity: 1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translateX(18px)
+      scale(0.98);
+  }
+}
+
+.animate-toast-in {
+  animation:
+    yartong-toast-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+.animate-toast-out {
+  animation:
+    yartong-toast-out
+    var(--motion-duration-fast)
+    var(--ease-exit)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Loading Spinner
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: var(--spinner-size, 22px);
+  height: var(--spinner-size, 22px);
+
+  display: inline-block;
+
+  border:
+    var(--spinner-width, 2px)
+    solid
+    rgba(255, 255, 255, 0.2);
+  border-top-color:
+    var(
+      --spinner-color,
+      var(--color-primary-400)
+    );
+  border-radius: var(--radius-round);
+
+  animation:
+    yartong-spin
+    var(--spinner-duration, 720ms)
+    linear
+    infinite;
+}
+
+.spinner--sm {
+  --spinner-size: 16px;
+  --spinner-width: 2px;
+}
+
+.spinner--lg {
+  --spinner-size: 34px;
+  --spinner-width: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Skeleton and Shimmer Loading
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-sm);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-surface-1) 0%,
+      var(--color-surface-3) 45%,
+      var(--color-surface-1) 100%
+    );
+
+  background-size: 220% 100%;
+
+  animation:
+    yartong-shimmer
+    1.5s
+    linear
+    infinite;
+}
+
+.skeleton--text {
+  width: 100%;
+  height: 14px;
+
+  border-radius: var(--radius-pill);
+}
+
+.skeleton--heading {
+  width: 60%;
+  height: 26px;
+
+  border-radius: var(--radius-pill);
+}
+
+.skeleton--avatar {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+
+  border-radius: var(--radius-round);
+}
+
+.skeleton--button {
+  width: 8rem;
+  height: var(--button-height-md);
+
+  border-radius: var(--radius-md);
+}
+
+.skeleton--card {
+  width: 100%;
+  min-height: 180px;
+
+  border-radius: var(--radius-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Progress and Upload Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-progress-indeterminate {
+  0% {
+    left: -45%;
+    width: 35%;
+  }
+
+  50% {
+    left: 35%;
+    width: 55%;
+  }
+
+  100% {
+    left: 105%;
+    width: 35%;
+  }
+}
+
+.progress-indeterminate {
+  position: relative;
+
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: var(--radius-pill);
+
+  background: var(--color-surface-3);
+}
+
+.progress-indeterminate::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  border-radius: inherit;
+
+  background: var(--gradient-primary);
+
+  content: "";
+
+  animation:
+    yartong-progress-indeterminate
+    1.4s
+    var(--ease-standard)
+    infinite;
+}
+
+@keyframes yartong-upload-pulse {
+  0%,
+  100% {
+    border-color: var(--color-border-strong);
+    background: var(--glass-bg-subtle);
+  }
+
+  50% {
+    border-color: var(--color-primary-400);
+    background: rgba(124, 58, 237, 0.08);
+  }
+}
+
+.upload-pulse {
+  animation:
+    yartong-upload-pulse
+    1.5s
+    ease-in-out
+    infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Success and Confirmation Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-success-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes yartong-check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-success-pop {
+  animation:
+    yartong-success-pop
+    var(--motion-duration-slow)
+    var(--ease-standard)
+    both;
+}
+
+.animated-check {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+
+  animation:
+    yartong-check-draw
+    var(--motion-duration-slow)
+    var(--ease-standard)
+    forwards;
+}
+
+/* --------------------------------------------------------------------------
+   Error and Validation Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-shake {
+  animation:
+    yartong-shake
+    380ms
+    var(--ease-standard);
+}
+
+/* --------------------------------------------------------------------------
+   Pulse and Status Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.48;
+  }
+}
+
+@keyframes yartong-status-ring {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.7);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+.animate-pulse {
+  animation:
+    yartong-pulse
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+.status-dot-live {
+  position: relative;
+}
+
+.status-dot-live::after {
+  position: absolute;
+  inset: 0;
+
+  border:
+    1px solid
+    currentColor;
+  border-radius: inherit;
+
+  content: "";
+
+  animation:
+    yartong-status-ring
+    1.7s
+    ease-out
+    infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Floating and Decorative Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes yartong-float-soft {
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0)
+      rotate(0deg);
+  }
+
+  50% {
+    transform:
+      translate3d(0, -7px, 0)
+      rotate(0.5deg);
+  }
+}
+
+@keyframes yartong-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+
+.animate-float {
+  animation:
+    yartong-float
+    5s
+    ease-in-out
+    infinite;
+}
+
+.animate-float-soft {
+  animation:
+    yartong-float-soft
+    7s
+    ease-in-out
+    infinite;
+}
+
+.animate-glow-pulse {
+  animation:
+    yartong-glow-pulse
+    4.5s
+    ease-in-out
+    infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Gradient Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+
+  animation:
+    yartong-gradient-shift
+    8s
+    ease
+    infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Notification Bell Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-bell {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20% {
+    transform: rotate(12deg);
+  }
+
+  40% {
+    transform: rotate(-10deg);
+  }
+
+  60% {
+    transform: rotate(7deg);
+  }
+
+  80% {
+    transform: rotate(-4deg);
+  }
+}
+
+.animate-bell {
+  transform-origin: top center;
+
+  animation:
+    yartong-bell
+    620ms
+    var(--ease-standard);
+}
+
+/* --------------------------------------------------------------------------
+   Message Arrival Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-message-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(10px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.animate-message-in {
+  animation:
+    yartong-message-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Typing Indicator
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-typing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-indicator__dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: var(--radius-round);
+
+  background: var(--color-text-muted);
+
+  animation:
+    yartong-typing-dot
+    1.2s
+    ease-in-out
+    infinite;
+}
+
+.typing-indicator__dot:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.typing-indicator__dot:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+/* --------------------------------------------------------------------------
+   Chart Reveal Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-chart-reveal {
+  from {
+    clip-path:
+      inset(
+        0
+        100%
+        0
+        0
+      );
+  }
+
+  to {
+    clip-path:
+      inset(
+        0
+        0
+        0
+        0
+      );
+  }
+}
+
+.animate-chart-reveal {
+  animation:
+    yartong-chart-reveal
+    var(--motion-duration-slower)
+    var(--ease-standard)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Counter Appearance
+   -------------------------------------------------------------------------- */
+
+@keyframes yartong-counter-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(8px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.animate-counter {
+  animation:
+    yartong-counter-in
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    both;
+}
+
+/* --------------------------------------------------------------------------
+   Accordion Motion
+   -------------------------------------------------------------------------- */
+
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  opacity: 0;
+
+  transition:
+    grid-template-rows
+    var(--transition-normal)
+    var(--ease-standard),
+    opacity
+    var(--transition-normal);
+}
+
+.accordion-content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.accordion-item[data-open="true"]
+.accordion-content,
+details[open]
+.accordion-content {
+  grid-template-rows: 1fr;
+
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Stagger Utilities
+   -------------------------------------------------------------------------- */
+
+.stagger-children > * {
+  opacity: 0;
+
+  animation:
+    yartong-fade-up
+    var(--motion-duration-normal)
+    var(--ease-enter)
+    forwards;
+}
+
+.stagger-children > :nth-child(1) {
+  animation-delay: 40ms;
+}
+
+.stagger-children > :nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.stagger-children > :nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.stagger-children > :nth-child(4) {
+  animation-delay: 160ms;
+}
+
+.stagger-children > :nth-child(5) {
+  animation-delay: 200ms;
+}
+
+.stagger-children > :nth-child(6) {
+  animation-delay: 240ms;
+}
+
+.stagger-children > :nth-child(7) {
+  animation-delay: 280ms;
+}
+
+.stagger-children > :nth-child(8) {
+  animation-delay: 320ms;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-Reveal States
+   JavaScript can toggle data-visible after IntersectionObserver detection.
+   -------------------------------------------------------------------------- */
+
+[data-reveal] {
+  opacity: 0;
+
+  transition:
+    opacity
+    var(--motion-duration-slow)
+    var(--ease-enter),
+    transform
+    var(--motion-duration-slow)
+    var(--ease-enter);
+}
+
+[data-reveal="up"] {
+  transform:
+    translateY(var(--motion-distance-lg));
+}
+
+[data-reveal="down"] {
+  transform:
+    translateY(
+      calc(var(--motion-distance-lg) * -1)
+    );
+}
+
+[data-reveal="left"] {
+  transform:
+    translateX(var(--motion-distance-lg));
+}
+
+[data-reveal="right"] {
+  transform:
+    translateX(
+      calc(var(--motion-distance-lg) * -1)
+    );
+}
+
+[data-reveal="scale"] {
+  transform: scale(0.96);
+}
+
+[data-reveal][data-visible="true"] {
+  opacity: 1;
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
+}
+
+/* --------------------------------------------------------------------------
+   Hover Motion Helpers
+   -------------------------------------------------------------------------- */
+
+.hover-lift {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-scale {
+  transition:
+    transform var(--transition-fast);
+}
+
+.hover-scale:hover {
+  transform: scale(1.025);
+}
+
+.hover-glow {
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-glow:hover {
+  border-color:
+    rgba(139, 92, 246, 0.38);
+
+  box-shadow: var(--shadow-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Animation Delay Helpers
+   -------------------------------------------------------------------------- */
+
+.delay-75 {
+  animation-delay: 75ms;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* --------------------------------------------------------------------------
+   Animation Duration Helpers
+   -------------------------------------------------------------------------- */
+
+.duration-fast {
+  animation-duration: var(--motion-duration-fast);
+}
+
+.duration-normal {
+  animation-duration: var(--motion-duration-normal);
+}
+
+.duration-slow {
+  animation-duration: var(--motion-duration-slow);
+}
+
+.duration-slower {
+  animation-duration: var(--motion-duration-slower);
+}
+
+/* --------------------------------------------------------------------------
+   Pause and Control States
+   -------------------------------------------------------------------------- */
+
+[data-animation-paused="true"],
+.animation-paused {
+  animation-play-state: paused !important;
+}
+
+[data-animation-disabled="true"],
+.animation-disabled {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+
+    scroll-behavior: auto !important;
+
+    transition-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .skeleton,
+  .progress-indeterminate::after,
+  .spinner,
+  .typing-indicator__dot {
+    animation: none !important;
+  }
+
+  .spinner {
+    border-top-color:
+      var(
+        --spinner-color,
+        var(--color-primary-400)
+      );
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print
+   -------------------------------------------------------------------------- */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .spinner,
+  .skeleton,
+  .progress-indeterminate,
+  .typing-indicator {
+    display: none !important;
+  }
+}

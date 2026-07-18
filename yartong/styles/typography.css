@@ -1,0 +1,729 @@
+/* ==========================================================================
+   YARTONG TYPOGRAPHY
+   Type hierarchy for marketplace, dashboards, forms and business content
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base Text
+   -------------------------------------------------------------------------- */
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+p,
+li,
+label,
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Headings
+   -------------------------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading-1,
+.heading-2,
+.heading-3,
+.heading-4,
+.heading-5,
+.heading-6 {
+  margin: 0;
+
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+
+  text-wrap: balance;
+}
+
+h1,
+.heading-1 {
+  font-size: clamp(
+    var(--font-size-4xl),
+    6vw,
+    var(--font-size-7xl)
+  );
+  line-height: var(--line-height-none);
+  font-weight: var(--font-weight-black);
+}
+
+h2,
+.heading-2 {
+  font-size: clamp(
+    var(--font-size-3xl),
+    4vw,
+    var(--font-size-5xl)
+  );
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-extrabold);
+}
+
+h3,
+.heading-3 {
+  font-size: clamp(
+    var(--font-size-2xl),
+    2.5vw,
+    var(--font-size-3xl)
+  );
+  line-height: var(--line-height-snug);
+}
+
+h4,
+.heading-4 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+}
+
+h5,
+.heading-5 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+}
+
+h6,
+.heading-6 {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* --------------------------------------------------------------------------
+   Display and Hero Text
+   -------------------------------------------------------------------------- */
+
+.display-title {
+  max-width: 18ch;
+
+  font-size: clamp(
+    3rem,
+    8vw,
+    6.5rem
+  );
+  font-weight: var(--font-weight-black);
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.display-title--compact {
+  max-width: 22ch;
+
+  font-size: clamp(
+    2.6rem,
+    6vw,
+    5rem
+  );
+}
+
+.display-gradient {
+  color: transparent;
+  background: var(--gradient-text);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.display-outline {
+  color: transparent;
+  -webkit-text-stroke:
+    1px
+    rgba(255, 255, 255, 0.48);
+}
+
+/* --------------------------------------------------------------------------
+   Eyebrows and Labels
+   -------------------------------------------------------------------------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-primary-300);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-widest);
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+
+  border-radius: var(--radius-round);
+
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-primary);
+
+  content: "";
+}
+
+.eyebrow--plain::before {
+  display: none;
+}
+
+.field-label,
+.form-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.field-required {
+  color: var(--color-danger);
+}
+
+.field-optional {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+}
+
+/* --------------------------------------------------------------------------
+   Body Copy
+   -------------------------------------------------------------------------- */
+
+.text-lead {
+  max-width: 68ch;
+
+  color: var(--color-text-secondary);
+
+  font-size: clamp(
+    var(--font-size-lg),
+    2vw,
+    var(--font-size-xl)
+  );
+  line-height: var(--line-height-relaxed);
+
+  text-wrap: pretty;
+}
+
+.text-body {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-small {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.text-caption {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.text-micro {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-2xs);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-subtle {
+  color: var(--color-text-subtle);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Semantic Text
+   -------------------------------------------------------------------------- */
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+.text-trust {
+  color: var(--color-trust);
+}
+
+.text-premium {
+  color: var(--color-premium);
+}
+
+/* --------------------------------------------------------------------------
+   Links
+   -------------------------------------------------------------------------- */
+
+.text-link {
+  color: var(--color-primary-300);
+  font-weight: var(--font-weight-medium);
+
+  text-decoration: none;
+
+  transition: var(--transition-colors);
+}
+
+.text-link:hover {
+  color: var(--color-secondary-400);
+}
+
+.text-link:active {
+  color: var(--color-primary-500);
+}
+
+.text-link--underline {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.text-link--subtle {
+  color: var(--color-text-secondary);
+}
+
+.text-link--subtle:hover {
+  color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Metadata and Supporting Information
+   -------------------------------------------------------------------------- */
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.meta-divider {
+  width: 3px;
+  height: 3px;
+
+  border-radius: var(--radius-round);
+  background: var(--color-text-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   Prices and Financial Values
+   -------------------------------------------------------------------------- */
+
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.price__currency {
+  color: var(--color-text-secondary);
+  font-size: 0.65em;
+  font-weight: var(--font-weight-semibold);
+}
+
+.price__unit {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.price--large {
+  font-size: clamp(
+    var(--font-size-3xl),
+    4vw,
+    var(--font-size-5xl)
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Analytics and Metrics
+   -------------------------------------------------------------------------- */
+
+.metric-value {
+  display: block;
+
+  color: var(--color-text-primary);
+
+  font-family: var(--font-display);
+  font-size: clamp(
+    var(--font-size-2xl),
+    3vw,
+    var(--font-size-4xl)
+  );
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.metric-value--compact {
+  font-size: var(--font-size-2xl);
+}
+
+.metric-label {
+  display: block;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+}
+
+.metric-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.metric-change--up {
+  color: var(--color-success);
+}
+
+.metric-change--down {
+  color: var(--color-danger);
+}
+
+.metric-change--stable {
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Business and Identity Text
+   -------------------------------------------------------------------------- */
+
+.business-name {
+  color: var(--color-text-primary);
+
+  font-size: clamp(
+    var(--font-size-xl),
+    3vw,
+    var(--font-size-3xl)
+  );
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.business-id {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-muted);
+
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.profile-headline {
+  max-width: 70ch;
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+}
+
+.rating-text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.rating-count {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation Typography
+   -------------------------------------------------------------------------- */
+
+.nav-label {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+
+  transition: var(--transition-colors);
+}
+
+.nav-label:hover,
+.nav-label[aria-current="page"] {
+  color: var(--color-text-primary);
+}
+
+.sidebar-section-label {
+  color: var(--color-text-subtle);
+
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-widest);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Table Typography
+   -------------------------------------------------------------------------- */
+
+.table-heading {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.table-primary {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.table-secondary {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+/* --------------------------------------------------------------------------
+   Quotes, Reviews and Messages
+   -------------------------------------------------------------------------- */
+
+blockquote,
+.quote-text {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-lg);
+  font-style: italic;
+  line-height: var(--line-height-relaxed);
+}
+
+.review-title {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.review-body,
+.message-body {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+
+  overflow-wrap: anywhere;
+}
+
+.message-time,
+.review-date {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-2xs);
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Truncation
+   -------------------------------------------------------------------------- */
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-clamp-2,
+.text-clamp-3,
+.text-clamp-4 {
+  display: -webkit-box;
+  overflow: hidden;
+
+  -webkit-box-orient: vertical;
+}
+
+.text-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.text-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.text-clamp-4 {
+  -webkit-line-clamp: 4;
+}
+
+/* --------------------------------------------------------------------------
+   Alignment and Weight Helpers
+   -------------------------------------------------------------------------- */
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.font-black {
+  font-weight: var(--font-weight-black);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Typography
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .display-title {
+    max-width: none;
+
+    font-size: clamp(
+      2.75rem,
+      13vw,
+      4.6rem
+    );
+  }
+
+  .text-lead {
+    font-size: var(--font-size-lg);
+  }
+
+  .business-name {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print Typography
+   -------------------------------------------------------------------------- */
+
+@media print {
+  body {
+    color: #111111;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #000000;
+    break-after: avoid;
+  }
+
+  p,
+  li,
+  blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .text-muted,
+  .text-secondary,
+  .text-subtle,
+  .metric-label,
+  .table-secondary {
+    color: #4b5563;
+  }
+}

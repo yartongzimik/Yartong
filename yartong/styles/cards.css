@@ -1,0 +1,1408 @@
+/* ==========================================================================
+   YARTONG CARD SYSTEM
+   Marketplace listings, profiles, materials, jobs, reviews and analytics
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base Card
+   -------------------------------------------------------------------------- */
+
+.card {
+  position: relative;
+
+  min-width: 0;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  background: var(--gradient-card);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--color-border);
+
+  box-shadow: var(--shadow-md);
+}
+
+.card--interactive {
+  cursor: pointer;
+}
+
+.card--interactive:hover {
+  border-color: rgba(139, 92, 246, 0.32);
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    var(--shadow-lg),
+    0 0 30px rgba(124, 58, 237, 0.1);
+}
+
+.card--interactive:active {
+  transform: translateY(-1px);
+}
+
+.card--surface {
+  background: var(--color-surface-1);
+}
+
+.card--elevated {
+  border-color: var(--color-border);
+
+  background: var(--color-surface-2);
+
+  box-shadow: var(--shadow-lg);
+}
+
+.card--glass {
+  border-color: var(--glass-border);
+
+  background: var(--glass-bg);
+
+  backdrop-filter: blur(var(--glass-blur-md));
+}
+
+.card--borderless {
+  border: 0;
+}
+
+.card--selected {
+  border-color: var(--color-primary-500);
+
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 2px rgba(124, 58, 237, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Card Sections
+   -------------------------------------------------------------------------- */
+
+.card__header,
+.card__body,
+.card__footer {
+  padding:
+    var(--card-padding-md);
+}
+
+.card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  border-bottom:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+}
+
+.card__body {
+  min-width: 0;
+}
+
+.card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  border-top:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+}
+
+.card__title {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.card__description {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.card__actions {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card--compact .card__header,
+.card--compact .card__body,
+.card--compact .card__footer {
+  padding: var(--card-padding-sm);
+}
+
+.card--spacious .card__header,
+.card--spacious .card__body,
+.card--spacious .card__footer {
+  padding: var(--card-padding-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Media Cards
+   -------------------------------------------------------------------------- */
+
+.card-media {
+  position: relative;
+
+  aspect-ratio: 16 / 10;
+
+  overflow: hidden;
+
+  background: var(--color-surface-2);
+}
+
+.card-media__image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: transform var(--transition-slow);
+}
+
+.card:hover .card-media__image {
+  transform: scale(1.035);
+}
+
+.card-media__overlay {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      transparent 45%,
+      rgba(0, 0, 0, 0.72)
+    );
+}
+
+.card-media__top {
+  position: absolute;
+  z-index: var(--z-raised);
+  top: var(--space-3);
+  right: var(--space-3);
+  left: var(--space-3);
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.card-media__bottom {
+  position: absolute;
+  z-index: var(--z-raised);
+  right: var(--space-3);
+  bottom: var(--space-3);
+  left: var(--space-3);
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   Worker and Provider Cards
+   -------------------------------------------------------------------------- */
+
+.worker-card {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+}
+
+.worker-card__profile {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+  gap: var(--space-4);
+
+  align-items: center;
+}
+
+.worker-card__avatar {
+  width: var(--avatar-size-lg);
+  height: var(--avatar-size-lg);
+
+  overflow: hidden;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-round);
+
+  background: var(--color-surface-3);
+}
+
+.worker-card__avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.worker-card__avatar-fallback {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-white);
+
+  background: var(--gradient-primary);
+
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.worker-card__identity {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-1);
+}
+
+.worker-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  min-width: 0;
+}
+
+.worker-card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.worker-card__trade {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+}
+
+.worker-card__location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+.worker-card__summary {
+  display: grid;
+  gap: var(--space-4);
+
+  margin-top: var(--space-5);
+}
+
+.worker-card__metrics {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.worker-card__metric {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-1);
+
+  padding: var(--space-3);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+  border-radius: var(--radius-md);
+
+  background: var(--glass-bg-subtle);
+}
+
+.worker-card__metric-value {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.worker-card__metric-label {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-2xs);
+}
+
+.worker-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.worker-card__footer {
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Contractor Cards
+   -------------------------------------------------------------------------- */
+
+.contractor-card {
+  height: 100%;
+}
+
+.contractor-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.contractor-card__logo {
+  width: 64px;
+  height: 64px;
+
+  flex: 0 0 auto;
+
+  overflow: hidden;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-3);
+}
+
+.contractor-card__logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.contractor-card__content {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-2);
+}
+
+.contractor-card__team {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+.contractor-card__stats {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+
+  margin-top: var(--space-5);
+}
+
+/* --------------------------------------------------------------------------
+   Labourer Cards
+   -------------------------------------------------------------------------- */
+
+.labourer-card__availability {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  margin-top: var(--space-4);
+}
+
+.labourer-card__performance {
+  display: grid;
+  gap: var(--space-3);
+
+  margin-top: var(--space-5);
+}
+
+.labourer-card__performance-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  gap: var(--space-4);
+
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Material Product Cards
+   -------------------------------------------------------------------------- */
+
+.material-card {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+}
+
+.material-card__image {
+  position: relative;
+
+  aspect-ratio: 4 / 3;
+
+  overflow: hidden;
+
+  background: var(--color-surface-2);
+}
+
+.material-card__image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: transform var(--transition-slow);
+}
+
+.material-card:hover .material-card__image img {
+  transform: scale(1.04);
+}
+
+.material-card__body {
+  display: grid;
+  gap: var(--space-3);
+
+  flex: 1;
+}
+
+.material-card__category {
+  color: var(--color-material);
+
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.material-card__name {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.material-card__supplier {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+}
+
+.material-card__price-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.material-card__stock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-xs);
+}
+
+.material-card__stock::before {
+  width: 7px;
+  height: 7px;
+
+  border-radius: var(--radius-round);
+
+  background: currentColor;
+
+  content: "";
+}
+
+.material-card__stock[data-stock="in-stock"] {
+  color: var(--color-success);
+}
+
+.material-card__stock[data-stock="low-stock"] {
+  color: var(--color-warning);
+}
+
+.material-card__stock[data-stock="out-of-stock"] {
+  color: var(--color-danger);
+}
+
+.material-card__footer {
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Supplier Cards
+   -------------------------------------------------------------------------- */
+
+.supplier-card__header {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+  gap: var(--space-4);
+
+  align-items: center;
+}
+
+.supplier-card__logo {
+  width: 60px;
+  height: 60px;
+
+  overflow: hidden;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-3);
+}
+
+.supplier-card__logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.supplier-card__stats {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+
+  margin-top: var(--space-5);
+}
+
+/* --------------------------------------------------------------------------
+   Job Cards
+   -------------------------------------------------------------------------- */
+
+.job-card {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.job-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.job-card__content {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-3);
+}
+
+.job-card__title {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.job-card__description {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.job-card__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+
+.job-card__detail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+}
+
+.job-card__budget {
+  display: grid;
+  gap: var(--space-1);
+
+  text-align: right;
+}
+
+.job-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.quick-job-card {
+  border-color: rgba(249, 115, 22, 0.24);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(249, 115, 22, 0.07),
+      rgba(255, 255, 255, 0.018)
+    );
+}
+
+.quick-job-card:hover {
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   Metric and Analytics Cards
+   -------------------------------------------------------------------------- */
+
+.metric-card {
+  min-height: var(--stat-card-min-height);
+
+  display: grid;
+  align-content: space-between;
+  gap: var(--space-6);
+
+  padding: var(--card-padding-md);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  background: var(--gradient-card);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+}
+
+.metric-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.metric-card__icon {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-primary-300);
+
+  border-radius: var(--radius-md);
+
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.metric-card__content {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.metric-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.metric-card--success .metric-card__icon {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.metric-card--warning .metric-card__icon {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+.metric-card--danger .metric-card__icon {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.metric-card--trust .metric-card__icon {
+  color: var(--color-trust);
+  background: var(--color-trust-soft);
+}
+
+.analytics-card {
+  min-width: 0;
+
+  padding: var(--card-padding-md);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-1);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.analytics-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  margin-bottom: var(--space-6);
+}
+
+.analytics-card__title {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.analytics-card__description {
+  margin-top: var(--space-1);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+.analytics-card__chart {
+  min-height: 260px;
+}
+
+/* --------------------------------------------------------------------------
+   Trust and Business Health Cards
+   -------------------------------------------------------------------------- */
+
+.score-card {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+  gap: var(--space-5);
+
+  align-items: center;
+}
+
+.score-card__ring {
+  --score-value: 0;
+
+  width: 104px;
+  height: 104px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: var(--radius-round);
+
+  background:
+    radial-gradient(
+      circle closest-side,
+      var(--color-surface-1) 76%,
+      transparent 77%
+    ),
+    conic-gradient(
+      var(--score-color, var(--color-primary-500))
+      calc(var(--score-value) * 1%),
+      var(--color-surface-3) 0
+    );
+}
+
+.score-card__value {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.score-card__content {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-2);
+}
+
+.score-card__factors {
+  display: grid;
+  gap: var(--space-3);
+
+  margin-top: var(--space-4);
+}
+
+.score-card__factor {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  gap: var(--space-4);
+
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Review Cards
+   -------------------------------------------------------------------------- */
+
+.review-card {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.review-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.review-card__reviewer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.review-card__avatar {
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+
+  overflow: hidden;
+
+  border-radius: var(--radius-round);
+
+  background: var(--color-surface-3);
+}
+
+.review-card__identity {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.review-card__rating {
+  display: inline-flex;
+  gap: 2px;
+
+  color: var(--color-premium);
+}
+
+.review-card__body {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* --------------------------------------------------------------------------
+   Conversation and Message Cards
+   -------------------------------------------------------------------------- */
+
+.conversation-card {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+  gap: var(--space-3);
+
+  align-items: center;
+
+  padding: var(--space-4);
+
+  border-bottom:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.conversation-card:hover,
+.conversation-card[data-active="true"] {
+  background: var(--glass-bg);
+}
+
+.conversation-card[data-active="true"] {
+  border-left:
+    3px solid
+    var(--color-primary-500);
+}
+
+.conversation-card__avatar {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+
+  overflow: hidden;
+
+  border-radius: var(--radius-round);
+
+  background: var(--color-surface-3);
+}
+
+.conversation-card__content {
+  min-width: 0;
+
+  display: grid;
+  gap: var(--space-1);
+}
+
+.conversation-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.conversation-card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.conversation-card__preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+.conversation-card__time {
+  color: var(--color-text-subtle);
+
+  font-size: var(--font-size-2xs);
+}
+
+.conversation-card__unread {
+  min-width: 20px;
+  height: 20px;
+
+  display: grid;
+  place-items: center;
+
+  padding-inline: var(--space-1);
+
+  color: var(--color-white);
+
+  border-radius: var(--radius-pill);
+
+  background: var(--color-primary-600);
+
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+}
+
+/* --------------------------------------------------------------------------
+   Membership Cards
+   -------------------------------------------------------------------------- */
+
+.membership-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+
+  padding: var(--card-padding-lg);
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border);
+  border-radius: var(--radius-xl);
+
+  background: var(--color-surface-1);
+}
+
+.membership-card--featured {
+  border-color: rgba(251, 191, 36, 0.38);
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(251, 191, 36, 0.12),
+      transparent 15rem
+    ),
+    var(--color-surface-1);
+
+  box-shadow:
+    var(--shadow-lg),
+    0 0 34px rgba(251, 191, 36, 0.12);
+}
+
+.membership-card__badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+}
+
+.membership-card__header {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.membership-card__price {
+  margin-top: var(--space-6);
+}
+
+.membership-card__features {
+  display: grid;
+  gap: var(--space-3);
+
+  margin-block: var(--space-6);
+}
+
+.membership-card__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+}
+
+.membership-card__footer {
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Empty, Loading and Error Cards
+   -------------------------------------------------------------------------- */
+
+.state-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+
+  padding:
+    clamp(
+      var(--space-8),
+      6vw,
+      var(--space-16)
+    );
+
+  text-align: center;
+
+  border:
+    var(--border-width-thin)
+    dashed
+    var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--glass-bg-subtle);
+}
+
+.state-card__icon {
+  width: 64px;
+  height: 64px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-primary-300);
+
+  border-radius: var(--radius-lg);
+
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.state-card__title {
+  color: var(--color-text-primary);
+
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.state-card__description {
+  max-width: 34rem;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.state-card--error .state-card__icon {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.state-card--success .state-card__icon {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Skeleton Cards
+   -------------------------------------------------------------------------- */
+
+.card-skeleton {
+  overflow: hidden;
+
+  border:
+    var(--border-width-thin)
+    solid
+    var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-1);
+}
+
+.card-skeleton__media,
+.card-skeleton__line,
+.card-skeleton__avatar,
+.card-skeleton__button {
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-surface-1),
+      var(--color-surface-3),
+      var(--color-surface-1)
+    );
+
+  background-size: 200% 100%;
+
+  animation:
+    card-skeleton-shimmer
+    1.4s
+    linear
+    infinite;
+}
+
+.card-skeleton__media {
+  aspect-ratio: 16 / 10;
+}
+
+.card-skeleton__body {
+  display: grid;
+  gap: var(--space-3);
+
+  padding: var(--card-padding-md);
+}
+
+.card-skeleton__line {
+  height: 14px;
+
+  border-radius: var(--radius-pill);
+}
+
+.card-skeleton__line--short {
+  width: 45%;
+}
+
+.card-skeleton__line--medium {
+  width: 70%;
+}
+
+.card-skeleton__avatar {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+
+  border-radius: var(--radius-round);
+}
+
+.card-skeleton__button {
+  width: 100%;
+  height: var(--button-height-md);
+
+  border-radius: var(--radius-md);
+}
+
+@keyframes card-skeleton-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Behaviour
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .card__header,
+  .card__footer,
+  .job-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .card__actions,
+  .job-card__actions {
+    width: 100%;
+  }
+
+  .card__actions > *,
+  .job-card__actions > * {
+    flex: 1 1 auto;
+  }
+
+  .worker-card__metrics,
+  .contractor-card__stats,
+  .supplier-card__stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .job-card__budget {
+    text-align: left;
+  }
+
+  .score-card {
+    justify-items: center;
+
+    grid-template-columns: minmax(0, 1fr);
+
+    text-align: center;
+  }
+
+  .conversation-card {
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+  }
+
+  .conversation-card > :last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .card__header,
+  .card__body,
+  .card__footer {
+    padding: var(--card-padding-sm);
+  }
+
+  .worker-card__profile,
+  .contractor-card__header,
+  .supplier-card__header {
+    align-items: flex-start;
+  }
+
+  .worker-card__metrics,
+  .contractor-card__stats,
+  .supplier-card__stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card-media__image,
+  .material-card__image img {
+    transform: none !important;
+  }
+
+  .card-skeleton__media,
+  .card-skeleton__line,
+  .card-skeleton__avatar,
+  .card-skeleton__button {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print
+   -------------------------------------------------------------------------- */
+
+@media print {
+  .card,
+  .analytics-card,
+  .metric-card,
+  .membership-card {
+    break-inside: avoid;
+
+    color: #000000;
+
+    border-color: #d1d5db;
+    background: #ffffff;
+
+    box-shadow: none;
+  }
+
+  .card__actions,
+  .job-card__actions,
+  .upload-preview__overlay {
+    display: none !important;
+  }
+}

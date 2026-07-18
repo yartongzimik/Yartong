@@ -1,0 +1,17 @@
+{
+  "name": "Yartong",
+  "short_name": "Yartong",
+  "description": "Find workers, contractors, labourers and construction materials through Yartong.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080b",
+  "theme_color": "#08080b",
+  "lang": "en-IN",
+  "orientation": "portrait-primary",
+  "categories": [
+    "business",
+    "productivity",
+    "shopping"
+  ],
+  "icons": []
+}

@@ -1,0 +1,526 @@
+/* ==========================================================================
+   YARTONG DESIGN SYSTEM
+   Design tokens for the full Yartong platform
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------------
+     Brand Identity
+     -------------------------------------------------------------------------- */
+
+  --brand-name: "Yartong";
+
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+
+  --color-secondary-400: #e879f9;
+  --color-secondary-500: #d946ef;
+  --color-secondary-600: #c026d3;
+
+  --color-accent: #a855f7;
+  --color-accent-bright: #d946ef;
+
+  /* --------------------------------------------------------------------------
+     Core Backgrounds
+     -------------------------------------------------------------------------- */
+
+  --color-bg: #08080b;
+  --color-bg-subtle: #0c0c10;
+  --color-bg-elevated: #111116;
+  --color-bg-overlay: rgba(5, 5, 8, 0.82);
+
+  --color-surface-1: #121218;
+  --color-surface-2: #18181f;
+  --color-surface-3: #20202a;
+  --color-surface-hover: #262631;
+  --color-surface-active: #2d2d3a;
+
+  --color-dashboard-bg: #0a0a0f;
+  --color-sidebar-bg: #0e0e14;
+  --color-header-bg: rgba(8, 8, 11, 0.86);
+
+  /* --------------------------------------------------------------------------
+     Borders and Dividers
+     -------------------------------------------------------------------------- */
+
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-border-focus: rgba(139, 92, 246, 0.72);
+
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+
+  /* --------------------------------------------------------------------------
+     Text
+     -------------------------------------------------------------------------- */
+
+  --color-text-primary: #f7f7f8;
+  --color-text-secondary: #c4c4cc;
+  --color-text-muted: #8c8c99;
+  --color-text-subtle: #686875;
+  --color-text-disabled: #555561;
+  --color-text-inverse: #111114;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* --------------------------------------------------------------------------
+     Semantic Colors
+     -------------------------------------------------------------------------- */
+
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-soft: rgba(34, 197, 94, 0.14);
+  --color-success-border: rgba(34, 197, 94, 0.28);
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-soft: rgba(245, 158, 11, 0.14);
+  --color-warning-border: rgba(245, 158, 11, 0.28);
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-soft: rgba(239, 68, 68, 0.14);
+  --color-danger-border: rgba(239, 68, 68, 0.28);
+
+  --color-info: #38bdf8;
+  --color-info-hover: #0ea5e9;
+  --color-info-soft: rgba(56, 189, 248, 0.14);
+  --color-info-border: rgba(56, 189, 248, 0.28);
+
+  /* --------------------------------------------------------------------------
+     Yartong-Specific Status Colors
+     -------------------------------------------------------------------------- */
+
+  --color-verified: #22c55e;
+  --color-verified-soft: rgba(34, 197, 94, 0.12);
+
+  --color-trust: #06b6d4;
+  --color-trust-soft: rgba(6, 182, 212, 0.14);
+
+  --color-premium: #fbbf24;
+  --color-premium-soft: rgba(251, 191, 36, 0.14);
+
+  --color-growth: #8b5cf6;
+  --color-growth-soft: rgba(139, 92, 246, 0.14);
+
+  --color-quick-job: #f97316;
+  --color-quick-job-soft: rgba(249, 115, 22, 0.14);
+
+  --color-material: #14b8a6;
+  --color-material-soft: rgba(20, 184, 166, 0.14);
+
+  /* --------------------------------------------------------------------------
+     Skill-Level Colors
+     -------------------------------------------------------------------------- */
+
+  --color-skill-foundation: #94a3b8;
+  --color-skill-professional: #3b82f6;
+  --color-skill-specialist: #a855f7;
+  --color-skill-master: #f59e0b;
+
+  /* --------------------------------------------------------------------------
+     Verification Colors
+     -------------------------------------------------------------------------- */
+
+  --color-phone-verified: #38bdf8;
+  --color-identity-verified: #8b5cf6;
+  --color-business-verified: #d946ef;
+  --color-yartong-verified: #22c55e;
+
+  /* --------------------------------------------------------------------------
+     Glassmorphism
+     -------------------------------------------------------------------------- */
+
+  --glass-bg-subtle: rgba(255, 255, 255, 0.025);
+  --glass-bg: rgba(255, 255, 255, 0.045);
+  --glass-bg-strong: rgba(255, 255, 255, 0.07);
+
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.12);
+
+  --glass-blur-sm: 10px;
+  --glass-blur-md: 18px;
+  --glass-blur-lg: 28px;
+
+  /* --------------------------------------------------------------------------
+     Gradients
+     -------------------------------------------------------------------------- */
+
+  --gradient-primary:
+    linear-gradient(
+      135deg,
+      var(--color-primary-600),
+      var(--color-secondary-500)
+    );
+
+  --gradient-primary-hover:
+    linear-gradient(
+      135deg,
+      var(--color-primary-500),
+      var(--color-secondary-400)
+    );
+
+  --gradient-surface:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  --gradient-dashboard:
+    radial-gradient(
+      circle at top right,
+      rgba(124, 58, 237, 0.12),
+      transparent 34%
+    ),
+    var(--color-dashboard-bg);
+
+  --gradient-hero:
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(217, 70, 239, 0.12),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 20% 15%,
+      rgba(124, 58, 237, 0.17),
+      transparent 38%
+    ),
+    var(--color-bg);
+
+  --gradient-card:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.02)
+    );
+
+  --gradient-text:
+    linear-gradient(
+      90deg,
+      var(--color-primary-300),
+      var(--color-secondary-400)
+    );
+
+  /* --------------------------------------------------------------------------
+     Typography Families
+     -------------------------------------------------------------------------- */
+
+  --font-sans:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  --font-display:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-mono:
+    "JetBrains Mono",
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+
+  /* --------------------------------------------------------------------------
+     Typography Scale
+     -------------------------------------------------------------------------- */
+
+  --font-size-2xs: 0.6875rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+  --font-size-7xl: 4.5rem;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.15;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+  --line-height-loose: 1.9;
+
+  --letter-spacing-tight: -0.035em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.08em;
+  --letter-spacing-widest: 0.16em;
+
+  /* --------------------------------------------------------------------------
+     Spacing Scale
+     -------------------------------------------------------------------------- */
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+  --space-32: 8rem;
+
+  /* --------------------------------------------------------------------------
+     Radius
+     -------------------------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* --------------------------------------------------------------------------
+     Shadows
+     -------------------------------------------------------------------------- */
+
+  --shadow-xs:
+    0 1px 2px rgba(0, 0, 0, 0.24);
+
+  --shadow-sm:
+    0 4px 12px rgba(0, 0, 0, 0.2);
+
+  --shadow-md:
+    0 10px 30px rgba(0, 0, 0, 0.28);
+
+  --shadow-lg:
+    0 18px 54px rgba(0, 0, 0, 0.36);
+
+  --shadow-xl:
+    0 28px 90px rgba(0, 0, 0, 0.44);
+
+  --shadow-primary:
+    0 0 34px rgba(124, 58, 237, 0.28);
+
+  --shadow-secondary:
+    0 0 34px rgba(217, 70, 239, 0.22);
+
+  --shadow-success:
+    0 0 28px rgba(34, 197, 94, 0.18);
+
+  --shadow-focus:
+    0 0 0 4px rgba(124, 58, 237, 0.16);
+
+  /* --------------------------------------------------------------------------
+     Container Widths
+     -------------------------------------------------------------------------- */
+
+  --container-xs: 30rem;
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 80rem;
+  --container-2xl: 90rem;
+
+  --container-page: 90rem;
+  --container-content: 72rem;
+  --container-form: 42rem;
+  --container-reading: 48rem;
+
+  /* --------------------------------------------------------------------------
+     Layout Dimensions
+     -------------------------------------------------------------------------- */
+
+  --header-height: 72px;
+  --header-height-mobile: 64px;
+
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 84px;
+
+  --dashboard-topbar-height: 72px;
+
+  --page-padding-inline: clamp(1rem, 3vw, 2rem);
+  --page-padding-block: clamp(2rem, 5vw, 5rem);
+
+  --section-gap: clamp(3rem, 6vw, 6rem);
+  --dashboard-gap: 1.5rem;
+
+  /* --------------------------------------------------------------------------
+     Component Dimensions
+     -------------------------------------------------------------------------- */
+
+  --button-height-sm: 36px;
+  --button-height-md: 44px;
+  --button-height-lg: 52px;
+
+  --input-height-sm: 40px;
+  --input-height-md: 48px;
+  --input-height-lg: 56px;
+
+  --search-height: 56px;
+
+  --icon-size-xs: 14px;
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
+
+  --avatar-size-xs: 28px;
+  --avatar-size-sm: 36px;
+  --avatar-size-md: 48px;
+  --avatar-size-lg: 64px;
+  --avatar-size-xl: 96px;
+
+  --card-padding-sm: 1rem;
+  --card-padding-md: 1.5rem;
+  --card-padding-lg: 2rem;
+
+  --stat-card-min-height: 168px;
+
+  /* --------------------------------------------------------------------------
+     Analytics and Chart Colors
+     -------------------------------------------------------------------------- */
+
+  --chart-purple: #8b5cf6;
+  --chart-violet: #7c3aed;
+  --chart-pink: #d946ef;
+  --chart-fuchsia: #e879f9;
+  --chart-green: #22c55e;
+  --chart-teal: #14b8a6;
+  --chart-cyan: #06b6d4;
+  --chart-blue: #3b82f6;
+  --chart-orange: #f97316;
+  --chart-amber: #f59e0b;
+  --chart-red: #ef4444;
+  --chart-slate: #94a3b8;
+
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-axis: rgba(255, 255, 255, 0.28);
+  --chart-tooltip-bg: #17171f;
+  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+
+  /* --------------------------------------------------------------------------
+     Transitions
+     -------------------------------------------------------------------------- */
+
+  --transition-instant: 80ms ease;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-slower: 600ms ease;
+
+  --transition-colors:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+
+  --transition-transform:
+    transform var(--transition-fast);
+
+  /* --------------------------------------------------------------------------
+     Motion Curves
+     -------------------------------------------------------------------------- */
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* --------------------------------------------------------------------------
+     Opacity
+     -------------------------------------------------------------------------- */
+
+  --opacity-disabled: 0.5;
+  --opacity-muted: 0.72;
+  --opacity-overlay: 0.82;
+
+  /* --------------------------------------------------------------------------
+     Z-index
+     -------------------------------------------------------------------------- */
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+
+  /* --------------------------------------------------------------------------
+     Focus and Accessibility
+     -------------------------------------------------------------------------- */
+
+  --focus-ring-color: rgba(139, 92, 246, 0.7);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  /* --------------------------------------------------------------------------
+     Breakpoints
+     Informational tokens for consistent planning.
+     CSS media queries still use literal values.
+     -------------------------------------------------------------------------- */
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-instant: 0ms;
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+    --transition-slower: 0ms;
+  }
+}

@@ -1,0 +1,569 @@
+/* ==========================================================================
+   YARTONG RESET
+   Cross-browser baseline and accessibility foundation
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Box Sizing
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Root Document
+   -------------------------------------------------------------------------- */
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+
+  color-scheme: dark;
+  background: var(--color-bg);
+
+  font-family: var(--font-sans);
+  font-size: 100%;
+
+  line-height: var(--line-height-normal);
+
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+
+  hanging-punctuation: first last;
+  tab-size: 4;
+}
+
+/* --------------------------------------------------------------------------
+   Body
+   -------------------------------------------------------------------------- */
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(
+      circle at 14% 4%,
+      rgba(124, 58, 237, 0.11),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 88% 10%,
+      rgba(217, 70, 239, 0.07),
+      transparent 28rem
+    ),
+    var(--color-bg);
+
+  font-family: var(--font-sans);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------------------------------------------------------
+   Application Root
+   -------------------------------------------------------------------------- */
+
+#__next,
+#root {
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   Typography Reset
+   -------------------------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+figcaption,
+dl,
+dd {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font: inherit;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Lists
+   -------------------------------------------------------------------------- */
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   Links
+   -------------------------------------------------------------------------- */
+
+a {
+  color: inherit;
+  text-decoration: none;
+  text-decoration-skip-ink: auto;
+}
+
+a:not([class]) {
+  color: var(--color-primary-300);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a:not([class]):hover {
+  color: var(--color-secondary-400);
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Images and Media
+   -------------------------------------------------------------------------- */
+
+img,
+picture,
+svg,
+canvas,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+svg,
+video {
+  height: auto;
+}
+
+img {
+  font-style: italic;
+  background-repeat: no-repeat;
+  background-size: cover;
+  shape-margin: 0.75rem;
+}
+
+svg {
+  overflow: visible;
+}
+
+iframe {
+  max-width: 100%;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Form Controls
+   -------------------------------------------------------------------------- */
+
+button,
+input,
+select,
+textarea {
+  margin: 0;
+
+  color: inherit;
+  font: inherit;
+
+  letter-spacing: inherit;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+button {
+  border: 0;
+  padding: 0;
+
+  background: none;
+
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  min-width: 0;
+}
+
+input,
+textarea {
+  border-radius: 0;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="search"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type="file"] {
+  max-width: 100%;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-primary-500);
+}
+
+::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+caption {
+  text-align: left;
+}
+
+/* --------------------------------------------------------------------------
+   Horizontal Rule
+   -------------------------------------------------------------------------- */
+
+hr {
+  height: 1px;
+  margin: 0;
+
+  border: 0;
+  background: var(--color-border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   Code
+   -------------------------------------------------------------------------- */
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+}
+
+pre {
+  margin: 0;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive Elements
+   -------------------------------------------------------------------------- */
+
+summary {
+  cursor: pointer;
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Dialog
+   -------------------------------------------------------------------------- */
+
+dialog {
+  max-width: calc(100% - 2rem);
+  max-height: calc(100% - 2rem);
+  margin: auto;
+  padding: 0;
+
+  color: inherit;
+  border: 0;
+
+  background: transparent;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+/* --------------------------------------------------------------------------
+   Selection
+   -------------------------------------------------------------------------- */
+
+::selection {
+  color: var(--color-white);
+  background: rgba(124, 58, 237, 0.55);
+}
+
+::-moz-selection {
+  color: var(--color-white);
+  background: rgba(124, 58, 237, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   Focus Management
+   -------------------------------------------------------------------------- */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline:
+    var(--focus-ring-width)
+    solid
+    var(--focus-ring-color);
+
+  outline-offset: var(--focus-ring-offset);
+}
+
+[data-focus-ring="inset"]:focus-visible {
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+
+/* --------------------------------------------------------------------------
+   Hidden Content
+   -------------------------------------------------------------------------- */
+
+[hidden] {
+  display: none !important;
+}
+
+template {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Screen-Reader Content
+   -------------------------------------------------------------------------- */
+
+.sr-only {
+  position: absolute !important;
+
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+
+  overflow: hidden !important;
+
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+
+  white-space: nowrap !important;
+
+  border: 0 !important;
+}
+
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+
+  overflow: hidden !important;
+
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+
+  white-space: nowrap !important;
+
+  border: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbar
+   -------------------------------------------------------------------------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color:
+    var(--color-surface-3)
+    var(--color-bg-subtle);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-bg-subtle);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid var(--color-bg-subtle);
+  border-radius: var(--radius-pill);
+
+  background: var(--color-surface-3);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-700);
+}
+
+/* --------------------------------------------------------------------------
+   Prevent Mobile Text Zoom on Inputs
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   High Contrast Support
+   -------------------------------------------------------------------------- */
+
+@media (forced-colors: active) {
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    forced-color-adjust: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Printing
+   Useful later for quotations, invoices and reports
+   -------------------------------------------------------------------------- */
+
+@media print {
+  html,
+  body {
+    color: #000000;
+    background: #ffffff;
+  }
+
+  body {
+    min-height: auto;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  nav,
+  [data-print-hidden="true"] {
+    display: none !important;
+  }
+
+  img,
+  table,
+  pre,
+  blockquote {
+    break-inside: avoid;
+  }
+}
