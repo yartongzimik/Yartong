@@ -41,6 +41,8 @@ if (
           name: user.displayName,
           email: user.email,
           image: user.image,
+          primaryRole: user.primaryRole,
+          accountStatus: user.accountStatus,
         };
       },
     }),
