@@ -269,16 +269,16 @@ model Job {
 }
 
 model JobApplication {
-  id                  String            @id @default(cuid())
-  jobId               String
-  providerId          String
-  providerRole        JobProviderRole
-  message             String            @db.VarChar(2000)
-  proposedPrice       Int?
+  id                   String            @id @default(cuid())
+  jobId                String
+  providerId           String
+  providerRole         JobProviderRole
+  message              String            @db.VarChar(2000)
+  proposedPrice        Int?
   proposedTimelineDays Int?
-  status              ApplicationStatus @default(SUBMITTED)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  status               ApplicationStatus @default(SUBMITTED)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
   provider User @relation("ApplicationProvider", fields: [providerId], references: [id], onDelete: Cascade)
