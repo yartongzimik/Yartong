@@ -86,7 +86,7 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
     });
     if (closed.count !== 1) throw new Error("This job is no longer open for hiring.");
 
-    await tx.engagement.create({
+    const engagement = await tx.engagement.create({
       data: {
         jobId: candidate.job.id,
         applicationId: candidate.id,
@@ -100,6 +100,15 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
         currency: candidate.job.currency,
         proposedTimelineDays: candidate.proposedTimelineDays,
         status: EngagementStatus.PENDING,
+      },
+      select: { id: true },
+    });
+
+    await tx.conversation.create({
+      data: {
+        engagementId: engagement.id,
+        customerId: candidate.job.customerId,
+        providerId: candidate.providerId,
       },
     });
 
@@ -116,4 +125,5 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
   revalidatePath(`/customer/jobs/${jobId}`);
   revalidatePath(`/jobs/${jobId}`);
   revalidatePath("/engagements");
+  revalidatePath("/messages");
 }
