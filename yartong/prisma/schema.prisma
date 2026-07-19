@@ -75,6 +75,12 @@ enum EngagementStatus {
   DISPUTED
 }
 
+enum ReviewStatus {
+  PUBLISHED
+  FLAGGED
+  HIDDEN
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -107,6 +113,8 @@ model User {
   customerConversations   Conversation[]           @relation("ConversationCustomer")
   providerConversations   Conversation[]           @relation("ConversationProvider")
   sentMessages            Message[]                @relation("MessageSender")
+  authoredReviews         Review[]                 @relation("ReviewAuthor")
+  receivedReviews         Review[]                 @relation("ReviewSubject")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -329,6 +337,7 @@ model Engagement {
   customer     User           @relation("EngagementCustomer", fields: [customerId], references: [id], onDelete: Restrict)
   provider     User           @relation("EngagementProvider", fields: [providerId], references: [id], onDelete: Restrict)
   conversation Conversation?
+  reviews      Review[]
 
   @@index([customerId, status])
   @@index([providerId, status])
@@ -366,4 +375,25 @@ model Message {
 
   @@index([conversationId, createdAt])
   @@index([senderId, createdAt])
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  engagementId String
+  authorId     String
+  subjectId    String
+  rating       Int
+  title        String?      @db.VarChar(120)
+  comment      String?      @db.VarChar(3000)
+  status       ReviewStatus @default(PUBLISHED)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  engagement Engagement @relation(fields: [engagementId], references: [id], onDelete: Restrict)
+  author     User       @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  subject    User       @relation("ReviewSubject", fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([engagementId, authorId])
+  @@index([subjectId, status, createdAt])
+  @@index([authorId, createdAt])
 }
