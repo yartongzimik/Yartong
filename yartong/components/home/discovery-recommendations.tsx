@@ -185,21 +185,21 @@ export function DiscoveryRecommendations() {
   const discoveryCards = useMemo(() => getDiscoveryCards(), []);
 
   return (
-    <Section className="overflow-hidden bg-[#0B0612]" containerClassName="relative">
+    <Section className="overflow-hidden bg-[#0B0612] py-12 sm:py-16" containerClassName="relative">
       <div className="absolute left-1/2 top-6 h-72 w-72 -translate-x-1/2 rounded-full bg-fuchsia-500/20 blur-3xl" aria-hidden="true" />
-      <div className="relative rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-2xl shadow-fuchsia-950/30 backdrop-blur sm:p-5 lg:p-6">
+      <div className="relative rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-xl shadow-fuchsia-950/25 backdrop-blur sm:p-5 lg:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200/75">Smart Discovery Hub</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">Find the right help faster</h2>
-            <p className="mt-3 text-sm leading-6 text-white/65 sm:text-base">Scan trusted workers, project teams, supplies, and urgent jobs in one compact marketplace view.</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">Discover trusted local options</h2>
+            <p className="mt-3 text-sm leading-6 text-white/65 sm:text-base">Compare workers, project teams, supplies, and urgent jobs from one trusted local view.</p>
           </div>
           <Link href={active.href} className="inline-flex min-h-11 items-center justify-center rounded-full border border-fuchsia-200/25 bg-fuchsia-200/10 px-5 text-sm font-black text-fuchsia-100 transition hover:border-fuchsia-100/60 hover:bg-fuchsia-200/20 focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#0B0612]">
             {active.cta} →
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-3 rounded-[1.5rem] border border-white/10 bg-black/20 p-2 sm:grid-cols-2 lg:grid-cols-4" role="tablist" aria-label="Smart discovery categories">
+        <div className="mt-5 grid gap-2 rounded-[1.25rem] border border-white/10 bg-black/20 p-2 sm:grid-cols-2 lg:grid-cols-4" role="tablist" aria-label="Smart discovery categories">
           {TAB_IDS.map((tab) => {
             const isActive = activeTab === tab;
             return (
@@ -211,7 +211,7 @@ export function DiscoveryRecommendations() {
                 aria-controls={`smart-discovery-${tab}`}
                 id={`smart-discovery-tab-${tab}`}
                 onClick={() => setActiveTab(tab)}
-                className={`min-h-12 rounded-2xl px-4 py-3 text-left text-sm font-black transition focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#13091d] ${
+                className={`min-h-12 rounded-xl px-4 py-3 text-left text-sm font-black transition focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#13091d] ${
                   isActive
                     ? "border border-fuchsia-200/40 bg-gradient-to-r from-[#9B4DFF] to-[#E126FF] text-white shadow-lg shadow-fuchsia-700/25"
                     : "border border-transparent text-white/70 hover:border-white/10 hover:bg-white/10 hover:text-white"
@@ -227,14 +227,14 @@ export function DiscoveryRecommendations() {
           })}
         </div>
 
-        <div id={`smart-discovery-${activeTab}`} role="tabpanel" aria-labelledby={`smart-discovery-tab-${activeTab}`} className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div id={`smart-discovery-${activeTab}`} role="tabpanel" aria-labelledby={`smart-discovery-tab-${activeTab}`} className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {discoveryCards[activeTab].map((card) => (
-            <Card key={`${activeTab}-${card.id}`} className="flex min-h-0 flex-col p-5 transition hover:-translate-y-0.5 hover:border-fuchsia-200/30 hover:bg-white/[0.08]">
+            <Card key={`${activeTab}-${card.id}`} className="flex min-h-0 flex-col p-4 transition hover:-translate-y-0.5 hover:border-fuchsia-200/30 hover:bg-white/[0.08]">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200/75">{card.eyebrow}</p>
                 <span className="rounded-full border border-emerald-200/20 bg-emerald-200/10 px-2.5 py-1 text-xs font-bold text-emerald-100">{card.primaryMeta}</span>
               </div>
-              <h3 className="mt-4 text-xl font-black leading-tight text-white">{card.title}</h3>
+              <h3 className="mt-3 text-lg font-black leading-tight text-white">{card.title}</h3>
               <p className="mt-2 text-sm font-semibold text-fuchsia-100/90">{card.headline}</p>
               {card.description ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/62">{card.description}</p> : null}
               <dl className="mt-4 grid grid-cols-2 gap-2 text-xs font-bold text-white/75">
@@ -244,7 +244,7 @@ export function DiscoveryRecommendations() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {card.chips.filter(Boolean).map((chip) => <span key={chip} className="rounded-full border border-white/10 px-3 py-1.5 text-xs font-bold capitalize text-white/65">{chip}</span>)}
               </div>
-              <Link href={card.href} className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-sm font-black text-[#14091f] transition hover:bg-fuchsia-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#14091f]">
+              <Link href={card.href} className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-sm font-black text-[#14091f] transition hover:bg-fuchsia-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#14091f]">
                 {card.actionLabel}
               </Link>
             </Card>

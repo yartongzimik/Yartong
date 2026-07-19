@@ -90,41 +90,45 @@ const toneClasses: Record<GrowthMetric["tone"], string> = {
   amber: "border-amber-200/20 bg-amber-300/[0.08] text-amber-100",
 };
 
-function buildTrendPath(points: TimeSeriesPoint[]) {
+function getTrendCoordinates(points: TimeSeriesPoint[]) {
   const max = Math.max(...points.map((point) => point.value));
   const min = Math.min(...points.map((point) => point.value));
   const range = Math.max(max - min, 1);
 
-  return points
-    .map((point, index) => {
-      const x = 10 + (index / Math.max(points.length - 1, 1)) * 280;
-      const y = 108 - ((point.value - min) / range) * 76;
-      return `${index === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(" ");
+  return points.map((point, index) => {
+    const x = 10 + (index / Math.max(points.length - 1, 1)) * 280;
+    const y = 108 - ((point.value - min) / range) * 76;
+
+    return { ...point, x, y };
+  });
+}
+
+function buildTrendPath(points: ReturnType<typeof getTrendCoordinates>) {
+  return points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
 
 export function TrustAndGrowth() {
-  const trendPath = buildTrendPath(demoAnalyticsPreview.activityTrend);
+  const trendCoordinates = getTrendCoordinates(demoAnalyticsPreview.activityTrend);
+  const trendPath = buildTrendPath(trendCoordinates);
 
   return (
     <Section className="overflow-hidden bg-[#07050D] py-12 sm:py-16" containerClassName="relative">
       <div className="absolute -left-24 top-12 h-72 w-72 rounded-full bg-fuchsia-600/20 blur-3xl" aria-hidden="true" />
       <div className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-violet-600/20 blur-3xl" aria-hidden="true" />
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-fuchsia-200/15 bg-gradient-to-br from-[#1C0B2C]/95 via-[#12091F]/95 to-[#08050D]/95 p-5 shadow-2xl shadow-fuchsia-950/35 backdrop-blur sm:p-6 lg:p-8">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-fuchsia-200/15 bg-gradient-to-br from-[#1C0B2C]/95 via-[#12091F]/95 to-[#08050D]/95 p-5 shadow-xl shadow-fuchsia-950/35 backdrop-blur sm:p-6 lg:p-8">
         <div className="absolute right-8 top-6 h-28 w-28 rounded-full border border-fuchsia-200/10" aria-hidden="true" />
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200/75">Business Growth Intelligence</p>
-            <h2 className="mt-3 max-w-xl text-3xl font-black tracking-tight text-white sm:text-5xl">Turn local demand into business growth</h2>
+            <h2 className="mt-3 max-w-xl text-3xl font-black tracking-tight text-white sm:text-4xl">Turn local demand into business growth</h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/66 sm:text-lg sm:leading-8">
-              Future Yartong insights can help skilled providers, contractors, and material suppliers understand visibility, demand, enquiries, and opportunities from one focused business view.
+              A future business view can help providers understand visibility, demand, enquiries, and opportunities without guessing what customers need.
             </p>
             <div className="mt-5 inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.2em] text-amber-100">
               Preview data only · Demo insights
             </div>
-            <Link href={ROUTES.advertise} className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-black text-[#16091f] shadow-lg shadow-fuchsia-500/20 transition hover:bg-fuchsia-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#12091F]">
+            <Link href={ROUTES.advertise} className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-black text-[#16091f] shadow-lg shadow-fuchsia-500/20 transition hover:bg-fuchsia-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-200 focus:ring-offset-2 focus:ring-offset-[#12091F]">
               Explore advertising options <span className="ml-1" aria-hidden="true">→</span>
             </Link>
           </div>
@@ -160,13 +164,9 @@ export function TrustAndGrowth() {
                 <path d="M10 70 H290" stroke="rgba(255,255,255,0.08)" strokeWidth="1" aria-hidden="true" />
                 <path d="M10 32 H290" stroke="rgba(255,255,255,0.08)" strokeWidth="1" aria-hidden="true" />
                 <path d={trendPath} fill="none" stroke="url(#growthGradient)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-                {demoAnalyticsPreview.activityTrend.map((point, index) => {
-                  const max = 72;
-                  const min = 38;
-                  const x = 10 + (index / Math.max(demoAnalyticsPreview.activityTrend.length - 1, 1)) * 280;
-                  const y = 108 - ((point.value - min) / Math.max(max - min, 1)) * 76;
-                  return <circle key={point.date} cx={x} cy={y} r="4" fill="#F8F6FF" opacity={index === demoAnalyticsPreview.activityTrend.length - 1 ? "1" : "0.72"} aria-hidden="true" />;
-                })}
+                {trendCoordinates.map((point, index) => (
+                  <circle key={point.date} cx={point.x} cy={point.y} r="4" fill="#F8F6FF" opacity={index === trendCoordinates.length - 1 ? "1" : "0.72"} aria-hidden="true" />
+                ))}
                 <defs>
                   <linearGradient id="growthGradient" x1="0" y1="0" x2="300" y2="0" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#9B4DFF" />

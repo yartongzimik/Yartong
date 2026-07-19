@@ -12,14 +12,14 @@ export function Header() {
           {PLATFORM.name}
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-          <Link className="transition hover:text-white" href={ROUTES.workers}>Find Workers</Link>
-          <Link className="transition hover:text-white" href={contractorDiscoveryHref}>Find Contractors</Link>
-          <Link className="transition hover:text-white" href={ROUTES.materials}>Materials</Link>
-          <Link className="transition hover:text-white" href={ROUTES.quickJobs}>Quick Jobs</Link>
+          <Link className="rounded-full px-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D]" href={ROUTES.workers}>Find Workers</Link>
+          <Link className="rounded-full px-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D]" href={contractorDiscoveryHref}>Find Contractors</Link>
+          <Link className="rounded-full px-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D]" href={ROUTES.materials}>Materials</Link>
+          <Link className="rounded-full px-1 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D]" href={ROUTES.quickJobs}>Quick Jobs</Link>
         </nav>
         <div className="flex items-center gap-3">
-          <Link className="hidden text-sm font-semibold text-white/75 transition hover:text-white sm:inline" href={ROUTES.login}>Login</Link>
-          <Link className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#180722] shadow-lg shadow-fuchsia-500/20 transition hover:bg-fuchsia-100" href={ROUTES.join}>Join</Link>
+          <Link className="hidden rounded-full px-1 text-sm font-semibold text-white/75 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D] sm:inline" href={ROUTES.login}>Login</Link>
+          <Link className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#180722] shadow-lg shadow-fuchsia-500/20 transition hover:bg-fuchsia-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07050D]" href={ROUTES.join}>Join</Link>
         </div>
       </div>
     </header>

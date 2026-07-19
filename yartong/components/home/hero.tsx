@@ -26,7 +26,7 @@ const trustSignals = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pb-16 pt-20 sm:pb-24 sm:pt-28">
+    <section className="relative overflow-hidden pb-14 pt-18 sm:pb-20 sm:pt-24">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(225,38,255,0.34),transparent_32%),radial-gradient(circle_at_72%_18%,rgba(155,77,255,0.3),transparent_30%),linear-gradient(135deg,rgba(24,7,34,0.96),rgba(7,5,13,0.98))]" />
       <div className="absolute left-1/2 top-16 h-64 w-64 -translate-x-1/2 rounded-full bg-fuchsia-500/10 blur-3xl" />
       <Container className="relative">
@@ -42,7 +42,7 @@ export function Hero() {
               {PLATFORM.name} connects Senapati with trusted workers, contractors, quick jobs, and construction materials in one premium local marketplace.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               {primaryActions.map((action, index) => (
                 <Link
                   key={action.label}
