@@ -77,6 +77,15 @@ export default async function EngagementDetailPage({ params }: Props) {
         </section>
 
         <div className="mt-6 flex flex-wrap gap-3">
+          {engagement.status === EngagementStatus.PENDING ? (
+            <Link
+              href={`/engagements/${engagement.id}/quotes`}
+              className="rounded-full border border-fuchsia-200/25 bg-fuchsia-200/10 px-5 py-3 font-black text-fuchsia-100"
+            >
+              Review quotes & terms
+            </Link>
+          ) : null}
+
           {isProvider && engagement.status === EngagementStatus.PENDING ? (
             <form action={confirmEngagementAction.bind(null, engagement.id)}>
               <button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">
