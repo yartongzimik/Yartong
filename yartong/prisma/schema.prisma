@@ -103,6 +103,25 @@ enum QuoteStatus {
   SUPERSEDED
 }
 
+enum PaymentStatus {
+  CREATED
+  PENDING
+  REQUIRES_ACTION
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  PARTIALLY_REFUNDED
+  REFUNDED
+}
+
+enum PaymentEventStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -140,6 +159,8 @@ model User {
   verificationRequests    VerificationRequest[]    @relation("VerificationApplicant")
   reviewedVerifications   VerificationRequest[]    @relation("VerificationReviewer")
   createdQuotes           EngagementQuote[]        @relation("QuoteCreator")
+  customerPaymentOrders   PaymentOrder[]           @relation("PaymentCustomer")
+  providerPaymentOrders   PaymentOrder[]           @relation("PaymentProvider")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -364,6 +385,7 @@ model Engagement {
   conversation Conversation?
   reviews      Review[]
   quotes       EngagementQuote[]
+  paymentOrder PaymentOrder?
 
   @@index([customerId, status])
   @@index([providerId, status])
@@ -467,4 +489,53 @@ model EngagementQuote {
 
   @@index([engagementId, status, submittedAt])
   @@index([createdById, createdAt])
+}
+
+model PaymentOrder {
+  id                 String        @id @default(cuid())
+  engagementId       String        @unique
+  customerId         String
+  providerId         String
+  amount             Int
+  currency           String        @default("INR") @db.VarChar(3)
+  status             PaymentStatus @default(CREATED)
+  providerName       String?       @db.VarChar(80)
+  providerPaymentRef String?       @db.VarChar(255)
+  idempotencyKey     String        @unique @db.VarChar(255)
+  failureCode        String?       @db.VarChar(120)
+  failureMessage     String?       @db.VarChar(1000)
+  authorizedAt       DateTime?
+  paidAt             DateTime?
+  cancelledAt        DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  engagement Engagement     @relation(fields: [engagementId], references: [id], onDelete: Restrict)
+  customer   User           @relation("PaymentCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  provider   User           @relation("PaymentProvider", fields: [providerId], references: [id], onDelete: Restrict)
+  events     PaymentEvent[]
+
+  @@index([customerId, status, createdAt])
+  @@index([providerId, status, createdAt])
+  @@index([status, createdAt])
+}
+
+model PaymentEvent {
+  id              String             @id @default(cuid())
+  paymentOrderId  String?
+  providerName    String             @db.VarChar(80)
+  providerEventId String             @db.VarChar(255)
+  eventType       String             @db.VarChar(160)
+  status          PaymentEventStatus @default(RECEIVED)
+  payload         Json
+  errorMessage    String?            @db.VarChar(1000)
+  receivedAt      DateTime           @default(now())
+  processedAt     DateTime?
+  createdAt       DateTime           @default(now())
+
+  paymentOrder PaymentOrder? @relation(fields: [paymentOrderId], references: [id], onDelete: SetNull)
+
+  @@unique([providerName, providerEventId])
+  @@index([paymentOrderId, receivedAt])
+  @@index([status, receivedAt])
 }
