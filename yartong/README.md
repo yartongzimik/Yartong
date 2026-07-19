@@ -120,3 +120,19 @@ Configure the same required variables in Vercel project settings, including the 
 ### Release expectations
 
 Before release, run Prisma generate, validate the schema, run linting, typechecking, and build. Apply migrations with `prisma migrate deploy` as an explicit release step, not automatically from application startup.
+
+## Backend Milestone 2 authentication and onboarding
+
+Yartong uses Auth.js with the Prisma adapter as the single authentication system. Google sign-in is shown only when `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are configured. Development demo login is shown only when `ENABLE_DEV_CREDENTIALS=true` and `NODE_ENV` is not `production`.
+
+New OAuth users are created with the safe `ONBOARDING_PENDING` role and `ACTIVE` account status. They receive no role-specific marketplace dashboard access until they complete `/onboarding`, select one public role, choose an active database `Location`, and create the matching role profile. Public onboarding allows Customer, Skilled Provider, Labourer, Contractor and Material Supplier. Admin is not selectable.
+
+For local testing:
+
+1. Set `DATABASE_URL` and `AUTH_SECRET`.
+2. Run `npm run db:generate` and apply migrations with your normal Prisma workflow.
+3. Seed demo users with `npm run db:seed`.
+4. Set `ENABLE_DEV_CREDENTIALS=true` in development.
+5. Visit `/login` and use one of the seeded demo emails such as `customer.demo@yartong.local`, or configure Google credentials and sign in with Google.
+
+Blocked accounts with `SUSPENDED`, `REJECTED` or `DEACTIVATED` status are redirected to `/account-blocked` and denied protected dashboard access.

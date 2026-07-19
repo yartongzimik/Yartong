@@ -1,6 +1,6 @@
-import { requireUser } from "../../lib/authz";
+import { requireRole } from "../../lib/authz";
 
 export default async function ProtectedRoleAreaLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  await requireUser();
+  await requireRole("MATERIAL_SUPPLIER");
   return children;
 }
