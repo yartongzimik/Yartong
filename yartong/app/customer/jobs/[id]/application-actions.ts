@@ -9,9 +9,17 @@ import { prisma } from "@/lib/prisma";
 export async function setApplicationStatusAction(
   jobId: string,
   applicationId: string,
-  nextStatus: ApplicationStatus.SHORTLISTED | ApplicationStatus.REJECTED,
+  nextStatus: ApplicationStatus,
 ): Promise<void> {
   const customer = await requireRole("CUSTOMER");
+
+  if (
+    nextStatus !== ApplicationStatus.SHORTLISTED &&
+    nextStatus !== ApplicationStatus.REJECTED
+  ) {
+    throw new Error("Unsupported application status transition.");
+  }
+
   const result = await prisma.jobApplication.updateMany({
     where: {
       id: applicationId,
