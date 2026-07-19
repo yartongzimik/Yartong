@@ -92,7 +92,7 @@ model User {
   contractorProfile       ContractorProfile?
   materialSupplierProfile MaterialSupplierProfile?
   jobs                    Job[]
-  jobApplications         JobApplication[]         @relation("ApplicationProvider")
+  jobApplications         JobApplication[] @relation("ApplicationProvider")
 
   @@index([primaryRole])
   @@index([accountStatus])
