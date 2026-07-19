@@ -56,7 +56,7 @@ export function paiseToRupees(value?: number | null) {
 
 export function formatMoney(
   value?: number | null,
-  currency = PLATFORM.defaultCurrency,
+  currency: string = PLATFORM.defaultCurrency,
 ) {
   return value == null
     ? ""
@@ -71,7 +71,7 @@ export function formatBudget(
   type: JobBudgetType,
   min?: number | null,
   max?: number | null,
-  currency = PLATFORM.defaultCurrency,
+  currency: string = PLATFORM.defaultCurrency,
 ) {
   if (type === JobBudgetType.NEGOTIABLE) return "Negotiable";
   if (type === JobBudgetType.FIXED) return formatMoney(min, currency);
