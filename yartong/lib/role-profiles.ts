@@ -7,6 +7,7 @@ export const ROLE_PROFILE_RELATION = {
   CONTRACTOR: "contractorProfile",
   MATERIAL_SUPPLIER: "materialSupplierProfile",
   ADMIN: null,
+  ONBOARDING_PENDING: null,
 } as const satisfies Record<UserRole, string | null>;
 
 export type MarketplaceProfileRelation = Exclude<

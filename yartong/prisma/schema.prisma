@@ -14,6 +14,7 @@ enum UserRole {
   CONTRACTOR
   MATERIAL_SUPPLIER
   ADMIN
+  ONBOARDING_PENDING
 }
 
 enum AccountStatus {
@@ -34,14 +35,14 @@ enum VerificationStatus {
 
 model User {
   id                 String             @id @default(cuid())
-  displayName        String
+  displayName        String             @default("")
   name               String?
   email              String?            @unique
   emailVerified      DateTime?
   phoneNumber        String?            @unique
   image              String?
-  primaryRole        UserRole           @default(CUSTOMER)
-  accountStatus      AccountStatus      @default(PENDING)
+  primaryRole        UserRole           @default(ONBOARDING_PENDING)
+  accountStatus      AccountStatus      @default(ACTIVE)
   verificationStatus VerificationStatus @default(UNVERIFIED)
   primaryLocationId  String?
   primaryLocation    Location?          @relation(fields: [primaryLocationId], references: [id], onDelete: SetNull)

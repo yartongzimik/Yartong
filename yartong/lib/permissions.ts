@@ -91,6 +91,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "ADVERTISE",
   ],
 
+  ONBOARDING_PENDING: [
+    "BROWSE_MARKETPLACE",
+  ],
+
   ADMIN: [
     "BROWSE_MARKETPLACE",
     "POST_JOB",

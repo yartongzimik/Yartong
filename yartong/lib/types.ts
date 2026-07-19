@@ -6,7 +6,8 @@ export type UserRole =
   | "LABOURER"
   | "CONTRACTOR"
   | "MATERIAL_SUPPLIER"
-  | "ADMIN";
+  | "ADMIN"
+  | "ONBOARDING_PENDING";
 
 export type AccountStatus =
   | "PENDING"
