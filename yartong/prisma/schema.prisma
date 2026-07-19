@@ -357,10 +357,10 @@ model Engagement {
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
 
-  job          Job            @relation(fields: [jobId], references: [id], onDelete: Restrict)
-  application  JobApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
-  customer     User           @relation("EngagementCustomer", fields: [customerId], references: [id], onDelete: Restrict)
-  provider     User           @relation("EngagementProvider", fields: [providerId], references: [id], onDelete: Restrict)
+  job          Job               @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  application  JobApplication    @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  customer     User              @relation("EngagementCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  provider     User              @relation("EngagementProvider", fields: [providerId], references: [id], onDelete: Restrict)
   conversation Conversation?
   reviews      Review[]
   quotes       EngagementQuote[]
@@ -389,12 +389,12 @@ model Conversation {
 }
 
 model Message {
-  id             String    @id @default(cuid())
+  id             String   @id @default(cuid())
   conversationId String
   senderId       String
-  body           String    @db.VarChar(4000)
+  body           String   @db.VarChar(4000)
   readAt         DateTime?
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime @default(now())
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
