@@ -81,6 +81,20 @@ enum ReviewStatus {
   HIDDEN
 }
 
+enum VerificationRequestType {
+  IDENTITY
+  BUSINESS
+  PROFESSIONAL_CREDENTIAL
+}
+
+enum VerificationRequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -115,6 +129,8 @@ model User {
   sentMessages            Message[]                @relation("MessageSender")
   authoredReviews         Review[]                 @relation("ReviewAuthor")
   receivedReviews         Review[]                 @relation("ReviewSubject")
+  verificationRequests    VerificationRequest[]    @relation("VerificationApplicant")
+  reviewedVerifications   VerificationRequest[]    @relation("VerificationReviewer")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -396,4 +412,27 @@ model Review {
   @@unique([engagementId, authorId])
   @@index([subjectId, status, createdAt])
   @@index([authorId, createdAt])
+}
+
+model VerificationRequest {
+  id            String                    @id @default(cuid())
+  userId        String
+  type          VerificationRequestType
+  status        VerificationRequestStatus @default(SUBMITTED)
+  applicantNote String?                   @db.VarChar(2000)
+  reviewerId    String?
+  reviewerNote  String?                   @db.VarChar(2000)
+  providerName  String?                   @db.VarChar(120)
+  providerRef   String?                   @db.VarChar(255)
+  submittedAt   DateTime                  @default(now())
+  reviewedAt    DateTime?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  applicant User  @relation("VerificationApplicant", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer  User? @relation("VerificationReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status, createdAt])
+  @@index([status, type, submittedAt])
+  @@index([reviewerId, reviewedAt])
 }
