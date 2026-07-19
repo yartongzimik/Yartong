@@ -33,6 +33,31 @@ enum VerificationStatus {
   YARTONG_VERIFIED
 }
 
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  CANCELLED
+}
+
+enum JobUrgency {
+  STANDARD
+  WITHIN_24_HOURS
+  EMERGENCY
+}
+
+enum JobBudgetType {
+  FIXED
+  RANGE
+  NEGOTIABLE
+}
+
+enum JobProviderRole {
+  SKILLED_PROVIDER
+  LABOURER
+  CONTRACTOR
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -58,6 +83,7 @@ model User {
   labourerProfile         LabourerProfile?
   contractorProfile       ContractorProfile?
   materialSupplierProfile MaterialSupplierProfile?
+  jobs                    Job[]
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -116,6 +142,7 @@ model Location {
   updatedAt DateTime @updatedAt
 
   primaryUsers User[]
+  jobs         Job[]
 
   @@index([district, state, country])
   @@index([isActive])
@@ -198,4 +225,35 @@ model MaterialSupplierProfile {
   updatedAt          DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Job {
+  id                  String            @id @default(cuid())
+  customerId          String
+  locationId          String
+  title               String            @db.VarChar(120)
+  description         String            @db.Text
+  category            String            @db.VarChar(120)
+  skills              String[]          @default([])
+  targetProviderRoles JobProviderRole[] @default([])
+  budgetType          JobBudgetType
+  budgetMin           Int?
+  budgetMax           Int?
+  currency            String            @default("INR") @db.VarChar(3)
+  urgency             JobUrgency        @default(STANDARD)
+  preferredStartDate  DateTime?
+  status              JobStatus         @default(DRAFT)
+  publishedAt         DateTime?
+  closedAt            DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  customer User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  @@index([customerId])
+  @@index([locationId])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([status, publishedAt])
 }

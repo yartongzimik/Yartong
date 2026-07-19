@@ -50,6 +50,7 @@ export const ROUTES = {
   trades: "/trades",
 
   quickJobs: "/quick-jobs",
+  jobs: "/jobs",
   postJob: "/post-job",
 
   materials: "/materials",
@@ -182,14 +183,20 @@ export const ACCOUNT_STATUS_LABELS = {
 export const JOB_STATUS_LABELS = {
   DRAFT: "Draft",
   PUBLISHED: "Published",
-  MATCHING: "Finding matches",
-  REQUESTED: "Request sent",
-  ACCEPTED: "Accepted",
-  IN_PROGRESS: "In progress",
-  COMPLETED: "Completed",
+  CLOSED: "Closed",
   CANCELLED: "Cancelled",
-  EXPIRED: "Expired",
-  DISPUTED: "Disputed",
+} as const;
+
+export const JOB_BUDGET_TYPE_LABELS = {
+  FIXED: "Fixed budget",
+  RANGE: "Budget range",
+  NEGOTIABLE: "Negotiable",
+} as const;
+
+export const JOB_PROVIDER_ROLE_LABELS = {
+  SKILLED_PROVIDER: "Skilled provider",
+  LABOURER: "Labourer",
+  CONTRACTOR: "Contractor",
 } as const;
 
 export const JOB_URGENCY_LABELS = {
