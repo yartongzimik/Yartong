@@ -33,6 +33,14 @@ export default async function EngagementDetailPage({ params }: Props) {
     engagement.status === EngagementStatus.COMPLETED
       ? await getReviewEligibility(user.id, engagement.id)
       : null;
+  const paymentAvailable =
+    engagement.agreedPrice !== null &&
+    engagement.agreedPrice > 0 &&
+    [
+      EngagementStatus.CONFIRMED,
+      EngagementStatus.IN_PROGRESS,
+      EngagementStatus.COMPLETED,
+    ].includes(engagement.status);
 
   return (
     <PublicShell>
@@ -83,6 +91,15 @@ export default async function EngagementDetailPage({ params }: Props) {
               className="rounded-full border border-fuchsia-200/25 bg-fuchsia-200/10 px-5 py-3 font-black text-fuchsia-100"
             >
               Review quotes & terms
+            </Link>
+          ) : null}
+
+          {paymentAvailable ? (
+            <Link
+              href={`/engagements/${engagement.id}/payment`}
+              className="rounded-full border border-emerald-200/25 bg-emerald-200/10 px-5 py-3 font-black text-emerald-100"
+            >
+              Payment status
             </Link>
           ) : null}
 
