@@ -82,3 +82,90 @@ Many route and component files are intentionally minimal placeholders while the 
 7. Implement worker, labourer, contractor, and supplier workflows.
 8. Implement messaging, contact sharing, admin moderation, memberships, advertising, and payments.
 9. Add testing, CI, monitoring, security hardening, and production deployment documentation.
+
+## Backend Foundation (Milestone 1)
+
+Yartong now has the production data and authentication foundation for future backend milestones while preserving the frozen homepage and mock marketplace data.
+
+### Data layer
+
+- PostgreSQL is the production database target.
+- Prisma is the ORM and schema/migration workflow.
+- `prisma/schema.prisma` defines the core persistent models for users, Auth.js-compatible accounts/sessions/tokens, service locations, and role-specific profile foundations.
+- `lib/db.ts` exports a server-side Prisma singleton that is safe for Next.js development hot reload and serverless execution.
+
+### Authentication architecture
+
+- Auth.js / NextAuth is configured in `auth.ts` and `lib/auth/config.ts`.
+- Sessions use JWT strategy for this foundation milestone, while the schema includes Auth.js-compatible `Account`, `Session`, and `VerificationToken` models so database-backed providers can be enabled later.
+- Google OAuth placeholders are documented for production.
+- A development-only credentials provider accepts seeded `@example.test` demo users and is disabled in production.
+- Phone/OTP is intentionally not implemented yet, but environment placeholders reserve the future integration path.
+
+### Authorization and route protection
+
+- Server helpers in `lib/auth/server.ts` provide `getCurrentUser`, `requireUser`, `requireRole`, and `requirePermission`.
+- Authorization derives from persisted user records and the existing Yartong permission map in `lib/permissions.ts`; client-supplied roles are not trusted.
+- `proxy.ts` provides lightweight protection for `/admin`, `/customer`, and `/messages`, with ADMIN-only proxy gating for `/admin` and server helper support for deeper route enforcement.
+
+### Required environment variables
+
+Copy `.env.example` to `.env.local` for local development and configure real values outside version control:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
+AUTH_SECRET="replace-with-a-long-random-secret"
+AUTH_URL="http://localhost:3000"
+AUTH_GOOGLE_ID=""
+AUTH_GOOGLE_SECRET=""
+PHONE_OTP_PROVIDER=""
+PHONE_OTP_API_KEY=""
+```
+
+Never commit real credentials or provider secrets.
+
+### Local PostgreSQL and Prisma workflow
+
+1. Start or provision a local PostgreSQL database.
+2. Set `DATABASE_URL` in `.env.local`.
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Generate Prisma Client:
+
+```bash
+npm run db:generate
+```
+
+5. Create/apply local migrations:
+
+```bash
+npm run db:migrate
+```
+
+6. Seed safe development data:
+
+```bash
+npm run db:seed
+```
+
+7. Inspect data when needed:
+
+```bash
+npm run db:studio
+```
+
+### Seed data
+
+`prisma/seed.ts` creates Senapati as the primary service location plus representative demo users for CUSTOMER, SKILLED_PROVIDER, LABOURER, CONTRACTOR, MATERIAL_SUPPLIER, and ADMIN. Demo records use `@example.test` emails and are marked with `isDemo`.
+
+### Health check
+
+`/api/health/db` performs a minimal server-side `SELECT 1` check and returns only a boolean health response without exposing connection details.
+
+### Vercel configuration
+
+Before deploying backend-enabled routes, configure Vercel project environment variables for `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, and any enabled OAuth/OTP provider secrets. Run Prisma migrations against the managed PostgreSQL database as part of the release process; do not use destructive reset commands on production databases.
