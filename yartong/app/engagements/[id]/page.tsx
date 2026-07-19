@@ -20,6 +20,12 @@ import {
 
 type Props = { params: Promise<{ id: string }> };
 
+const PAYABLE_STATUSES: EngagementStatus[] = [
+  EngagementStatus.CONFIRMED,
+  EngagementStatus.IN_PROGRESS,
+  EngagementStatus.COMPLETED,
+];
+
 export default async function EngagementDetailPage({ params }: Props) {
   const user = await requireUser();
   const { id } = await params;
@@ -36,11 +42,7 @@ export default async function EngagementDetailPage({ params }: Props) {
   const paymentAvailable =
     engagement.agreedPrice !== null &&
     engagement.agreedPrice > 0 &&
-    [
-      EngagementStatus.CONFIRMED,
-      EngagementStatus.IN_PROGRESS,
-      EngagementStatus.COMPLETED,
-    ].includes(engagement.status);
+    PAYABLE_STATUSES.includes(engagement.status);
 
   return (
     <PublicShell>
