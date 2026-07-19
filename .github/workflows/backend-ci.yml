@@ -65,9 +65,19 @@ jobs:
         run: npm run db:generate
 
       - name: Format-check Prisma schema
+        id: prisma_format
         run: |
           npx prisma format
           git diff --exit-code -- prisma/schema.prisma
+
+      - name: Upload formatted Prisma schema diagnostics
+        if: failure() && steps.prisma_format.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prisma-format-diagnostics
+          path: yartong/prisma/schema.prisma
+          if-no-files-found: error
+          retention-days: 3
 
       - name: Validate Prisma schema
         run: npx prisma validate
