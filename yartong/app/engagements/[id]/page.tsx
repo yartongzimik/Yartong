@@ -1,4 +1,5 @@
 import { EngagementStatus } from "@prisma/client";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PublicShell } from "@/components/layout/public-shell";
@@ -8,6 +9,7 @@ import {
   engagementStatusLabel,
   getUserEngagement,
 } from "@/lib/marketplace/engagements";
+import { getReviewEligibility } from "@/lib/marketplace/reviews";
 
 import {
   cancelEngagementAction,
@@ -27,6 +29,10 @@ export default async function EngagementDetailPage({ params }: Props) {
 
   const isCustomer = engagement.customerId === user.id;
   const isProvider = engagement.providerId === user.id;
+  const reviewEligibility =
+    engagement.status === EngagementStatus.COMPLETED
+      ? await getReviewEligibility(user.id, engagement.id)
+      : null;
 
   return (
     <PublicShell>
@@ -103,6 +109,15 @@ export default async function EngagementDetailPage({ params }: Props) {
                 Cancel engagement
               </button>
             </form>
+          ) : null}
+
+          {reviewEligibility ? (
+            <Link
+              href={`/engagements/${engagement.id}/review`}
+              className="rounded-full bg-fuchsia-200 px-5 py-3 font-black text-[#14091f]"
+            >
+              Leave a verified review
+            </Link>
           ) : null}
         </div>
 
