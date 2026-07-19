@@ -92,7 +92,7 @@ model User {
   contractorProfile       ContractorProfile?
   materialSupplierProfile MaterialSupplierProfile?
   jobs                    Job[]
-  jobApplications         JobApplication[] @relation("ApplicationProvider")
+  jobApplications         JobApplication[]         @relation("ApplicationProvider")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -257,8 +257,8 @@ model Job {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
-  customer    User             @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  location    Location         @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  customer     User             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  location     Location         @relation(fields: [locationId], references: [id], onDelete: Restrict)
   applications JobApplication[]
 
   @@index([customerId])
