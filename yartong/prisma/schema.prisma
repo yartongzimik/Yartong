@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  SKILLED_PROVIDER
+  LABOURER
+  CONTRACTOR
+  MATERIAL_SUPPLIER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+  DEACTIVATED
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PHONE_VERIFIED
+  IDENTITY_VERIFIED
+  BUSINESS_VERIFIED
+  YARTONG_VERIFIED
+}
+
+model User {
+  id                 String             @id @default(cuid())
+  displayName        String
+  name               String?
+  email              String?            @unique
+  emailVerified      DateTime?
+  phoneNumber        String?            @unique
+  image              String?
+  primaryRole        UserRole           @default(CUSTOMER)
+  accountStatus      AccountStatus      @default(PENDING)
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  primaryLocationId  String?
+  primaryLocation    Location?          @relation(fields: [primaryLocationId], references: [id], onDelete: SetNull)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  lastActiveAt       DateTime?
+  isDemo             Boolean            @default(false)
+
+  accounts                Account[]
+  sessions                Session[]
+  customerProfile         CustomerProfile?
+  skilledProviderProfile  SkilledProviderProfile?
+  labourerProfile         LabourerProfile?
+  contractorProfile       ContractorProfile?
+  materialSupplierProfile MaterialSupplierProfile?
+
+  @@index([primaryRole])
+  @@index([accountStatus])
+  @@index([primaryLocationId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  district  String
+  state     String
+  country   String   @default("India")
+  pincode   String?
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  isActive  Boolean  @default(true)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  primaryUsers User[]
+
+  @@index([district, state, country])
+  @@index([isActive])
+}
+
+model CustomerProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  onboardingComplete Boolean  @default(false)
+  bio                String?  @db.VarChar(500)
+  preferredLanguages String[] @default([])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SkilledProviderProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  onboardingComplete Boolean  @default(false)
+  businessName       String?
+  headline           String?
+  bio                String?  @db.VarChar(800)
+  experienceYears    Int?
+  skills             String[] @default([])
+  serviceRadiusKm    Int?
+  availableForWork   Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LabourerProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  onboardingComplete Boolean  @default(false)
+  headline           String?
+  bio                String?  @db.VarChar(500)
+  experienceYears    Int?
+  skills             String[] @default([])
+  availableForWork   Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ContractorProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  onboardingComplete Boolean  @default(false)
+  businessName       String?
+  headline           String?
+  bio                String?  @db.VarChar(800)
+  experienceYears    Int?
+  teamSize           Int?
+  projectTypes       String[] @default([])
+  serviceRadiusKm    Int?
+  availableForWork   Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MaterialSupplierProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  onboardingComplete Boolean  @default(false)
+  businessName       String?
+  headline           String?
+  bio                String?  @db.VarChar(800)
+  materialCategories String[] @default([])
+  deliveryAvailable  Boolean  @default(false)
+  deliveryRadiusKm   Int?
+  wholesaleAvailable Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

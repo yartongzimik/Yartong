@@ -82,3 +82,41 @@ Many route and component files are intentionally minimal placeholders while the 
 7. Implement worker, labourer, contractor, and supplier workflows.
 8. Implement messaging, contact sharing, admin moderation, memberships, advertising, and payments.
 9. Add testing, CI, monitoring, security hardening, and production deployment documentation.
+
+## Backend Milestone 1 foundation
+
+Yartong Backend Milestone 1 uses PostgreSQL with Prisma as the production data layer and Auth.js/NextAuth with the Prisma adapter for authentication.
+
+### Required environment variables
+
+Copy `.env.example` to `.env.local` for local development and configure:
+
+- `DATABASE_URL` — PostgreSQL connection string.
+- `AUTH_SECRET` — generated Auth.js secret; never commit a real value.
+- `AUTH_URL` — local or deployed application URL when required by Auth.js hosting.
+- `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` — optional Google OAuth credentials; Google sign-in is enabled only when both are present.
+- `ENABLE_DEV_CREDENTIALS` — set to `true` only in local development to sign in as seeded demo users.
+
+### Local setup
+
+```bash
+npm install
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+The seed script refuses to run when `NODE_ENV=production`. It creates Senapati as initial location data and idempotent demo users for every Yartong role.
+
+### Migration workflow
+
+Use `npm run db:migrate` for local development migrations. Use `npm run db:deploy` during release deployment after reviewing the generated SQL. Do not run destructive resets against shared or production databases.
+
+### Vercel deployment notes
+
+Configure the same required variables in Vercel project settings, including the production `DATABASE_URL`, `AUTH_SECRET`, and production app URL. Add Google provider credentials only when Google sign-in should be enabled. Keep `ENABLE_DEV_CREDENTIALS=false` in production.
+
+### Release expectations
+
+Before release, run Prisma generate, validate the schema, run linting, typechecking, and build. Apply migrations with `prisma migrate deploy` as an explicit release step, not automatically from application startup.
