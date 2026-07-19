@@ -9,7 +9,7 @@ type IntentPathway = {
   description: string;
   href: string;
   action: string;
-  intent: "hire" | "work";
+  intent: "hire" | "source" | "work";
   icon: "post" | "worker" | "contractor" | "materials" | "quick";
 };
 
@@ -43,7 +43,7 @@ const pathways: IntentPathway[] = [
     description: "Check local construction supplies and supplier options faster.",
     href: ROUTES.materials,
     action: "Browse supplies",
-    intent: "hire",
+    intent: "source",
     icon: "materials",
   },
   {
@@ -110,31 +110,48 @@ export function IntentPathways() {
   return (
     <Section className="overflow-hidden bg-[#090511] py-10 sm:py-12" containerClassName="relative">
       <div className="absolute inset-x-6 top-1/2 h-px bg-gradient-to-r from-transparent via-fuchsia-300/20 to-transparent" aria-hidden="true" />
-      <div className="relative rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-white/[0.07] via-white/[0.035] to-fuchsia-500/[0.06] p-4 shadow-2xl shadow-fuchsia-950/25 backdrop-blur sm:p-5">
+      <div className="relative rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-4 shadow-xl shadow-fuchsia-950/20 backdrop-blur sm:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.26em] text-fuchsia-200/75">Quick pathways</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">What do you want to do?</h2>
           </div>
-          <p className="max-w-md text-sm leading-6 text-white/60">Choose a focused route into Yartong without scanning the whole marketplace.</p>
+          <p className="max-w-md text-sm leading-6 text-white/60">Jump straight to the part of Yartong that fits your next step.</p>
         </div>
 
         <div className="mt-5 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {pathways.map((pathway) => {
             const isWorkIntent = pathway.intent === "work";
+            const isSourceIntent = pathway.intent === "source";
+            const accentClass = isWorkIntent
+              ? "border-violet-200/20 bg-violet-300/[0.07]"
+              : isSourceIntent
+                ? "border-emerald-200/20 bg-emerald-300/[0.06]"
+                : "border-fuchsia-200/15";
+            const iconClass = isWorkIntent
+              ? "border-violet-200/25 bg-violet-300/15 text-violet-100"
+              : isSourceIntent
+                ? "border-emerald-200/25 bg-emerald-300/15 text-emerald-100"
+                : "border-fuchsia-200/25 bg-fuchsia-300/15 text-fuchsia-100";
+            const labelClass = isWorkIntent
+              ? "bg-violet-200/12 text-violet-100"
+              : isSourceIntent
+                ? "bg-emerald-200/12 text-emerald-100"
+                : "bg-fuchsia-200/12 text-fuchsia-100";
+            const label = isWorkIntent ? "Work" : isSourceIntent ? "Source" : "Hire";
             return (
               <Link
                 key={pathway.title}
                 href={pathway.href}
                 className="group block rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#090511]"
               >
-                <Card className={`flex h-full flex-col p-4 transition group-hover:-translate-y-0.5 group-hover:border-fuchsia-200/35 group-hover:bg-white/[0.09] ${isWorkIntent ? "border-violet-200/20 bg-violet-300/[0.07]" : "border-fuchsia-200/15"}`}>
+                <Card className={`flex h-full flex-col p-4 transition group-hover:-translate-y-0.5 group-hover:border-fuchsia-200/35 group-hover:bg-white/[0.09] ${accentClass}`}>
                   <div className="flex items-center justify-between gap-3">
-                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border ${isWorkIntent ? "border-violet-200/25 bg-violet-300/15 text-violet-100" : "border-fuchsia-200/25 bg-fuchsia-300/15 text-fuchsia-100"}`}>
+                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border ${iconClass}`}>
                       <PathwayIcon icon={pathway.icon} />
                     </span>
-                    <span className={`rounded-full px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-wider ${isWorkIntent ? "bg-violet-200/12 text-violet-100" : "bg-fuchsia-200/12 text-fuchsia-100"}`}>
-                      {isWorkIntent ? "Work" : "Hire"}
+                    <span className={`rounded-full px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-wider ${labelClass}`}>
+                      {label}
                     </span>
                   </div>
                   <h3 className="mt-4 text-base font-black text-white">{pathway.title}</h3>
