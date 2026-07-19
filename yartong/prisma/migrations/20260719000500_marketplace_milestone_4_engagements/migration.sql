@@ -1,3 +1,4 @@
+-- Marketplace Milestone 4: durable engagement/work-order lifecycle.
 CREATE TYPE "EngagementStatus" AS ENUM ('PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED');
 
 CREATE TABLE "Engagement" (
