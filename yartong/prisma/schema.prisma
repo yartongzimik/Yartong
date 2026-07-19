@@ -95,6 +95,14 @@ enum VerificationRequestStatus {
   CANCELLED
 }
 
+enum QuoteStatus {
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  SUPERSEDED
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -131,6 +139,7 @@ model User {
   receivedReviews         Review[]                 @relation("ReviewSubject")
   verificationRequests    VerificationRequest[]    @relation("VerificationApplicant")
   reviewedVerifications   VerificationRequest[]    @relation("VerificationReviewer")
+  createdQuotes           EngagementQuote[]        @relation("QuoteCreator")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -354,6 +363,7 @@ model Engagement {
   provider     User           @relation("EngagementProvider", fields: [providerId], references: [id], onDelete: Restrict)
   conversation Conversation?
   reviews      Review[]
+  quotes       EngagementQuote[]
 
   @@index([customerId, status])
   @@index([providerId, status])
@@ -435,4 +445,26 @@ model VerificationRequest {
   @@index([userId, status, createdAt])
   @@index([status, type, submittedAt])
   @@index([reviewerId, reviewedAt])
+}
+
+model EngagementQuote {
+  id           String      @id @default(cuid())
+  engagementId String
+  createdById  String
+  amount       Int
+  currency     String      @default("INR") @db.VarChar(3)
+  scope        String      @db.Text
+  timelineDays Int?
+  note         String?     @db.VarChar(2000)
+  status       QuoteStatus @default(SUBMITTED)
+  submittedAt  DateTime    @default(now())
+  respondedAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  engagement Engagement @relation(fields: [engagementId], references: [id], onDelete: Restrict)
+  createdBy  User       @relation("QuoteCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([engagementId, status, submittedAt])
+  @@index([createdById, createdAt])
 }
