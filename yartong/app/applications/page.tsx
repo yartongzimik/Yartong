@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { ApplicationStatus, UserRole } from "@prisma/client";
 import Link from "next/link";
 
 import { PublicShell } from "@/components/layout/public-shell";
@@ -21,14 +21,28 @@ export default async function ApplicationsPage() {
       proposedPrice: true,
       proposedTimelineDays: true,
       createdAt: true,
-      job: { select: { id: true, title: true, status: true, currency: true, location: { select: { name: true, state: true } } } },
+      engagement: { select: { id: true } },
+      job: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          currency: true,
+          location: { select: { name: true, state: true } },
+        },
+      },
     },
   });
 
   return (
     <PublicShell>
       <main className="mx-auto max-w-5xl px-6 py-12 text-white">
-        <h1 className="text-4xl font-black">My applications</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-4xl font-black">My applications</h1>
+          <Link href="/engagements" className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">
+            View engagements
+          </Link>
+        </div>
         <div className="mt-8 space-y-4">
           {applications.length === 0 ? <p className="text-white/60">You have not applied to any jobs yet.</p> : null}
           {applications.map((application) => (
@@ -44,10 +58,15 @@ export default async function ApplicationsPage() {
               <p className="mt-3 text-sm text-white/55">
                 Proposed price: {application.proposedPrice === null ? "Not specified" : formatMoney(application.proposedPrice, application.job.currency)} · Timeline: {application.proposedTimelineDays ? `${application.proposedTimelineDays} days` : "Not specified"}
               </p>
-              {application.status === "SUBMITTED" || application.status === "SHORTLISTED" ? (
+              {application.status === ApplicationStatus.SUBMITTED || application.status === ApplicationStatus.SHORTLISTED ? (
                 <form action={withdrawApplicationAction.bind(null, application.id)} className="mt-4">
                   <button className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Withdraw application</button>
                 </form>
+              ) : null}
+              {application.status === ApplicationStatus.ACCEPTED && application.engagement ? (
+                <Link href={`/engagements/${application.engagement.id}`} className="mt-4 inline-block rounded-full bg-white px-4 py-2 text-sm font-black text-[#14091f]">
+                  Open work engagement
+                </Link>
               ) : null}
             </article>
           ))}

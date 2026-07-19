@@ -31,6 +31,7 @@ export default async function CustomerJobDetail({ params }: Props) {
       proposedPrice: true,
       proposedTimelineDays: true,
       providerRole: true,
+      engagement: { select: { id: true } },
       provider: { select: { id: true, displayName: true, verificationStatus: true } },
     },
   });
@@ -47,6 +48,7 @@ export default async function CustomerJobDetail({ params }: Props) {
         <div className="mt-6 flex flex-wrap gap-3">
           {job.status === JobStatus.DRAFT ? <><Link href={`${ROUTES.customerJobs}/${job.id}/edit`} className="rounded-full border border-white/15 px-5 py-3 font-black">Edit</Link><form action={transitionJobAction.bind(null, job.id, JobStatus.PUBLISHED)}><button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Publish</button></form><form action={transitionJobAction.bind(null, job.id, JobStatus.CANCELLED)}><button className="rounded-full border border-white/15 px-5 py-3 font-black">Cancel</button></form></> : null}
           {job.status === JobStatus.PUBLISHED ? <><form action={transitionJobAction.bind(null, job.id, JobStatus.CLOSED)}><button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Close</button></form><form action={transitionJobAction.bind(null, job.id, JobStatus.CANCELLED)}><button className="rounded-full border border-white/15 px-5 py-3 font-black">Cancel</button></form></> : null}
+          <Link href="/engagements" className="rounded-full border border-white/15 px-5 py-3 font-black">My engagements</Link>
         </div>
 
         <section className="mt-12">
@@ -68,6 +70,9 @@ export default async function CustomerJobDetail({ params }: Props) {
                     <form action={acceptApplicationAction.bind(null, job.id, application.id)}><button className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#14091f]">Accept & hire</button></form>
                     <form action={setApplicationStatusAction.bind(null, job.id, application.id, ApplicationStatus.REJECTED)}><button className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Reject</button></form>
                   </div> : null}
+                  {application.status === ApplicationStatus.ACCEPTED && application.engagement ? (
+                    <Link href={`/engagements/${application.engagement.id}`} className="mt-4 inline-block rounded-full bg-white px-4 py-2 text-sm font-black text-[#14091f]">Open work engagement</Link>
+                  ) : null}
                 </article>
               );
             })}

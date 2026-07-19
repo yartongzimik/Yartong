@@ -66,6 +66,15 @@ enum ApplicationStatus {
   WITHDRAWN
 }
 
+enum EngagementStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -93,6 +102,8 @@ model User {
   materialSupplierProfile MaterialSupplierProfile?
   jobs                    Job[]
   jobApplications         JobApplication[]         @relation("ApplicationProvider")
+  customerEngagements     Engagement[]             @relation("EngagementCustomer")
+  providerEngagements     Engagement[]             @relation("EngagementProvider")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -260,6 +271,7 @@ model Job {
   customer     User             @relation(fields: [customerId], references: [id], onDelete: Cascade)
   location     Location         @relation(fields: [locationId], references: [id], onDelete: Restrict)
   applications JobApplication[]
+  engagement   Engagement?
 
   @@index([customerId])
   @@index([locationId])
@@ -280,10 +292,41 @@ model JobApplication {
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
-  job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  provider User @relation("ApplicationProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  job        Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  provider   User        @relation("ApplicationProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  engagement Engagement?
 
   @@unique([jobId, providerId])
   @@index([jobId, status])
   @@index([providerId, status])
+}
+
+model Engagement {
+  id                   String           @id @default(cuid())
+  jobId                String           @unique
+  applicationId        String           @unique
+  customerId           String
+  providerId           String
+  providerRole         JobProviderRole
+  scope                String           @db.Text
+  agreedPrice          Int?
+  currency             String           @default("INR") @db.VarChar(3)
+  proposedTimelineDays Int?
+  status               EngagementStatus @default(PENDING)
+  confirmedAt          DateTime?
+  startedAt            DateTime?
+  completedAt          DateTime?
+  cancelledAt          DateTime?
+  disputedAt           DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  job         Job            @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  customer    User           @relation("EngagementCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  provider    User           @relation("EngagementProvider", fields: [providerId], references: [id], onDelete: Restrict)
+
+  @@index([customerId, status])
+  @@index([providerId, status])
+  @@index([status, createdAt])
 }
