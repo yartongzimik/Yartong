@@ -33,26 +33,77 @@ export async function setApplicationStatusAction(
   revalidatePath(`/customer/jobs/${jobId}`);
 }
 
-export async function acceptApplicationAction(jobId: string, applicationId: string): Promise<void> {
+export async function acceptApplicationAction(
+  jobId: string,
+  applicationId: string,
+): Promise<void> {
   const customer = await requireRole("CUSTOMER");
 
   await prisma.$transaction(async (tx) => {
-    const accepted = await tx.jobApplication.updateMany({
+    const application = await tx.jobApplication.findFirst({
       where: {
         id: applicationId,
         jobId,
         job: { customerId: customer.id, status: JobStatus.PUBLISHED },
         status: { in: [ApplicationStatus.SUBMITTED, ApplicationStatus.SHORTLISTED] },
       },
+      select: {
+        id: true,
+        providerId: true,
+        providerRole: true,
+        proposedPrice: true,
+        proposedTimelineDays: true,
+        job: {
+          select: {
+            id: true,
+            customerId: true,
+            description: true,
+            currency: true,
+          },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new Error("This application can no longer be accepted.");
+    }
+
+    const accepted = await tx.jobApplication.updateMany({
+      where: {
+        id: application.id,
+        status: { in: [ApplicationStatus.SUBMITTED, ApplicationStatus.SHORTLISTED] },
+      },
       data: { status: ApplicationStatus.ACCEPTED },
     });
-    if (accepted.count !== 1) throw new Error("This application can no longer be accepted.");
+    if (accepted.count !== 1) {
+      throw new Error("This application can no longer be accepted.");
+    }
 
     const closed = await tx.job.updateMany({
-      where: { id: jobId, customerId: customer.id, status: JobStatus.PUBLISHED },
+      where: {
+        id: application.job.id,
+        customerId: customer.id,
+        status: JobStatus.PUBLISHED,
+      },
       data: { status: JobStatus.CLOSED, closedAt: new Date() },
     });
-    if (closed.count !== 1) throw new Error("This job is no longer open for hiring.");
+    if (closed.count !== 1) {
+      throw new Error("This job is no longer open for hiring.");
+    }
+
+    await tx.engagement.create({
+      data: {
+        applicationId: application.id,
+        jobId: application.job.id,
+        customerId: application.job.customerId,
+        providerId: application.providerId,
+        providerRole: application.providerRole,
+        scope: application.job.description,
+        agreedPrice: application.proposedPrice,
+        currency: application.job.currency,
+        agreedTimelineDays: application.proposedTimelineDays,
+      },
+    });
 
     await tx.jobApplication.updateMany({
       where: {
@@ -66,4 +117,5 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
 
   revalidatePath(`/customer/jobs/${jobId}`);
   revalidatePath(`/jobs/${jobId}`);
+  revalidatePath("/engagements");
 }
