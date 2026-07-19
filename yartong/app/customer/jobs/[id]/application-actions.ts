@@ -1,6 +1,11 @@
 "use server";
 
-import { ApplicationStatus, JobStatus } from "@prisma/client";
+import {
+  ApplicationStatus,
+  EngagementStatus,
+  JobBudgetType,
+  JobStatus,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/authz";
@@ -37,11 +42,38 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
   const customer = await requireRole("CUSTOMER");
 
   await prisma.$transaction(async (tx) => {
-    const accepted = await tx.jobApplication.updateMany({
+    const candidate = await tx.jobApplication.findFirst({
       where: {
         id: applicationId,
         jobId,
         job: { customerId: customer.id, status: JobStatus.PUBLISHED },
+        status: { in: [ApplicationStatus.SUBMITTED, ApplicationStatus.SHORTLISTED] },
+      },
+      select: {
+        id: true,
+        providerId: true,
+        providerRole: true,
+        proposedPrice: true,
+        proposedTimelineDays: true,
+        job: {
+          select: {
+            id: true,
+            customerId: true,
+            description: true,
+            budgetType: true,
+            budgetMin: true,
+            currency: true,
+          },
+        },
+      },
+    });
+
+    if (!candidate) throw new Error("This application can no longer be accepted.");
+
+    const accepted = await tx.jobApplication.updateMany({
+      where: {
+        id: applicationId,
+        jobId,
         status: { in: [ApplicationStatus.SUBMITTED, ApplicationStatus.SHORTLISTED] },
       },
       data: { status: ApplicationStatus.ACCEPTED },
@@ -53,6 +85,23 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
       data: { status: JobStatus.CLOSED, closedAt: new Date() },
     });
     if (closed.count !== 1) throw new Error("This job is no longer open for hiring.");
+
+    await tx.engagement.create({
+      data: {
+        jobId: candidate.job.id,
+        applicationId: candidate.id,
+        customerId: candidate.job.customerId,
+        providerId: candidate.providerId,
+        providerRole: candidate.providerRole,
+        scope: candidate.job.description,
+        agreedPrice:
+          candidate.proposedPrice ??
+          (candidate.job.budgetType === JobBudgetType.FIXED ? candidate.job.budgetMin : null),
+        currency: candidate.job.currency,
+        proposedTimelineDays: candidate.proposedTimelineDays,
+        status: EngagementStatus.PENDING,
+      },
+    });
 
     await tx.jobApplication.updateMany({
       where: {
@@ -66,4 +115,5 @@ export async function acceptApplicationAction(jobId: string, applicationId: stri
 
   revalidatePath(`/customer/jobs/${jobId}`);
   revalidatePath(`/jobs/${jobId}`);
+  revalidatePath("/engagements");
 }
