@@ -44,7 +44,8 @@ export const ROUTES = {
   home: "/",
 
   workers: "/workers",
-  workerProfile: "/workers",
+  workerProfile: "/providers",
+  providerProfile: "/providers",
 
   trades: "/trades",
 
