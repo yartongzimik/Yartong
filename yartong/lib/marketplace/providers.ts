@@ -132,14 +132,13 @@ export function isPubliclyListableProvider(
   if ("accountStatus" in user && user.accountStatus !== "ACTIVE") return false;
   if (!user.primaryLocation) return false;
 
-  const profile =
-    user.primaryRole === "SKILLED_PROVIDER"
-      ? user.skilledProviderProfile
-      : user.primaryRole === "LABOURER"
-        ? user.labourerProfile
-        : user.contractorProfile;
-
-  return Boolean(profile?.onboardingComplete);
+  if (user.primaryRole === "SKILLED_PROVIDER") {
+    return Boolean(user.skilledProviderProfile?.onboardingComplete);
+  }
+  if (user.primaryRole === "LABOURER") {
+    return Boolean(user.labourerProfile?.onboardingComplete);
+  }
+  return Boolean(user.contractorProfile?.onboardingComplete);
 }
 
 function verificationLabel(status: VerificationStatus) {
@@ -151,54 +150,14 @@ function verificationLabel(status: VerificationStatus) {
         .replace(/^./, (c) => c.toUpperCase());
 }
 
-function toPublicProvider(
+function basePublicProvider(
   user: PublicProviderRecord,
-): PublicProviderCard | null {
-  if (!isPubliclyListableProvider(user)) return null;
-
-  const profile =
-    user.primaryRole === "SKILLED_PROVIDER"
-      ? user.skilledProviderProfile
-      : user.primaryRole === "LABOURER"
-        ? user.labourerProfile
-        : user.contractorProfile;
-
-  if (!profile) return null;
-
-  const contractor =
-    user.primaryRole === "CONTRACTOR" ? user.contractorProfile : null;
-  const skilled =
-    user.primaryRole === "SKILLED_PROVIDER"
-      ? user.skilledProviderProfile
-      : null;
-  const skills =
-    user.primaryRole === "CONTRACTOR"
-      ? (contractor?.projectTypes ?? [])
-      : (profile.skills ?? []);
-
+  role: PublicProviderRole,
+) {
   return {
     id: user.id,
-    displayName:
-      user.displayName ||
-      skilled?.businessName ||
-      contractor?.businessName ||
-      "Yartong provider",
-    role: user.primaryRole,
-    roleLabel: ROLE_LABELS[user.primaryRole],
-    businessName:
-      skilled?.businessName ?? contractor?.businessName ?? undefined,
-    headline: profile.headline ?? undefined,
-    bio: profile.bio ?? undefined,
-    experienceYears: profile.experienceYears ?? undefined,
-    teamSize: contractor?.teamSize ?? undefined,
-    serviceRadiusKm:
-      ("serviceRadiusKm" in profile ? profile.serviceRadiusKm : undefined) ??
-      undefined,
-    skills,
-    availableForWork: profile.availableForWork,
-    availabilityLabel: profile.availableForWork
-      ? "Available for enquiries"
-      : "Availability limited",
+    role,
+    roleLabel: ROLE_LABELS[role],
     verificationStatus: user.verificationStatus,
     verificationLabel: verificationLabel(user.verificationStatus),
     isVerified:
@@ -206,6 +165,74 @@ function toPublicProvider(
       user.verificationStatus !== "PHONE_VERIFIED",
     isDemo: user.isDemo,
     location: user.primaryLocation,
+  };
+}
+
+function toPublicProvider(
+  user: PublicProviderRecord,
+): PublicProviderCard | null {
+  if (!isPublicProviderRole(user.primaryRole)) return null;
+  if (!user.primaryLocation) return null;
+
+  if (user.primaryRole === "SKILLED_PROVIDER") {
+    const profile = user.skilledProviderProfile;
+    if (!profile?.onboardingComplete) return null;
+
+    return {
+      ...basePublicProvider(user, "SKILLED_PROVIDER"),
+      displayName: user.displayName || profile.businessName || "Yartong provider",
+      businessName: profile.businessName ?? undefined,
+      headline: profile.headline ?? undefined,
+      bio: profile.bio ?? undefined,
+      experienceYears: profile.experienceYears ?? undefined,
+      teamSize: undefined,
+      serviceRadiusKm: profile.serviceRadiusKm ?? undefined,
+      skills: profile.skills,
+      availableForWork: profile.availableForWork,
+      availabilityLabel: profile.availableForWork
+        ? "Available for enquiries"
+        : "Availability limited",
+    };
+  }
+
+  if (user.primaryRole === "LABOURER") {
+    const profile = user.labourerProfile;
+    if (!profile?.onboardingComplete) return null;
+
+    return {
+      ...basePublicProvider(user, "LABOURER"),
+      displayName: user.displayName || "Yartong provider",
+      businessName: undefined,
+      headline: profile.headline ?? undefined,
+      bio: profile.bio ?? undefined,
+      experienceYears: profile.experienceYears ?? undefined,
+      teamSize: undefined,
+      serviceRadiusKm: undefined,
+      skills: profile.skills,
+      availableForWork: profile.availableForWork,
+      availabilityLabel: profile.availableForWork
+        ? "Available for enquiries"
+        : "Availability limited",
+    };
+  }
+
+  const profile = user.contractorProfile;
+  if (!profile?.onboardingComplete) return null;
+
+  return {
+    ...basePublicProvider(user, "CONTRACTOR"),
+    displayName: user.displayName || profile.businessName || "Yartong provider",
+    businessName: profile.businessName ?? undefined,
+    headline: profile.headline ?? undefined,
+    bio: profile.bio ?? undefined,
+    experienceYears: profile.experienceYears ?? undefined,
+    teamSize: profile.teamSize ?? undefined,
+    serviceRadiusKm: profile.serviceRadiusKm ?? undefined,
+    skills: profile.projectTypes,
+    availableForWork: profile.availableForWork,
+    availabilityLabel: profile.availableForWork
+      ? "Available for enquiries"
+      : "Availability limited",
   };
 }
 
@@ -258,8 +285,10 @@ function roleWhere(
     { primaryLocation: { is: { isActive: true } } },
   ];
 
-  if (location)
+  if (location) {
     and.push({ primaryLocation: { is: { slug: location, isActive: true } } });
+  }
+
   if (q) {
     and.push({
       OR: [
@@ -299,17 +328,21 @@ function roleWhere(
       ],
     });
   }
-  if (skill)
+
+  if (skill) {
     and.push({
       OR: [
         { skilledProviderProfile: { is: { skills: { has: skill } } } },
         { labourerProfile: { is: { skills: { has: skill } } } },
       ],
     });
-  if (projectType)
+  }
+
+  if (projectType) {
     and.push({
       contractorProfile: { is: { projectTypes: { has: projectType } } },
     });
+  }
 
   return { AND: and };
 }
@@ -344,9 +377,10 @@ export async function getProviderDiscovery(
       orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
     }),
   ]);
+
   const providers = rows
     .map(toPublicProvider)
-    .filter((p): p is PublicProviderCard => Boolean(p));
+    .filter((provider): provider is PublicProviderCard => Boolean(provider));
 
   return {
     providers,
