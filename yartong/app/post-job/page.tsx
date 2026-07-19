@@ -1,17 +1,6 @@
-const pageTitle = "Post Job";
-const routePath = "/post-job";
-
-export default function PlaceholderPage() {
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
-        Yartong milestone 0 placeholder
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-gray-950">{pageTitle}</h1>
-      <p className="mt-4 max-w-2xl text-gray-600">
-        The {routePath} route is reserved for a future Yartong workflow.
-        Product features for this page have not been implemented yet.
-      </p>
-    </main>
-  );
-}
+import { JobForm } from "@/components/marketplace/job-ui";
+import { PublicShell } from "@/components/layout/public-shell";
+import { createJobAction } from "@/app/customer/jobs/actions";
+import { requireRole } from "@/lib/authz";
+import { getActiveJobLocations } from "@/lib/marketplace/jobs";
+export default async function PostJobPage(){ await requireRole("CUSTOMER"); const locations=await getActiveJobLocations(); return <PublicShell><main className="mx-auto max-w-5xl px-6 py-12"><p className="text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200/75">Customer job posting</p><h1 className="mt-4 text-4xl font-black text-white">Post a job</h1><p className="mt-3 text-white/65">Save a private draft or publish a job for public worker discovery.</p><JobForm action={createJobAction} locations={locations}/></main></PublicShell> }

@@ -1,0 +1,11 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { PublicShell } from "@/components/layout/public-shell";
+import { JobStatusBadge } from "@/components/marketplace/job-ui";
+import { transitionJobAction } from "../actions";
+import { requireRole } from "@/lib/authz";
+import { JOB_PROVIDER_ROLE_LABELS, JOB_URGENCY_LABELS, ROUTES } from "@/lib/constants";
+import { formatBudget } from "@/lib/jobs/validation";
+import { getCustomerJob } from "@/lib/marketplace/jobs";
+type Props={params:Promise<{id:string}>};
+export default async function CustomerJobDetail({params}:Props){ const user=await requireRole("CUSTOMER"); const {id}=await params; const job=await getCustomerJob(user.id,id); if(!job) notFound(); return <PublicShell><main className="mx-auto max-w-4xl px-6 py-12 text-white"><JobStatusBadge status={job.status}/><h1 className="mt-4 text-5xl font-black">{job.title}</h1><p className="mt-3 text-white/60">{job.location.name} · {formatBudget(job.budgetType,job.budgetMin,job.budgetMax,job.currency)} · {JOB_URGENCY_LABELS[job.urgency]}</p><p className="mt-6 whitespace-pre-wrap rounded-3xl border border-white/10 bg-white/[0.06] p-6 leading-7 text-white/75">{job.description}</p><p className="mt-4 text-white/60">Targets: {job.targetProviderRoles.map(r=>JOB_PROVIDER_ROLE_LABELS[r]).join(", ")}</p><div className="mt-6 flex flex-wrap gap-3">{job.status==="DRAFT"?<><Link href={`${ROUTES.customerJobs}/${job.id}/edit`} className="rounded-full border border-white/15 px-5 py-3 font-black">Edit</Link><form action={transitionJobAction.bind(null, job.id, "PUBLISHED")}><button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Publish</button></form><form action={transitionJobAction.bind(null, job.id, "CANCELLED")}><button className="rounded-full border border-white/15 px-5 py-3 font-black">Cancel</button></form></>:null}{job.status==="PUBLISHED"?<><form action={transitionJobAction.bind(null, job.id, "CLOSED")}><button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Close</button></form><form action={transitionJobAction.bind(null, job.id, "CANCELLED")}><button className="rounded-full border border-white/15 px-5 py-3 font-black">Cancel</button></form></>:null}</div></main></PublicShell> }

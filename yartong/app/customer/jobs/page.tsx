@@ -1,17 +1,10 @@
-const pageTitle = "Customer / Jobs";
-const routePath = "/customer/jobs";
-
-export default function PlaceholderPage() {
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
-        Yartong milestone 0 placeholder
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-gray-950">{pageTitle}</h1>
-      <p className="mt-4 max-w-2xl text-gray-600">
-        The {routePath} route is reserved for a future Yartong workflow.
-        Product features for this page have not been implemented yet.
-      </p>
-    </main>
-  );
-}
+import Link from "next/link";
+import { JobStatus } from "@prisma/client";
+import { PublicShell } from "@/components/layout/public-shell";
+import { JobStatusBadge } from "@/components/marketplace/job-ui";
+import { requireRole } from "@/lib/authz";
+import { JOB_URGENCY_LABELS, ROUTES } from "@/lib/constants";
+import { formatBudget } from "@/lib/jobs/validation";
+import { prisma } from "@/lib/prisma";
+type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
+export default async function CustomerJobsPage({searchParams}:Props){ const user=await requireRole("CUSTOMER"); const p=await searchParams; const status=Object.values(JobStatus).includes(String(p.status) as JobStatus)?String(p.status) as JobStatus:undefined; const jobs=await prisma.job.findMany({where:{customerId:user.id,...(status?{status}:{})},include:{location:true},orderBy:{createdAt:"desc"}}); return <PublicShell><main className="mx-auto max-w-6xl px-6 py-12 text-white"><div className="flex justify-between"><h1 className="text-4xl font-black">My jobs</h1><Link href={ROUTES.postJob} className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Post job</Link></div><div className="mt-6 flex gap-2"><Link href={ROUTES.customerJobs}>All</Link>{Object.values(JobStatus).map(s=><Link key={s} href={`${ROUTES.customerJobs}?status=${s}`}>{s}</Link>)}</div><div className="mt-6 grid gap-4">{jobs.map(j=><Link key={j.id} href={`${ROUTES.customerJobs}/${j.id}`} className="rounded-3xl border border-white/10 bg-white/[0.06] p-5"><JobStatusBadge status={j.status}/><h2 className="mt-3 text-2xl font-black">{j.title}</h2><p className="mt-2 text-white/65">{j.location.name} · {formatBudget(j.budgetType,j.budgetMin,j.budgetMax,j.currency)} · {JOB_URGENCY_LABELS[j.urgency]}</p><p className="mt-1 text-sm text-white/50">Created {j.createdAt.toLocaleDateString("en-IN")}{j.publishedAt?` · Published ${j.publishedAt.toLocaleDateString("en-IN")}`:""}</p></Link>)}</div>{!jobs.length?<p className="mt-8 rounded-3xl border border-white/10 p-8">No jobs found.</p>:null}</main></PublicShell> }

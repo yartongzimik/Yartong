@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from "@prisma/client";
+import { JobBudgetType, JobProviderRole, JobStatus, JobUrgency, PrismaClient, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -47,6 +47,23 @@ async function main() {
     if (demo.role === UserRole.CONTRACTOR) await prisma.contractorProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, businessName: "Demo Valley Contractor Works", headline: "Residential renovation and small project contractor", experienceYears: 8, teamSize: 5, projectTypes: ["Residential", "Renovation", "Boundary wall"], serviceRadiusKm: 40, availableForWork: true }, create: { userId: user.id, onboardingComplete: true, businessName: "Demo Valley Contractor Works", headline: "Residential renovation and small project contractor", experienceYears: 8, teamSize: 5, projectTypes: ["Residential", "Renovation", "Boundary wall"], serviceRadiusKm: 40, availableForWork: true } });
     if (demo.role === UserRole.MATERIAL_SUPPLIER) await prisma.materialSupplierProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true }, create: { userId: user.id, onboardingComplete: true, businessName: "Demo Building Materials", headline: "Cement, sand, steel and aggregates", materialCategories: ["Cement", "Sand", "Steel", "Aggregates"], deliveryAvailable: true, deliveryRadiusKm: 30, wholesaleAvailable: true } });
   }
+  const customer = await prisma.user.findUniqueOrThrow({ where: { email: "customer.demo@yartong.local" } });
+  const demoJobs = [
+    { title: "Repair kitchen water seepage", description: "Need a skilled provider to inspect and repair water seepage near the kitchen wall before repainting.", category: "Home repair", skills: ["Masonry", "Repairs"], targetProviderRoles: [JobProviderRole.SKILLED_PROVIDER], locationId: senapati.id, budgetType: JobBudgetType.RANGE, budgetMin: 250000, budgetMax: 600000, urgency: JobUrgency.STANDARD, status: JobStatus.PUBLISHED },
+    { title: "Two labourers for material shifting", description: "Looking for reliable labourers to shift sand and bricks at a residential site for one day.", category: "Site labour", skills: ["Material shifting", "Loading"], targetProviderRoles: [JobProviderRole.LABOURER], locationId: mao.id, budgetType: JobBudgetType.FIXED, budgetMin: 180000, budgetMax: null, urgency: JobUrgency.WITHIN_24_HOURS, status: JobStatus.PUBLISHED },
+    { title: "Boundary wall estimate and construction", description: "Need a contractor to assess and quote for a small boundary wall project.", category: "Construction", skills: ["Boundary wall", "Residential"], targetProviderRoles: [JobProviderRole.CONTRACTOR], locationId: kangpokpi.id, budgetType: JobBudgetType.NEGOTIABLE, budgetMin: null, budgetMax: null, urgency: JobUrgency.STANDARD, status: JobStatus.PUBLISHED },
+    { title: "Draft bathroom renovation plan", description: "Private draft for a future bathroom renovation job.", category: "Renovation", skills: ["Plumbing", "Tiling"], targetProviderRoles: [JobProviderRole.SKILLED_PROVIDER, JobProviderRole.CONTRACTOR], locationId: senapati.id, budgetType: JobBudgetType.RANGE, budgetMin: 1500000, budgetMax: 3000000, urgency: JobUrgency.STANDARD, status: JobStatus.DRAFT },
+    { title: "Closed roof inspection request", description: "Completed listing kept for private customer history only.", category: "Roofing", skills: ["Inspection"], targetProviderRoles: [JobProviderRole.SKILLED_PROVIDER], locationId: senapati.id, budgetType: JobBudgetType.FIXED, budgetMin: 500000, budgetMax: null, urgency: JobUrgency.EMERGENCY, status: JobStatus.CLOSED },
+  ];
+  for (const job of demoJobs) {
+    const now = new Date();
+    await prisma.job.upsert({
+      where: { id: `demo-${job.title.toLowerCase().replaceAll(" ", "-").replaceAll("/", "-")}` },
+      update: { ...job, customerId: customer.id, publishedAt: job.status === JobStatus.PUBLISHED ? now : null, closedAt: job.status === JobStatus.CLOSED || job.status === JobStatus.CANCELLED ? now : null },
+      create: { id: `demo-${job.title.toLowerCase().replaceAll(" ", "-").replaceAll("/", "-")}`, ...job, customerId: customer.id, publishedAt: job.status === JobStatus.PUBLISHED ? now : null, closedAt: job.status === JobStatus.CLOSED || job.status === JobStatus.CANCELLED ? now : null },
+    });
+  }
+
 }
 
 main().finally(async () => prisma.$disconnect());
