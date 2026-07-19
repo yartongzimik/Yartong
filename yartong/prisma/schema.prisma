@@ -58,6 +58,14 @@ enum JobProviderRole {
   CONTRACTOR
 }
 
+enum ApplicationStatus {
+  SUBMITTED
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -84,6 +92,7 @@ model User {
   contractorProfile       ContractorProfile?
   materialSupplierProfile MaterialSupplierProfile?
   jobs                    Job[]
+  jobApplications         JobApplication[]         @relation("ApplicationProvider")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -248,12 +257,33 @@ model Job {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
-  customer User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  customer     User             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  location     Location         @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  applications JobApplication[]
 
   @@index([customerId])
   @@index([locationId])
   @@index([status])
   @@index([publishedAt])
   @@index([status, publishedAt])
+}
+
+model JobApplication {
+  id                   String            @id @default(cuid())
+  jobId                String
+  providerId           String
+  providerRole         JobProviderRole
+  message              String            @db.VarChar(2000)
+  proposedPrice        Int?
+  proposedTimelineDays Int?
+  status               ApplicationStatus @default(SUBMITTED)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  provider User @relation("ApplicationProvider", fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, providerId])
+  @@index([jobId, status])
+  @@index([providerId, status])
 }
