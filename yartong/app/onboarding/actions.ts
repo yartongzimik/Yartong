@@ -39,6 +39,7 @@ export async function completeOnboarding(_prev: OnboardingState | undefined, for
   const fieldErrors: Record<string, string> = {};
 
   if (!isPublicOnboardingRole(role)) fieldErrors.role = "Choose one public Yartong role.";
+  if (user.primaryRole !== "ONBOARDING_PENDING" && role !== user.primaryRole) fieldErrors.role = "Your existing account role cannot be changed through onboarding.";
   if (displayName.length < 2 || displayName.length > 80) fieldErrors.displayName = "Display name must be 2–80 characters.";
   if (phoneNumber && !phonePattern.test(phoneNumber)) fieldErrors.phoneNumber = "Enter a valid phone number or leave it blank.";
   if (!locationId) fieldErrors.locationId = "Choose your primary Yartong location.";
