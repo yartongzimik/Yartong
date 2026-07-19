@@ -1,0 +1,69 @@
+name: Yartong Backend CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Install, Prisma, lint, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: yartong
+
+    env:
+      DATABASE_URL: postgresql://ci_user:ci_password@localhost:5432/yartong_ci?schema=public
+      AUTH_SECRET: ci-only-placeholder-secret-not-for-production
+      AUTH_URL: http://localhost:3000
+      ENABLE_DEV_CREDENTIALS: "false"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: yartong/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Verify package lock is synchronized
+        run: git diff --exit-code -- package-lock.json
+
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Format-check Prisma schema
+        run: |
+          npx prisma format
+          git diff --exit-code -- prisma/schema.prisma
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
