@@ -8,27 +8,54 @@ import { prisma } from "./lib/prisma";
 
 const providers: Provider[] = [];
 
-function summarizeAuthError(error: unknown) {
-  if (!(error instanceof Error)) {
-    return { value: String(error) };
+const SENSITIVE_KEYS = [
+  "token",
+  "secret",
+  "password",
+  "authorization",
+  "cookie",
+  "code_verifier",
+  "pkce",
+];
+
+function sanitizeAuthDiagnostic(value: unknown, depth = 0): unknown {
+  if (depth > 4) return "[max-depth]";
+
+  if (value instanceof Error) {
+    return {
+      name: value.name,
+      message: value.message,
+      stack: value.stack,
+      cause: sanitizeAuthDiagnostic(value.cause, depth + 1),
+    };
   }
 
-  const cause = error.cause;
-  return {
-    name: error.name,
-    message: error.message,
-    stack: error.stack,
-    cause:
-      cause instanceof Error
-        ? {
-            name: cause.name,
-            message: cause.message,
-            stack: cause.stack,
-          }
-        : cause == null
-          ? undefined
-          : { value: String(cause) },
-  };
+  if (Array.isArray(value)) {
+    return value.slice(0, 20).map((item) => sanitizeAuthDiagnostic(item, depth + 1));
+  }
+
+  if (value && typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, nestedValue] of Object.entries(value as Record<string, unknown>)) {
+      const lowerKey = key.toLowerCase();
+      if (SENSITIVE_KEYS.some((sensitiveKey) => lowerKey.includes(sensitiveKey))) {
+        result[key] = "[redacted]";
+      } else {
+        result[key] = sanitizeAuthDiagnostic(nestedValue, depth + 1);
+      }
+    }
+    return result;
+  }
+
+  if (typeof value === "string") {
+    return value.length > 2000 ? `${value.slice(0, 2000)}…` : value;
+  }
+
+  return value;
+}
+
+function summarizeAuthError(error: unknown) {
+  return sanitizeAuthDiagnostic(error);
 }
 
 export const isGoogleAuthConfigured = Boolean(
@@ -62,7 +89,6 @@ if (isDevCredentialsEnabled) {
         const user = await prisma.user.findFirst({
           where: { email, isDemo: true },
         });
-
         if (!user) return null;
 
         return {
