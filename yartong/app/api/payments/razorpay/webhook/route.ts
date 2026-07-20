@@ -42,7 +42,6 @@ export async function POST(request: Request) {
   const paymentEntity = getEntity(payload, "payment");
   const orderEntity = getEntity(payload, "order");
   const providerOrderId = String(orderEntity?.id || paymentEntity?.order_id || "");
-  const providerPaymentId = String(paymentEntity?.id || "") || null;
   const eventId = request.headers.get("x-razorpay-event-id") || createHash("sha256").update(rawBody).digest("hex");
 
   const paymentOrder = providerOrderId
@@ -65,7 +64,7 @@ export async function POST(request: Request) {
     payload: payload as Prisma.InputJsonValue,
     paymentOrderId: paymentOrder?.id ?? null,
     nextStatus,
-    providerPaymentRef: providerPaymentId ?? providerOrderId ?? null,
+    providerPaymentRef: providerOrderId || null,
     failureCode: errorCode,
     failureMessage: errorDescription,
   });
