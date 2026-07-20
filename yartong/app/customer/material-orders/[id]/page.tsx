@@ -60,7 +60,7 @@ export default async function CustomerMaterialOrderDetailPage({ params }: Props)
           </form>
         ) : null}
 
-        <p className="mt-6 text-sm leading-6 text-white/45">This order lifecycle manages inventory reservation and fulfillment status. It does not represent successful payment collection; payment remains behind Yartong's separate verified payment-provider boundary.</p>
+        <p className="mt-6 text-sm leading-6 text-white/45">This order lifecycle manages inventory reservation and fulfillment status. It does not represent successful payment collection; payment remains behind the separate verified Yartong payment-provider boundary.</p>
       </main>
     </PublicShell>
   );
