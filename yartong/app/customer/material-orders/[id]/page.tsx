@@ -18,6 +18,7 @@ export default async function CustomerMaterialOrderDetailPage({ params }: Props)
 
   const steps = ["PLACED", "ACCEPTED", "PREPARING", "READY", "FULFILLED"];
   const currentIndex = steps.indexOf(order.status);
+  const orderClosed = ["REJECTED", "CANCELLED"].includes(order.status);
 
   return (
     <PublicShell>
@@ -27,7 +28,7 @@ export default async function CustomerMaterialOrderDetailPage({ params }: Props)
         <h1 className="mt-3 text-4xl font-black">{order.productName}</h1>
         <p className="mt-2 text-white/55">{order.variantName} · {order.quantity} {order.unitName}</p>
 
-        {!['REJECTED', 'CANCELLED'].includes(order.status) ? (
+        {!orderClosed ? (
           <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
             <h2 className="font-black">Order progress</h2>
             <div className="mt-5 grid gap-2 sm:grid-cols-5">
@@ -54,13 +55,18 @@ export default async function CustomerMaterialOrderDetailPage({ params }: Props)
           {order.supplierNote ? <p className="mt-3 rounded-2xl bg-amber-200/10 p-4 text-sm text-amber-50/80"><strong>Supplier note:</strong> {order.supplierNote}</p> : null}
         </section>
 
-        {order.status === "PLACED" ? (
-          <form action={cancelPlacedMaterialOrderAction.bind(null, order.id)} className="mt-6">
-            <button className="rounded-full border border-rose-200/25 px-5 py-3 font-black text-rose-100">Cancel before supplier acceptance</button>
-          </form>
-        ) : null}
+        <div className="mt-6 flex flex-wrap gap-3">
+          {!orderClosed ? (
+            <Link href={`/customer/material-orders/${order.id}/payment`} className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">Payment</Link>
+          ) : null}
+          {order.status === "PLACED" ? (
+            <form action={cancelPlacedMaterialOrderAction.bind(null, order.id)}>
+              <button className="rounded-full border border-rose-200/25 px-5 py-3 font-black text-rose-100">Cancel before supplier acceptance</button>
+            </form>
+          ) : null}
+        </div>
 
-        <p className="mt-6 text-sm leading-6 text-white/45">This order lifecycle manages inventory reservation and fulfillment status. It does not represent successful payment collection; payment remains behind the separate verified Yartong payment-provider boundary.</p>
+        <p className="mt-6 text-sm leading-6 text-white/45">This order lifecycle manages inventory reservation and fulfillment status. Payment preparation has its own provider-neutral state and never treats client input as proof that money moved.</p>
       </main>
     </PublicShell>
   );
