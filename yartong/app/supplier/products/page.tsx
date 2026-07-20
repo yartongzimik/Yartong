@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { PublicShell } from "@/components/layout/public-shell";
 import { requireRole } from "@/lib/authz";
 import { formatMoney } from "@/lib/jobs/validation";
@@ -25,8 +27,8 @@ export default async function SupplierProductsPage() {
             Reuse a canonical product variant whenever it already exists. Create a new catalog product only when the marketplace does not yet contain the exact item you sell. Your price, seller SKU and fulfillment terms stay supplier-specific.
           </p>
           <div className="mt-5 flex flex-wrap gap-3 text-sm">
-            <a href="/supplier/inventory" className="rounded-full border border-white/15 px-4 py-2 font-bold">Manage inventory</a>
-            <a href="/materials" className="rounded-full border border-white/15 px-4 py-2 font-bold">View public catalog</a>
+            <Link href="/supplier/inventory" className="rounded-full border border-white/15 px-4 py-2 font-bold">Manage inventory</Link>
+            <Link href="/materials" className="rounded-full border border-white/15 px-4 py-2 font-bold">View public catalog</Link>
           </div>
         </section>
 
@@ -52,7 +54,7 @@ export default async function SupplierProductsPage() {
                     <div><dt className="text-white/40">Minimum order</dt><dd className="mt-1 font-bold">{listing.minOrderQty} {listing.unitName}</dd></div>
                   </dl>
                   <div className="mt-5 flex flex-wrap gap-3">
-                    <a href={`/materials/${listing.productId}`} className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Public product</a>
+                    <Link href={`/materials/${listing.productId}`} className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Public product</Link>
                     {listing.status === "ACTIVE" ? (
                       <form action={setSupplierListingStatusAction.bind(null, listing.listingId, "PAUSED")}>
                         <button className="rounded-full border border-amber-200/20 px-4 py-2 text-sm font-bold text-amber-100">Pause listing</button>
