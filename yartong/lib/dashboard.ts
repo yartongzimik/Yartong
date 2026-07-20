@@ -1,4 +1,10 @@
-import { ApplicationStatus, EngagementStatus, JobStatus, UserRole } from "@prisma/client";
+import {
+  ApplicationStatus,
+  EngagementStatus,
+  JobStatus,
+  UserRole,
+  VerificationRequestStatus,
+} from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -154,7 +160,6 @@ export async function getProviderDashboard(userId: string, role: ProviderRole) {
       orderBy: { updatedAt: "desc" },
       take: 4,
       select: {
-        id: true,
         status: true,
         updatedAt: true,
         job: { select: { id: true, title: true } },
@@ -225,7 +230,12 @@ export async function getSupplierDashboard(userId: string) {
     prisma.verificationRequest.count({
       where: {
         userId,
-        status: { in: ["SUBMITTED", "UNDER_REVIEW"] },
+        status: {
+          in: [
+            VerificationRequestStatus.SUBMITTED,
+            VerificationRequestStatus.UNDER_REVIEW,
+          ],
+        },
       },
     }),
   ]);
