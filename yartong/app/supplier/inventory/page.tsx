@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { PublicShell } from "@/components/layout/public-shell";
 import { requireRole } from "@/lib/authz";
 import {
@@ -28,8 +30,8 @@ export default async function SupplierInventoryPage() {
             Track physical stock separately for each store, warehouse, yard or depot. Available stock is always calculated as on-hand minus reserved quantity, preserving a clean boundary for future ordering and fulfillment.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href="/supplier/products" className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Manage product listings</a>
-            <a href="/materials" className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">View public catalog</a>
+            <Link href="/supplier/products" className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">Manage product listings</Link>
+            <Link href="/materials" className="rounded-full border border-white/15 px-4 py-2 text-sm font-bold">View public catalog</Link>
           </div>
         </section>
 
