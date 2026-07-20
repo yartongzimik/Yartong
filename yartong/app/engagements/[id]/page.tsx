@@ -26,6 +26,13 @@ const PAYABLE_STATUSES: EngagementStatus[] = [
   EngagementStatus.COMPLETED,
 ];
 
+const DISPUTE_ELIGIBLE_STATUSES: EngagementStatus[] = [
+  EngagementStatus.CONFIRMED,
+  EngagementStatus.IN_PROGRESS,
+  EngagementStatus.COMPLETED,
+  EngagementStatus.DISPUTED,
+];
+
 export default async function EngagementDetailPage({ params }: Props) {
   const user = await requireUser();
   const { id } = await params;
@@ -43,6 +50,7 @@ export default async function EngagementDetailPage({ params }: Props) {
     engagement.agreedPrice !== null &&
     engagement.agreedPrice > 0 &&
     PAYABLE_STATUSES.includes(engagement.status);
+  const disputeAvailable = DISPUTE_ELIGIBLE_STATUSES.includes(engagement.status);
 
   return (
     <PublicShell>
@@ -105,6 +113,15 @@ export default async function EngagementDetailPage({ params }: Props) {
             </Link>
           ) : null}
 
+          {disputeAvailable ? (
+            <Link
+              href={`/engagements/${engagement.id}/dispute`}
+              className={`rounded-full border px-5 py-3 font-black ${engagement.status === EngagementStatus.DISPUTED ? "border-amber-200/30 bg-amber-200/10 text-amber-100" : "border-white/15 text-white"}`}
+            >
+              {engagement.status === EngagementStatus.DISPUTED ? "View active dispute" : "Get dispute support"}
+            </Link>
+          ) : null}
+
           {isProvider && engagement.status === EngagementStatus.PENDING ? (
             <form action={confirmEngagementAction.bind(null, engagement.id)}>
               <button className="rounded-full bg-white px-5 py-3 font-black text-[#14091f]">
@@ -151,7 +168,7 @@ export default async function EngagementDetailPage({ params }: Props) {
 
         {engagement.status === EngagementStatus.DISPUTED ? (
           <p className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
-            Formal dispute handling will be implemented in the dedicated disputes milestone.
+            This engagement is paused in the Yartong resolution workflow. Use the active dispute case for shared statements and support updates.
           </p>
         ) : null}
       </main>
