@@ -1,17 +1,64 @@
-const pageTitle = "Contractor / Dashboard";
-const routePath = "/contractor/dashboard";
+import { UserRole } from "@prisma/client";
 
-export default function PlaceholderPage() {
+import { RoleDashboard } from "@/components/dashboard/role-dashboard";
+import { ROUTES } from "@/lib/constants";
+import { getProviderDashboard } from "@/lib/dashboard";
+import { requireUser } from "@/lib/authz";
+
+export default async function ContractorDashboardPage() {
+  const user = await requireUser();
+  const dashboard = await getProviderDashboard(user.id, UserRole.CONTRACTOR);
+
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
-        Yartong milestone 0 placeholder
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-gray-950">{pageTitle}</h1>
-      <p className="mt-4 max-w-2xl text-gray-600">
-        The {routePath} route is reserved for a future Yartong workflow.
-        Product features for this page have not been implemented yet.
-      </p>
-    </main>
+    <RoleDashboard
+      eyebrow="Contractor dashboard"
+      title={`Welcome back, ${dashboard.user.displayName || "Contractor"}`}
+      subtitle={`Track bids, hired projects and customer communication${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}.`}
+      metrics={[
+        { label: "Active applications", value: dashboard.metrics.activeApplications },
+        { label: "Accepted applications", value: dashboard.metrics.acceptedApplications },
+        { label: "Active engagements", value: dashboard.metrics.activeEngagements },
+        {
+          label: "Unread messages",
+          value: dashboard.metrics.unreadMessages,
+          helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}`,
+        },
+      ]}
+      actions={[
+        {
+          label: "Find projects",
+          href: ROUTES.quickJobs,
+          description: "Browse published jobs seeking contractors and qualified providers.",
+        },
+        {
+          label: "My applications",
+          href: "/applications",
+          description: "Track project applications from submission through hiring.",
+        },
+        {
+          label: "Project engagements",
+          href: "/engagements",
+          description: "Manage agreed scope, quotes, project progress, messages and payments.",
+        },
+        {
+          label: "Messages",
+          href: ROUTES.messages,
+          description: "Continue private conversations with customers after a marketplace hire.",
+        },
+        {
+          label: "Contractor marketplace",
+          href: ROUTES.trades,
+          description: "Review public contractor discovery and marketplace positioning.",
+        },
+        {
+          label: "Verification",
+          href: "/verification",
+          description: `Current trust status: ${dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase()}.`,
+        },
+      ]}
+      activityTitle="Recent project activity"
+      activities={dashboard.activities}
+      emptyActivity="Applications and project engagements will appear here as your contractor activity grows."
+    />
   );
 }

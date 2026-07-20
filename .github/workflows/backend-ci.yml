@@ -102,4 +102,4 @@ jobs:
           retention-days: 3
 
       - name: Build
-        run: npm run build
+        run: npm run build:ci

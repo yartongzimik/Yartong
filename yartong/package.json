@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "(prisma migrate resolve --rolled-back 20260719000200_onboarding_pending_role || true) && prisma migrate deploy && prisma generate && next build",
+    "build:ci": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
