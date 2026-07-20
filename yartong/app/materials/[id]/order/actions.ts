@@ -5,6 +5,7 @@ import { Prisma, UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { requireUser } from "@/lib/authz";
+import { createNotificationWithTx } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
 function numberValue(formData: FormData, key: string) {
@@ -108,6 +109,13 @@ export async function placeMaterialOrderAction(productId: string, formData: Form
       INSERT INTO "MaterialOrderEvent" ("id", "orderId", "actorId", "type", "note")
       VALUES (${randomUUID()}, ${orderId}, ${customer.id}, 'PLACED'::"MaterialOrderEventType", 'Order placed and inventory reserved.')
     `);
+    await createNotificationWithTx(tx, {
+      userId: item.supplierId,
+      type: "ORDER",
+      title: `New material order ${orderNumber}`,
+      body: `${quantity} ${item.unitName} of ${item.productName} has been reserved for a new customer order.`,
+      href: `/supplier/orders/${orderId}`,
+    });
   }, { isolationLevel: "Serializable" });
 
   redirect(`/customer/material-orders/${orderId}`);
