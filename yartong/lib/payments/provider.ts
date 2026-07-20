@@ -45,11 +45,16 @@ export function getPaymentProviderConfiguration(): PaymentProviderConfiguration 
   };
 }
 
-export function requirePaymentGatewayAdapter(): never {
+export async function requirePaymentGatewayAdapter(): Promise<PaymentGatewayAdapter> {
   const config = getPaymentProviderConfiguration();
-  throw new Error(
-    config.configured
-      ? "A payment provider is configured but no production adapter has been activated yet."
-      : `Payment provider is not configured. Missing: ${config.missing.join(", ")}.`,
-  );
+  if (!config.configured) {
+    throw new Error(`Payment provider is not configured. Missing: ${config.missing.join(", ")}.`);
+  }
+
+  if (config.providerName?.toLowerCase() !== "razorpay") {
+    throw new Error(`Unsupported payment provider: ${config.providerName}.`);
+  }
+
+  const { razorpayGatewayAdapter } = await import("./razorpay");
+  return razorpayGatewayAdapter;
 }
