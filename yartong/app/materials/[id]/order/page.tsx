@@ -26,30 +26,19 @@ export default async function MaterialOrderPage({ params }: Props) {
         <Link href={`/materials/${id}`} className="text-sm font-bold text-fuchsia-200">← Back to product</Link>
         <p className="mt-8 text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200/70">Material order</p>
         <h1 className="mt-3 text-4xl font-black">Order {catalog.product.name}</h1>
-        <p className="mt-3 max-w-2xl text-white/60">Choose a supplier inventory location with verified available stock. Placing an order reserves the requested quantity immediately to reduce overselling risk.</p>
+        <p className="mt-3 max-w-2xl text-white/60">Choose one verified supplier stock location. Placing the order reserves the requested quantity immediately to reduce overselling risk.</p>
 
         {stocks.length ? (
           <form action={placeMaterialOrderAction.bind(null, id)} className="mt-8 space-y-6 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
             <div>
-              <label className="text-sm font-bold" htmlFor="stockId">Supplier & stock location</label>
-              <select id="stockId" name="stockId" required className="mt-2 w-full rounded-2xl border border-white/15 bg-[#120b1d] px-4 py-3">
+              <label className="text-sm font-bold" htmlFor="stockSelection">Supplier, variant & stock location</label>
+              <select id="stockSelection" name="stockSelection" required className="mt-2 w-full rounded-2xl border border-white/15 bg-[#120b1d] px-4 py-3">
                 {stocks.map((stock) => (
-                  <option key={stock.stockId} value={stock.stockId}>
+                  <option key={stock.stockId} value={`${stock.stockId}|${stock.listingId}`}>
                     {stock.supplierBusinessName || stock.supplierName} — {stock.variantName} — {stock.locationName} — {formatMoney(stock.price, stock.currency)} — {stock.availableQty} available
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="text-sm font-bold" htmlFor="listingId">Listing</label>
-              <select id="listingId" name="listingId" required className="mt-2 w-full rounded-2xl border border-white/15 bg-[#120b1d] px-4 py-3">
-                {stocks.map((stock) => (
-                  <option key={stock.stockId} value={stock.listingId}>
-                    {stock.supplierBusinessName || stock.supplierName} — {stock.variantName} — SKU {stock.sellerSku}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-2 text-xs text-white/40">Select the matching supplier in both fields. The server verifies that listing and stock belong together before reserving anything.</p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
@@ -73,7 +62,7 @@ export default async function MaterialOrderPage({ params }: Props) {
               <textarea id="customerNote" name="customerNote" maxLength={2000} rows={3} className="mt-2 w-full rounded-2xl border border-white/15 bg-white/[0.04] px-4 py-3" placeholder="Site directions, preferred pickup window, or other useful fulfillment details." />
             </div>
             <div className="rounded-2xl border border-amber-200/15 bg-amber-200/10 p-4 text-sm text-amber-50/80">
-              This milestone reserves stock and creates a supplier order. Payment collection is not simulated here; payment remains a separate production-provider integration.
+              This workflow reserves stock and creates a supplier order. Payment collection is not simulated here; payment remains a separate production-provider integration.
             </div>
             <button className="rounded-full bg-white px-6 py-3 font-black text-[#14091f]">Place order & reserve stock</button>
           </form>
