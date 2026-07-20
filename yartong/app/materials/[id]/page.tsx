@@ -12,6 +12,7 @@ export default async function MaterialProductDetailPage({ params }: Props) {
   const result = await getPublicCatalogProduct(id);
   if (!result) notFound();
   const { product, listings } = result;
+  const hasRecordedStock = listings.some((listing) => listing.availableQty > 0);
 
   return (
     <PublicShell>
@@ -28,6 +29,9 @@ export default async function MaterialProductDetailPage({ params }: Props) {
             {product.manufacturerPartNumber ? <div className="rounded-2xl border border-white/10 px-4 py-3 text-sm"><p className="text-white/35">Manufacturer part no.</p><p className="mt-1 font-black">{product.manufacturerPartNumber}</p></div> : null}
           </div>
           {product.description ? <p className="mt-6 max-w-4xl whitespace-pre-wrap leading-7 text-white/65">{product.description}</p> : null}
+          {hasRecordedStock ? (
+            <Link href={`/materials/${id}/order`} className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-black text-[#14091f]">Order from recorded stock</Link>
+          ) : null}
         </section>
 
         <section className="mt-8">
@@ -56,7 +60,11 @@ export default async function MaterialProductDetailPage({ params }: Props) {
                       <p className={`mt-1 font-black ${listing.availableQty > 0 ? "text-emerald-200" : "text-white/45"}`}>{listing.availableQty > 0 ? `${listing.availableQty} available` : "Stock not recorded"}</p>
                       <p className="mt-1 text-xs text-white/40">{listing.deliveryAvailable ? "Delivery available" : "Pickup / supplier terms"}{listing.leadTimeDays != null ? ` · ${listing.leadTimeDays} day lead time` : ""}</p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 px-4 py-3 text-center text-sm font-bold text-white/55">Ordering workflow coming next</div>
+                    {listing.availableQty > 0 ? (
+                      <Link href={`/materials/${id}/order`} className="rounded-2xl border border-emerald-200/25 bg-emerald-200/10 px-4 py-3 text-center text-sm font-black text-emerald-100">Order</Link>
+                    ) : (
+                      <div className="rounded-2xl border border-white/10 px-4 py-3 text-center text-sm font-bold text-white/40">Unavailable</div>
+                    )}
                   </div>
                 </article>
               ))}
