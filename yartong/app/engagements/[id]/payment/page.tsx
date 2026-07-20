@@ -49,6 +49,9 @@ export default async function EngagementPaymentPage({ params }: Props) {
   const payable = PAYABLE_STATUSES.includes(engagement.status) && engagement.agreedPrice !== null && engagement.agreedPrice > 0;
   const providerConfig = getPaymentProviderConfiguration();
   const razorpayReady = providerConfig.configured && providerConfig.providerName?.toLowerCase() === "razorpay";
+  const checkoutReady = engagement.paymentOrder
+    ? engagement.paymentOrder.status === PaymentStatus.CREATED || engagement.paymentOrder.status === PaymentStatus.REQUIRES_ACTION
+    : false;
 
   return (
     <PublicShell>
@@ -81,7 +84,7 @@ export default async function EngagementPaymentPage({ params }: Props) {
             <h2 className="text-2xl font-black">Payment order</h2>
             <p className="mt-3 text-white/65">{formatMoney(engagement.paymentOrder.amount, engagement.paymentOrder.currency)} · {engagement.paymentOrder.status.replaceAll("_", " ")}</p>
             {engagement.paymentOrder.failureMessage ? <p className="mt-3 text-sm text-rose-100">{engagement.paymentOrder.failureMessage}</p> : null}
-            {isCustomer && razorpayReady && [PaymentStatus.CREATED, PaymentStatus.REQUIRES_ACTION].includes(engagement.paymentOrder.status) ? (
+            {isCustomer && razorpayReady && checkoutReady ? (
               <RazorpayCheckoutButton engagementId={engagement.id} name={user.displayName} email={user.email} />
             ) : null}
             {isCustomer && engagement.paymentOrder.status === PaymentStatus.CREATED ? (
