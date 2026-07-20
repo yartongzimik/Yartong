@@ -10,7 +10,9 @@ import {
   type DisputeCategory,
   getParticipantDisputeById,
 } from "@/lib/marketplace/disputes";
+import { createNotificationWithTx } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
+import { enforceMutationRateLimit } from "@/lib/rate-limit";
 
 const ELIGIBLE_STATUSES: EngagementStatus[] = [
   EngagementStatus.CONFIRMED,
@@ -27,6 +29,8 @@ function requiredText(formData: FormData, key: string, max: number) {
 
 export async function openDisputeAction(engagementId: string, formData: FormData): Promise<void> {
   const user = await requireUser();
+  await enforceMutationRateLimit({ actorId: user.id, action: "open-dispute", limit: 5, windowSeconds: 3600 });
+
   const category = String(formData.get("category") ?? "") as DisputeCategory;
   if (!DISPUTE_CATEGORIES.includes(category)) throw new Error("Select a valid dispute category.");
 
@@ -44,7 +48,7 @@ export async function openDisputeAction(engagementId: string, formData: FormData
         OR: [{ customerId: user.id }, { providerId: user.id }],
         status: { in: ELIGIBLE_STATUSES },
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true, customerId: true, providerId: true },
     });
     if (!engagement) throw new Error("This engagement is not eligible for a dispute.");
 
@@ -72,34 +76,64 @@ export async function openDisputeAction(engagementId: string, formData: FormData
       where: { id: engagementId },
       data: { status: EngagementStatus.DISPUTED, disputedAt: new Date() },
     });
+
+    const counterpartId = engagement.customerId === user.id ? engagement.providerId : engagement.customerId;
+    await createNotificationWithTx(tx, {
+      userId: counterpartId,
+      type: "DISPUTE",
+      title: "A dispute was opened",
+      body: title,
+      href: `/engagements/${engagementId}/dispute`,
+    });
   }, { isolationLevel: "Serializable" });
 
   revalidatePath(`/engagements/${engagementId}`);
   revalidatePath(`/engagements/${engagementId}/dispute`);
   revalidatePath("/admin/disputes");
+  revalidatePath("/notifications");
 }
 
 export async function addDisputeStatementAction(disputeId: string, formData: FormData): Promise<void> {
   const user = await requireUser();
+  await enforceMutationRateLimit({ actorId: user.id, action: "dispute-statement", limit: 12, windowSeconds: 300 });
+
   const dispute = await getParticipantDisputeById(user.id, disputeId);
   if (!dispute || dispute.status === "RESOLVED" || dispute.status === "CANCELLED") {
     throw new Error("This dispute is no longer accepting participant statements.");
   }
   const body = requiredText(formData, "body", 4000);
 
-  await prisma.$executeRaw(Prisma.sql`
-    INSERT INTO "DisputeEvent" ("id", "disputeId", "actorId", "kind", "visibility", "body")
-    VALUES (${randomUUID()}, ${disputeId}, ${user.id}, 'STATEMENT'::"DisputeEventKind", 'PARTICIPANTS'::"DisputeEventVisibility", ${body})
-  `);
+  await prisma.$transaction(async (tx) => {
+    const engagement = await tx.engagement.findUnique({
+      where: { id: dispute.engagementId },
+      select: { customerId: true, providerId: true },
+    });
+    if (!engagement) throw new Error("The linked engagement no longer exists.");
 
-  await prisma.$executeRaw(Prisma.sql`
-    UPDATE "Dispute" SET "updatedAt" = CURRENT_TIMESTAMP,
-      "status" = CASE WHEN "status" = 'OPEN'::"DisputeStatus" THEN 'AWAITING_RESPONSE'::"DisputeStatus" ELSE "status" END
-    WHERE "id" = ${disputeId}
-  `);
+    await tx.$executeRaw(Prisma.sql`
+      INSERT INTO "DisputeEvent" ("id", "disputeId", "actorId", "kind", "visibility", "body")
+      VALUES (${randomUUID()}, ${disputeId}, ${user.id}, 'STATEMENT'::"DisputeEventKind", 'PARTICIPANTS'::"DisputeEventVisibility", ${body})
+    `);
+
+    await tx.$executeRaw(Prisma.sql`
+      UPDATE "Dispute" SET "updatedAt" = CURRENT_TIMESTAMP,
+        "status" = CASE WHEN "status" = 'OPEN'::"DisputeStatus" THEN 'AWAITING_RESPONSE'::"DisputeStatus" ELSE "status" END
+      WHERE "id" = ${disputeId}
+    `);
+
+    const counterpartId = engagement.customerId === user.id ? engagement.providerId : engagement.customerId;
+    await createNotificationWithTx(tx, {
+      userId: counterpartId,
+      type: "DISPUTE",
+      title: "New dispute statement",
+      body: body.length > 180 ? `${body.slice(0, 177)}…` : body,
+      href: `/engagements/${dispute.engagementId}/dispute`,
+    });
+  });
 
   revalidatePath(`/engagements/${dispute.engagementId}/dispute`);
   revalidatePath("/admin/disputes");
+  revalidatePath("/notifications");
 }
 
 export async function withdrawDisputeAction(disputeId: string): Promise<void> {
@@ -110,6 +144,12 @@ export async function withdrawDisputeAction(disputeId: string): Promise<void> {
   }
 
   await prisma.$transaction(async (tx) => {
+    const engagement = await tx.engagement.findUnique({
+      where: { id: dispute.engagementId },
+      select: { customerId: true, providerId: true },
+    });
+    if (!engagement) throw new Error("The linked engagement no longer exists.");
+
     const changed = await tx.$executeRaw(Prisma.sql`
       UPDATE "Dispute"
       SET "status" = 'CANCELLED'::"DisputeStatus", "cancelledAt" = CURRENT_TIMESTAMP, "updatedAt" = CURRENT_TIMESTAMP
@@ -127,9 +167,19 @@ export async function withdrawDisputeAction(disputeId: string): Promise<void> {
       where: { id: dispute.engagementId },
       data: { status: dispute.previousEngagementStatus as EngagementStatus, disputedAt: null },
     });
+
+    const counterpartId = engagement.customerId === user.id ? engagement.providerId : engagement.customerId;
+    await createNotificationWithTx(tx, {
+      userId: counterpartId,
+      type: "DISPUTE",
+      title: "Dispute withdrawn",
+      body: "The dispute was withdrawn before formal review.",
+      href: `/engagements/${dispute.engagementId}/dispute`,
+    });
   });
 
   revalidatePath(`/engagements/${dispute.engagementId}`);
   revalidatePath(`/engagements/${dispute.engagementId}/dispute`);
   revalidatePath("/admin/disputes");
+  revalidatePath("/notifications");
 }
