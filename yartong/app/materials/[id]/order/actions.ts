@@ -17,11 +17,12 @@ export async function placeMaterialOrderAction(productId: string, formData: Form
   const customer = await requireUser();
   if (customer.primaryRole !== UserRole.CUSTOMER) throw new Error("Only customer accounts can place material orders.");
 
-  const listingId = String(formData.get("listingId") ?? "").trim();
-  const stockId = String(formData.get("stockId") ?? "").trim();
+  const selection = String(formData.get("stockSelection") ?? "").trim();
+  const [stockId, listingId] = selection.split("|");
+  if (!stockId || !listingId) throw new Error("Select a valid supplier stock option.");
   const quantity = numberValue(formData, "quantity");
   const fulfillmentMethod = String(formData.get("fulfillmentMethod") ?? "PICKUP");
-  if (!['PICKUP', 'DELIVERY'].includes(fulfillmentMethod)) throw new Error("Select a valid fulfillment method.");
+  if (!["PICKUP", "DELIVERY"].includes(fulfillmentMethod)) throw new Error("Select a valid fulfillment method.");
   const deliveryAddress = String(formData.get("deliveryAddress") ?? "").trim();
   const customerNote = String(formData.get("customerNote") ?? "").trim().slice(0, 2000) || null;
   if (fulfillmentMethod === "DELIVERY" && !deliveryAddress) throw new Error("Delivery address is required for delivery orders.");
