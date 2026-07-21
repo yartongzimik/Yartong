@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Facebook from "next-auth/providers/facebook";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { Provider } from "next-auth/providers";
@@ -62,9 +63,12 @@ export const isGoogleAuthConfigured = Boolean(
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
 );
 
-export const isDevCredentialsEnabled =
-  process.env.NODE_ENV !== "production" &&
-  process.env.ENABLE_DEV_CREDENTIALS === "true";
+export const isFacebookAuthConfigured = Boolean(
+  process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET,
+);
+
+export const isDemoLoginEnabled =
+  process.env.ENABLE_DEMO_LOGIN === "true" && Boolean(process.env.DEMO_LOGIN_PASSWORD);
 
 if (isGoogleAuthConfigured) {
   providers.push(
@@ -75,19 +79,30 @@ if (isGoogleAuthConfigured) {
   );
 }
 
-if (isDevCredentialsEnabled) {
+if (isFacebookAuthConfigured) {
+  providers.push(
+    Facebook({
+      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+    }),
+  );
+}
+
+if (isDemoLoginEnabled) {
   providers.push(
     Credentials({
-      name: "Demo user",
+      name: "Demo email",
       credentials: {
         email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         const email = String(credentials?.email ?? "").trim().toLowerCase();
-        if (!email) return null;
+        const password = String(credentials?.password ?? "");
+        if (!email || !password || password !== process.env.DEMO_LOGIN_PASSWORD) return null;
 
         const user = await prisma.user.findFirst({
-          where: { email, isDemo: true },
+          where: { email, isDemo: true, accountStatus: "ACTIVE" },
         });
         if (!user) return null;
 
