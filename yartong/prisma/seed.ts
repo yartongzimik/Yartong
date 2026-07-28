@@ -164,8 +164,8 @@ async function main() {
     const now = new Date();
     await prisma.engagement.upsert({
       where: { id },
-      update: { status, agreedPrice, proposedTimelineDays, scope: `QA work order for ${title}.`, confirmedAt: now, startedAt: status !== EngagementStatus.PENDING ? now : null, completedAt: status === EngagementStatus.COMPLETED ? now : null },
-      create: { id, jobId: jobId(title), applicationId, customerId: customer.id, providerId, providerRole, status, scope: `QA work order for ${title}.`, agreedPrice, currency: "INR", proposedTimelineDays, confirmedAt: now, startedAt: status !== EngagementStatus.PENDING ? now : null, completedAt: status === EngagementStatus.COMPLETED ? now : null },
+      update: { status, agreedPrice, proposedTimelineDays, scope: `QA work order for ${title}.`, confirmedAt: now, startedAt: now, completedAt: status === EngagementStatus.COMPLETED ? now : null },
+      create: { id, jobId: jobId(title), applicationId, customerId: customer.id, providerId, providerRole, status, scope: `QA work order for ${title}.`, agreedPrice, currency: "INR", proposedTimelineDays, confirmedAt: now, startedAt: now, completedAt: status === EngagementStatus.COMPLETED ? now : null },
     });
     await prisma.job.update({ where: { id: jobId(title) }, data: { status: JobStatus.CLOSED, closedAt: now } });
   }
@@ -262,7 +262,7 @@ async function main() {
     ["product-tape", hardwareCategory.id, "qa-insulation-tape", "QA Electrical Insulation Tape", "variant-tape", "QA-TAPE-01", "roll", supplier2.id, "listing-tape", "HW-TAPE-01", 6000, "stock-tape", 150],
   ] as const;
 
-  for (const [productId, categoryId, slug, name, variantId, sku, variantName, supplierId, listingId, sellerSku, price, stockId, onHand] of catalogSeeds) {
+  for (const [productId, categoryId, slug, name, variantId, sku, variantName, supplierId, listingId, sellerSku, price] of catalogSeeds) {
     await prisma.catalogProduct.upsert({
       where: { id: productId },
       update: { name, categoryId, brandId: brand.id, status: CatalogProductStatus.ACTIVE },
