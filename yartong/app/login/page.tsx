@@ -16,7 +16,7 @@ const QA_ACCOUNTS = [
 ] as const;
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string; error?: string }> }) {
-  await redirectAuthenticatedUser();
+  if (!isQaTestAccessEnabled) await redirectAuthenticatedUser();
   const params = await searchParams;
   const callbackUrl = params.callbackUrl || "/";
   const hasProviders = isGoogleAuthConfigured || isFacebookAuthConfigured || isDemoLoginEnabled;
@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             ].map(([step, label]) => <div key={step} className="rounded-2xl border border-white/10 bg-black/20 p-4"><span className="text-xs font-black text-fuchsia-200">STEP {step}</span><p className="mt-2 text-sm font-bold">{label}</p></div>)}
           </div>
           <Link href="/join#account-types" className="mt-7 inline-flex rounded-full border border-white/15 px-5 py-3 font-bold hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-100">{isSignupFlow ? "Change account type" : "Create a new account"}</Link>
-        </> : <div className="mt-8 rounded-2xl border border-amber-200/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">Testing mode bypasses external authentication only for demo accounts. Turn this mode off before launch.</div>}
+        </> : <div className="mt-8 rounded-2xl border border-amber-200/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">Testing mode uses a temporary preview-only role switcher for seeded demo accounts. Open this Login page at any time to switch roles. Turn this mode off before launch.</div>}
       </div>
 
       <div className="rounded-[2rem] border border-white/10 bg-[#12091d] p-6 shadow-xl sm:p-8">
