@@ -59,16 +59,20 @@ function summarizeAuthError(error: unknown) {
   return sanitizeAuthDiagnostic(error);
 }
 
-export const isGoogleAuthConfigured = Boolean(
+export const isQaTestAccessEnabled =
+  process.env.VERCEL_ENV === "preview" || process.env.ENABLE_QA_TEST_ACCESS === "true";
+
+export const isGoogleAuthConfigured = !isQaTestAccessEnabled && Boolean(
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
 );
 
-export const isFacebookAuthConfigured = Boolean(
+export const isFacebookAuthConfigured = !isQaTestAccessEnabled && Boolean(
   process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET,
 );
 
 export const isDemoLoginEnabled =
-  process.env.ENABLE_DEMO_LOGIN === "true" && Boolean(process.env.DEMO_LOGIN_PASSWORD);
+  isQaTestAccessEnabled ||
+  (process.env.ENABLE_DEMO_LOGIN === "true" && Boolean(process.env.DEMO_LOGIN_PASSWORD));
 
 if (isGoogleAuthConfigured) {
   providers.push(
@@ -91,7 +95,7 @@ if (isFacebookAuthConfigured) {
 if (isDemoLoginEnabled) {
   providers.push(
     Credentials({
-      name: "Demo email",
+      name: isQaTestAccessEnabled ? "QA account" : "Demo email",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -99,7 +103,8 @@ if (isDemoLoginEnabled) {
       async authorize(credentials) {
         const email = String(credentials?.email ?? "").trim().toLowerCase();
         const password = String(credentials?.password ?? "");
-        if (!email || !password || password !== process.env.DEMO_LOGIN_PASSWORD) return null;
+        if (!email) return null;
+        if (!isQaTestAccessEnabled && (!password || password !== process.env.DEMO_LOGIN_PASSWORD)) return null;
 
         const user = await prisma.user.findFirst({
           where: { email, isDemo: true, accountStatus: "ACTIVE" },
