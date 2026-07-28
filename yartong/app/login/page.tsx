@@ -7,12 +7,12 @@ import { signInAsQaUser, signInWithFacebook, signInWithGoogle } from "./actions"
 import { DemoLoginForm } from "./demo-login-form";
 
 const QA_ACCOUNTS = [
-  ["Customer", "customer.demo@yartong.local"],
-  ["Skilled Provider", "provider.demo@yartong.local"],
-  ["Labourer", "labourer.demo@yartong.local"],
-  ["Contractor", "contractor.demo@yartong.local"],
-  ["Material Supplier", "supplier.demo@yartong.local"],
-  ["Admin", "admin.demo@yartong.local"],
+  ["Customer", "customer.demo@yartong.local", "/customer"],
+  ["Skilled Provider", "provider.demo@yartong.local", "/worker"],
+  ["Labourer", "labourer.demo@yartong.local", "/labourer"],
+  ["Contractor", "contractor.demo@yartong.local", "/contractor"],
+  ["Material Supplier", "supplier.demo@yartong.local", "/supplier"],
+  ["Admin", "admin.demo@yartong.local", "/admin"],
 ] as const;
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string; error?: string }> }) {
@@ -46,7 +46,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <p className="mt-2 text-sm text-white/55">Tap any role to enter Yartong immediately as that seeded QA user.</p>
           {params.error ? <p role="alert" className="mt-4 rounded-2xl border border-rose-300/30 bg-rose-500/10 p-3 text-sm text-rose-100">That QA account is not available in this database.</p> : null}
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {QA_ACCOUNTS.map(([label, email]) => <form key={email} action={async () => { "use server"; await signInAsQaUser(email, "/"); }}>
+            {QA_ACCOUNTS.map(([label, email, dashboard]) => <form key={email} action={async () => { "use server"; await signInAsQaUser(email, dashboard); }}>
               <button className="min-h-16 w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-left transition hover:border-fuchsia-200/50 hover:bg-fuchsia-400/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-100">
                 <span className="block font-black">{label}</span>
                 <span className="mt-1 block text-xs text-white/45">{email}</span>
