@@ -1,13 +1,45 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { auth } from "../auth";
+import { auth, isQaTestAccessEnabled } from "../auth";
 import { getDashboardForRole } from "./onboarding";
 import { hasPermission } from "./permissions";
 import { prisma } from "./prisma";
 import { getProfileRelationForRole } from "./role-profiles";
 import type { Permission, UserRole } from "./types";
 
+const currentUserSelect = {
+  id: true,
+  displayName: true,
+  email: true,
+  image: true,
+  primaryRole: true,
+  accountStatus: true,
+  verificationStatus: true,
+  primaryLocationId: true,
+  isDemo: true,
+  customerProfile: { select: { onboardingComplete: true } },
+  skilledProviderProfile: { select: { onboardingComplete: true } },
+  labourerProfile: { select: { onboardingComplete: true } },
+  contractorProfile: { select: { onboardingComplete: true } },
+  materialSupplierProfile: { select: { onboardingComplete: true } },
+} as const;
+
 export async function getCurrentUser() {
+  if (isQaTestAccessEnabled) {
+    const cookieStore = await cookies();
+    const qaEmail = cookieStore.get("yartong_qa_user")?.value?.trim().toLowerCase();
+
+    if (qaEmail) {
+      const qaUser = await prisma.user.findFirst({
+        where: { email: qaEmail, isDemo: true, accountStatus: "ACTIVE" },
+        select: currentUserSelect,
+      });
+
+      if (qaUser) return qaUser;
+    }
+  }
+
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -15,22 +47,7 @@ export async function getCurrentUser() {
 
   return prisma.user.findUnique({
     where: { id: userId },
-    select: {
-      id: true,
-      displayName: true,
-      email: true,
-      image: true,
-      primaryRole: true,
-      accountStatus: true,
-      verificationStatus: true,
-      primaryLocationId: true,
-      isDemo: true,
-      customerProfile: { select: { onboardingComplete: true } },
-      skilledProviderProfile: { select: { onboardingComplete: true } },
-      labourerProfile: { select: { onboardingComplete: true } },
-      contractorProfile: { select: { onboardingComplete: true } },
-      materialSupplierProfile: { select: { onboardingComplete: true } },
-    },
+    select: currentUserSelect,
   });
 }
 
