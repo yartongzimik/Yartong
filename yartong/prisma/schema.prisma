@@ -545,12 +545,12 @@ model Conversation {
 }
 
 model Message {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   conversationId String
   senderId       String
-  body           String   @db.VarChar(4000)
+  body           String    @db.VarChar(4000)
   readAt         DateTime?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
@@ -675,18 +675,18 @@ model PaymentEvent {
 }
 
 model Dispute {
-  id                       String            @id
-  engagementId             String            @unique
+  id                       String             @id
+  engagementId             String             @unique
   openedById               String
   assignedAdminId          String?
   category                 DisputeCategory
-  title                    String            @db.VarChar(160)
-  description              String            @db.Text
-  desiredOutcome           String?           @db.VarChar(2000)
+  title                    String             @db.VarChar(160)
+  description              String             @db.Text
+  desiredOutcome           String?            @db.VarChar(2000)
   status                   DisputeStatus      @default(OPEN)
   previousEngagementStatus EngagementStatus
   resolution               DisputeResolution?
-  resolutionNote           String?           @db.VarChar(4000)
+  resolutionNote           String?            @db.VarChar(4000)
   recommendedRefundAmount  Int?
   openedAt                 DateTime           @default(now())
   reviewStartedAt          DateTime?
@@ -722,15 +722,15 @@ model DisputeEvent {
 }
 
 model CatalogCategory {
-  id          String            @id
+  id          String   @id
   parentId    String?
-  slug        String            @unique
-  name        String            @db.VarChar(120)
-  description String?           @db.VarChar(1000)
-  sortOrder   Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @default(now()) @updatedAt
+  slug        String   @unique
+  name        String   @db.VarChar(120)
+  description String?  @db.VarChar(1000)
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   parent   CatalogCategory?  @relation("CatalogCategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children CatalogCategory[] @relation("CatalogCategoryHierarchy")
@@ -755,26 +755,26 @@ model CatalogBrand {
 }
 
 model CatalogProduct {
-  id                  String               @id
-  categoryId          String
-  brandId             String?
-  createdBySupplierId String?
-  slug                String               @unique
-  name                String               @db.VarChar(240)
-  description         String?              @db.Text
-  manufacturerPartNumber String?            @db.VarChar(160)
-  attributes          Json                 @default("{}")
-  status              CatalogProductStatus @default(ACTIVE)
-  source              CatalogProductSource @default(SUPPLIER_SUBMITTED)
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @default(now()) @updatedAt
+  id                     String               @id
+  categoryId             String
+  brandId                String?
+  createdBySupplierId    String?
+  slug                   String               @unique
+  name                   String               @db.VarChar(240)
+  description            String?              @db.Text
+  manufacturerPartNumber String?              @db.VarChar(160)
+  attributes             Json                 @default("{}")
+  status                 CatalogProductStatus @default(ACTIVE)
+  source                 CatalogProductSource @default(SUPPLIER_SUBMITTED)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @default(now()) @updatedAt
 
-  category            CatalogCategory          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  brand               CatalogBrand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  createdBySupplier   User?                    @relation("CatalogProductCreator", fields: [createdBySupplierId], references: [id], onDelete: SetNull)
-  variants            CatalogVariant[]
-  moderationEvents    CatalogModerationEvent[] @relation("CatalogModerationProduct")
-  moderationTargets   CatalogModerationEvent[] @relation("CatalogModerationTarget")
+  category          CatalogCategory          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand             CatalogBrand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  createdBySupplier User?                    @relation("CatalogProductCreator", fields: [createdBySupplierId], references: [id], onDelete: SetNull)
+  variants          CatalogVariant[]
+  moderationEvents  CatalogModerationEvent[] @relation("CatalogModerationProduct")
+  moderationTargets CatalogModerationEvent[] @relation("CatalogModerationTarget")
 
   @@index([categoryId, status, name])
   @@index([brandId, status])
@@ -816,9 +816,9 @@ model SupplierListing {
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @default(now()) @updatedAt
 
-  supplier User             @relation("SupplierListingSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
-  variant  CatalogVariant   @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  stocks   InventoryStock[]
+  supplier   User                @relation("SupplierListingSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  variant    CatalogVariant      @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  stocks     InventoryStock[]
   orderItems MaterialOrderItem[]
 
   @@unique([supplierId, sellerSku])
@@ -837,9 +837,9 @@ model InventoryLocation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
-  supplier      User            @relation("InventoryLocationSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
-  location      Location?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  stocks        InventoryStock[]
+  supplier       User             @relation("InventoryLocationSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  location       Location?        @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  stocks         InventoryStock[]
   materialOrders MaterialOrder[]
 
   @@unique([supplierId, name])
@@ -856,8 +856,8 @@ model InventoryStock {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @default(now()) @updatedAt
 
-  listing           SupplierListing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  inventoryLocation InventoryLocation @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
+  listing           SupplierListing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  inventoryLocation InventoryLocation   @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
   movements         InventoryMovement[]
   orderItems        MaterialOrderItem[]
 
@@ -904,9 +904,9 @@ model MaterialOrder {
   createdAt           DateTime                  @default(now())
   updatedAt           DateTime                  @default(now()) @updatedAt
 
-  customer          User              @relation("MaterialOrderCustomer", fields: [customerId], references: [id], onDelete: Restrict)
-  supplier          User              @relation("MaterialOrderSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
-  inventoryLocation InventoryLocation @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
+  customer          User                  @relation("MaterialOrderCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  supplier          User                  @relation("MaterialOrderSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  inventoryLocation InventoryLocation     @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
   items             MaterialOrderItem[]
   events            MaterialOrderEvent[]
   paymentOrder      MaterialPaymentOrder?
@@ -930,9 +930,9 @@ model MaterialOrderItem {
   lineTotal           Int
   createdAt           DateTime @default(now())
 
-  order   MaterialOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order   MaterialOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   listing SupplierListing @relation(fields: [listingId], references: [id], onDelete: Restrict)
-  stock   InventoryStock @relation(fields: [stockId], references: [id], onDelete: Restrict)
+  stock   InventoryStock  @relation(fields: [stockId], references: [id], onDelete: Restrict)
 
   @@index([orderId])
   @@index([listingId, createdAt])
