@@ -122,6 +122,124 @@ enum PaymentEventStatus {
   FAILED
 }
 
+enum DisputeStatus {
+  OPEN
+  AWAITING_RESPONSE
+  UNDER_REVIEW
+  RESOLVED
+  CANCELLED
+}
+
+enum DisputeCategory {
+  WORK_QUALITY
+  INCOMPLETE_WORK
+  NO_SHOW
+  DELAY
+  SCOPE_DISAGREEMENT
+  PAYMENT
+  PROPERTY_DAMAGE
+  SAFETY
+  HARASSMENT
+  FRAUD
+  OTHER
+}
+
+enum DisputeResolution {
+  NO_ACTION
+  MUTUAL_AGREEMENT
+  REDO_WORK
+  PARTIAL_REFUND_RECOMMENDED
+  FULL_REFUND_RECOMMENDED
+  PAYMENT_RELEASE_RECOMMENDED
+  ACCOUNT_ACTION
+  OTHER
+}
+
+enum DisputeEventKind {
+  SYSTEM
+  STATEMENT
+  ADMIN_NOTE
+  STATUS_CHANGE
+  RESOLUTION
+}
+
+enum DisputeEventVisibility {
+  PARTICIPANTS
+  ADMIN_ONLY
+}
+
+enum CatalogProductStatus {
+  ACTIVE
+  PENDING_REVIEW
+  MERGED
+  ARCHIVED
+}
+
+enum CatalogProductSource {
+  ADMIN_CURATED
+  SUPPLIER_SUBMITTED
+  IMPORTED
+}
+
+enum CatalogVariantStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum SupplierListingStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum InventoryMovementType {
+  RESTOCK
+  SALE
+  RESERVE
+  RELEASE
+  RETURN
+  DAMAGE
+  ADJUSTMENT
+}
+
+enum MaterialOrderStatus {
+  PLACED
+  ACCEPTED
+  REJECTED
+  PREPARING
+  READY
+  FULFILLED
+  CANCELLED
+}
+
+enum MaterialFulfillmentMethod {
+  PICKUP
+  DELIVERY
+}
+
+enum MaterialOrderEventType {
+  PLACED
+  ACCEPTED
+  REJECTED
+  PREPARING
+  READY
+  FULFILLED
+  CANCELLED
+  NOTE
+}
+
+enum NotificationType {
+  ORDER
+  DISPUTE
+  MESSAGE
+  ENGAGEMENT
+  APPLICATION
+  VERIFICATION
+  PAYMENT
+  SYSTEM
+}
+
 model User {
   id                 String             @id @default(cuid())
   displayName        String             @default("")
@@ -140,27 +258,41 @@ model User {
   lastActiveAt       DateTime?
   isDemo             Boolean            @default(false)
 
-  accounts                Account[]
-  sessions                Session[]
-  customerProfile         CustomerProfile?
-  skilledProviderProfile  SkilledProviderProfile?
-  labourerProfile         LabourerProfile?
-  contractorProfile       ContractorProfile?
-  materialSupplierProfile MaterialSupplierProfile?
-  jobs                    Job[]
-  jobApplications         JobApplication[]         @relation("ApplicationProvider")
-  customerEngagements     Engagement[]             @relation("EngagementCustomer")
-  providerEngagements     Engagement[]             @relation("EngagementProvider")
-  customerConversations   Conversation[]           @relation("ConversationCustomer")
-  providerConversations   Conversation[]           @relation("ConversationProvider")
-  sentMessages            Message[]                @relation("MessageSender")
-  authoredReviews         Review[]                 @relation("ReviewAuthor")
-  receivedReviews         Review[]                 @relation("ReviewSubject")
-  verificationRequests    VerificationRequest[]    @relation("VerificationApplicant")
-  reviewedVerifications   VerificationRequest[]    @relation("VerificationReviewer")
-  createdQuotes           EngagementQuote[]        @relation("QuoteCreator")
-  customerPaymentOrders   PaymentOrder[]           @relation("PaymentCustomer")
-  providerPaymentOrders   PaymentOrder[]           @relation("PaymentProvider")
+  accounts                      Account[]
+  sessions                      Session[]
+  customerProfile               CustomerProfile?
+  skilledProviderProfile        SkilledProviderProfile?
+  labourerProfile               LabourerProfile?
+  contractorProfile             ContractorProfile?
+  materialSupplierProfile       MaterialSupplierProfile?
+  jobs                          Job[]
+  jobApplications               JobApplication[]         @relation("ApplicationProvider")
+  customerEngagements           Engagement[]             @relation("EngagementCustomer")
+  providerEngagements           Engagement[]             @relation("EngagementProvider")
+  customerConversations         Conversation[]           @relation("ConversationCustomer")
+  providerConversations         Conversation[]           @relation("ConversationProvider")
+  sentMessages                  Message[]                @relation("MessageSender")
+  authoredReviews               Review[]                 @relation("ReviewAuthor")
+  receivedReviews               Review[]                 @relation("ReviewSubject")
+  verificationRequests          VerificationRequest[]    @relation("VerificationApplicant")
+  reviewedVerifications         VerificationRequest[]    @relation("VerificationReviewer")
+  createdQuotes                 EngagementQuote[]        @relation("QuoteCreator")
+  customerPaymentOrders         PaymentOrder[]           @relation("PaymentCustomer")
+  providerPaymentOrders         PaymentOrder[]           @relation("PaymentProvider")
+  openedDisputes                Dispute[]                @relation("DisputeOpenedBy")
+  assignedDisputes              Dispute[]                @relation("DisputeAssignedAdmin")
+  disputeEvents                 DisputeEvent[]           @relation("DisputeEventActor")
+  createdCatalogProducts        CatalogProduct[]         @relation("CatalogProductCreator")
+  supplierListings              SupplierListing[]        @relation("SupplierListingSupplier")
+  supplierInventoryLocations    InventoryLocation[]      @relation("InventoryLocationSupplier")
+  inventoryMovements            InventoryMovement[]      @relation("InventoryMovementActor")
+  customerMaterialOrders        MaterialOrder[]          @relation("MaterialOrderCustomer")
+  supplierMaterialOrders        MaterialOrder[]          @relation("MaterialOrderSupplier")
+  materialOrderEvents           MaterialOrderEvent[]     @relation("MaterialOrderEventActor")
+  notifications                 Notification[]
+  customerMaterialPaymentOrders MaterialPaymentOrder[]   @relation("MaterialPaymentCustomer")
+  supplierMaterialPaymentOrders MaterialPaymentOrder[]   @relation("MaterialPaymentSupplier")
+  catalogModerationEvents       CatalogModerationEvent[] @relation("CatalogModerationActor")
 
   @@index([primaryRole])
   @@index([accountStatus])
@@ -218,8 +350,9 @@ model Location {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  primaryUsers User[]
-  jobs         Job[]
+  primaryUsers       User[]
+  jobs               Job[]
+  inventoryLocations InventoryLocation[]
 
   @@index([district, state, country])
   @@index([isActive])
@@ -386,6 +519,7 @@ model Engagement {
   reviews      Review[]
   quotes       EngagementQuote[]
   paymentOrder PaymentOrder?
+  dispute      Dispute?
 
   @@index([customerId, status])
   @@index([providerId, status])
@@ -538,4 +672,351 @@ model PaymentEvent {
   @@unique([providerName, providerEventId])
   @@index([paymentOrderId, receivedAt])
   @@index([status, receivedAt])
+}
+
+model Dispute {
+  id                       String             @id
+  engagementId             String             @unique
+  openedById               String
+  assignedAdminId          String?
+  category                 DisputeCategory
+  title                    String             @db.VarChar(160)
+  description              String             @db.Text
+  desiredOutcome           String?            @db.VarChar(2000)
+  status                   DisputeStatus      @default(OPEN)
+  previousEngagementStatus EngagementStatus
+  resolution               DisputeResolution?
+  resolutionNote           String?            @db.VarChar(4000)
+  recommendedRefundAmount  Int?
+  openedAt                 DateTime           @default(now())
+  reviewStartedAt          DateTime?
+  resolvedAt               DateTime?
+  cancelledAt              DateTime?
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @default(now()) @updatedAt
+
+  engagement    Engagement     @relation(fields: [engagementId], references: [id], onDelete: Restrict)
+  openedBy      User           @relation("DisputeOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
+  assignedAdmin User?          @relation("DisputeAssignedAdmin", fields: [assignedAdminId], references: [id], onDelete: SetNull)
+  events        DisputeEvent[]
+
+  @@index([status, openedAt])
+  @@index([openedById, createdAt])
+  @@index([assignedAdminId, updatedAt])
+}
+
+model DisputeEvent {
+  id         String                 @id
+  disputeId  String
+  actorId    String?
+  kind       DisputeEventKind
+  visibility DisputeEventVisibility @default(PARTICIPANTS)
+  body       String                 @db.VarChar(4000)
+  createdAt  DateTime               @default(now())
+
+  dispute Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  actor   User?   @relation("DisputeEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([disputeId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model CatalogCategory {
+  id          String   @id
+  parentId    String?
+  slug        String   @unique
+  name        String   @db.VarChar(120)
+  description String?  @db.VarChar(1000)
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  parent   CatalogCategory?  @relation("CatalogCategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children CatalogCategory[] @relation("CatalogCategoryHierarchy")
+  products CatalogProduct[]
+
+  @@index([parentId, sortOrder])
+  @@index([isActive, name])
+}
+
+model CatalogBrand {
+  id          String   @id
+  slug        String   @unique
+  name        String   @db.VarChar(160)
+  websiteUrl  String?  @db.VarChar(500)
+  countryCode String?  @db.VarChar(2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  products CatalogProduct[]
+
+  @@index([name])
+}
+
+model CatalogProduct {
+  id                     String               @id
+  categoryId             String
+  brandId                String?
+  createdBySupplierId    String?
+  slug                   String               @unique
+  name                   String               @db.VarChar(240)
+  description            String?              @db.Text
+  manufacturerPartNumber String?              @db.VarChar(160)
+  attributes             Json                 @default("{}")
+  status                 CatalogProductStatus @default(ACTIVE)
+  source                 CatalogProductSource @default(SUPPLIER_SUBMITTED)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @default(now()) @updatedAt
+
+  category          CatalogCategory          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand             CatalogBrand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  createdBySupplier User?                    @relation("CatalogProductCreator", fields: [createdBySupplierId], references: [id], onDelete: SetNull)
+  variants          CatalogVariant[]
+  moderationEvents  CatalogModerationEvent[] @relation("CatalogModerationProduct")
+  moderationTargets CatalogModerationEvent[] @relation("CatalogModerationTarget")
+
+  @@index([categoryId, status, name])
+  @@index([brandId, status])
+  @@index([createdBySupplierId, createdAt])
+}
+
+model CatalogVariant {
+  id           String               @id
+  productId    String
+  sku          String               @unique @db.VarChar(160)
+  name         String               @db.VarChar(240)
+  gtin         String?              @db.VarChar(32)
+  unitName     String               @db.VarChar(80)
+  unitQuantity Decimal              @default(1) @db.Decimal(18, 3)
+  attributes   Json                 @default("{}")
+  status       CatalogVariantStatus @default(ACTIVE)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @default(now()) @updatedAt
+
+  product  CatalogProduct    @relation(fields: [productId], references: [id], onDelete: Restrict)
+  listings SupplierListing[]
+
+  @@index([productId, status])
+}
+
+model SupplierListing {
+  id                String                @id
+  supplierId        String
+  variantId         String
+  sellerSku         String                @db.VarChar(160)
+  title             String?               @db.VarChar(260)
+  description       String?               @db.VarChar(3000)
+  currency          String                @default("INR") @db.VarChar(3)
+  price             Int
+  minOrderQty       Decimal               @default(1) @db.Decimal(18, 3)
+  deliveryAvailable Boolean               @default(false)
+  leadTimeDays      Int?
+  status            SupplierListingStatus @default(ACTIVE)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @default(now()) @updatedAt
+
+  supplier   User                @relation("SupplierListingSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  variant    CatalogVariant      @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  stocks     InventoryStock[]
+  orderItems MaterialOrderItem[]
+
+  @@unique([supplierId, sellerSku])
+  @@unique([supplierId, variantId])
+  @@index([variantId, status, price])
+  @@index([supplierId, status, updatedAt])
+}
+
+model InventoryLocation {
+  id          String   @id
+  supplierId  String
+  locationId  String?
+  name        String   @db.VarChar(160)
+  addressLine String?  @db.VarChar(500)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  supplier       User             @relation("InventoryLocationSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  location       Location?        @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  stocks         InventoryStock[]
+  materialOrders MaterialOrder[]
+
+  @@unique([supplierId, name])
+  @@index([supplierId, isActive])
+}
+
+model InventoryStock {
+  id                  String   @id
+  listingId           String
+  inventoryLocationId String
+  onHand              Decimal  @default(0) @db.Decimal(18, 3)
+  reserved            Decimal  @default(0) @db.Decimal(18, 3)
+  reorderPoint        Decimal? @db.Decimal(18, 3)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
+
+  listing           SupplierListing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  inventoryLocation InventoryLocation   @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
+  movements         InventoryMovement[]
+  orderItems        MaterialOrderItem[]
+
+  @@unique([listingId, inventoryLocationId])
+  @@index([inventoryLocationId, updatedAt])
+}
+
+model InventoryMovement {
+  id            String                @id
+  stockId       String
+  actorId       String?
+  type          InventoryMovementType
+  onHandDelta   Decimal               @default(0) @db.Decimal(18, 3)
+  reservedDelta Decimal               @default(0) @db.Decimal(18, 3)
+  reason        String?               @db.VarChar(1000)
+  reference     String?               @db.VarChar(255)
+  createdAt     DateTime              @default(now())
+
+  stock InventoryStock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  actor User?          @relation("InventoryMovementActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([stockId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model MaterialOrder {
+  id                  String                    @id
+  orderNumber         String                    @unique @db.VarChar(32)
+  customerId          String
+  supplierId          String
+  inventoryLocationId String
+  status              MaterialOrderStatus       @default(PLACED)
+  fulfillmentMethod   MaterialFulfillmentMethod
+  deliveryAddress     String?                   @db.VarChar(700)
+  customerNote        String?                   @db.VarChar(2000)
+  supplierNote        String?                   @db.VarChar(2000)
+  currency            String                    @default("INR") @db.VarChar(3)
+  subtotal            Int
+  placedAt            DateTime                  @default(now())
+  acceptedAt          DateTime?
+  readyAt             DateTime?
+  fulfilledAt         DateTime?
+  cancelledAt         DateTime?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @default(now()) @updatedAt
+
+  customer          User                  @relation("MaterialOrderCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  supplier          User                  @relation("MaterialOrderSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+  inventoryLocation InventoryLocation     @relation(fields: [inventoryLocationId], references: [id], onDelete: Restrict)
+  items             MaterialOrderItem[]
+  events            MaterialOrderEvent[]
+  paymentOrder      MaterialPaymentOrder?
+
+  @@index([customerId, status, createdAt])
+  @@index([supplierId, status, createdAt])
+  @@index([inventoryLocationId, status])
+}
+
+model MaterialOrderItem {
+  id                  String   @id
+  orderId             String
+  listingId           String
+  stockId             String
+  productNameSnapshot String   @db.VarChar(240)
+  variantNameSnapshot String   @db.VarChar(240)
+  sellerSkuSnapshot   String   @db.VarChar(160)
+  unitNameSnapshot    String   @db.VarChar(80)
+  quantity            Decimal  @db.Decimal(18, 3)
+  unitPrice           Int
+  lineTotal           Int
+  createdAt           DateTime @default(now())
+
+  order   MaterialOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  listing SupplierListing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  stock   InventoryStock  @relation(fields: [stockId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([listingId, createdAt])
+}
+
+model MaterialOrderEvent {
+  id        String                 @id
+  orderId   String
+  actorId   String?
+  type      MaterialOrderEventType
+  note      String?                @db.VarChar(2000)
+  createdAt DateTime               @default(now())
+
+  order MaterialOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  actor User?         @relation("MaterialOrderEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt])
+}
+
+model Notification {
+  id        String           @id
+  userId    String
+  type      NotificationType
+  title     String           @db.VarChar(180)
+  body      String           @db.VarChar(1000)
+  href      String?          @db.VarChar(500)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, createdAt])
+}
+
+model MutationRateLimit {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([resetAt])
+}
+
+model MaterialPaymentOrder {
+  id                 String        @id
+  materialOrderId    String        @unique
+  customerId         String
+  supplierId         String
+  amount             Int
+  currency           String
+  status             PaymentStatus @default(CREATED)
+  idempotencyKey     String        @unique
+  providerName       String?
+  providerPaymentRef String?
+  failureCode        String?
+  failureMessage     String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @default(now()) @updatedAt
+  cancelledAt        DateTime?
+
+  materialOrder MaterialOrder @relation(fields: [materialOrderId], references: [id], onDelete: Restrict)
+  customer      User          @relation("MaterialPaymentCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  supplier      User          @relation("MaterialPaymentSupplier", fields: [supplierId], references: [id], onDelete: Restrict)
+
+  @@index([customerId, status])
+  @@index([supplierId, status])
+}
+
+model CatalogModerationEvent {
+  id              String   @id
+  productId       String
+  targetProductId String?
+  actorId         String?
+  action          String   @db.VarChar(40)
+  note            String?  @db.VarChar(1000)
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now())
+
+  product       CatalogProduct  @relation("CatalogModerationProduct", fields: [productId], references: [id], onDelete: Restrict)
+  targetProduct CatalogProduct? @relation("CatalogModerationTarget", fields: [targetProductId], references: [id], onDelete: SetNull)
+  actor         User?           @relation("CatalogModerationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([productId, createdAt])
+  @@index([targetProductId, createdAt])
+  @@index([actorId, createdAt])
 }
