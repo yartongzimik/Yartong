@@ -1,138 +1,193 @@
 # Yartong Web App
 
-Yartong is an early-stage Next.js application for a local construction-services marketplace. The intended product connects customers with skilled workers, labourers, contractors, and construction-material suppliers.
+Yartong is a Senapati-first construction and services marketplace connecting customers, skilled providers, labourers, contractors, and material suppliers. The repository now contains a database-backed marketplace rather than the original Milestone 0 skeleton.
 
-This repository is currently in **Milestone 0 stabilization**. It contains the application skeleton, route placeholders, domain types, mock data, route constants, role definitions, and permission helpers. It does **not** yet implement authentication, database persistence, messaging, payments, production search, admin workflows, or live marketplace transactions.
+## Current product status
 
-## Current Status
+Implemented core workflows include:
 
-Implemented today:
+- Auth.js/NextAuth authentication with PostgreSQL/Prisma sessions, Google OAuth, optional Facebook OAuth, controlled QA demo login, account-state enforcement, and role-specific onboarding.
+- Public provider discovery and profiles for skilled providers, labourers, and contractors.
+- Customer job posting, public job discovery, applications, hiring, engagements/work orders, quotes, private messaging, verified reviews, verification requests, and disputes.
+- Role dashboards, account/profile management, in-app notifications, admin operations, review moderation, catalog moderation, and system-health views.
+- Supplier catalog/inventory, material ordering/reservation, fulfillment, and material-payment preparation.
+- Engagement payment infrastructure with a Razorpay adapter and signed webhook processing.
+- Browser security headers, durable mutation rate limiting, CI validation, and production migration deployment.
 
-- A minimal public homepage at `/`.
-- Valid placeholder modules for planned App Router pages.
-- Central route constants, platform constants, role/permission helpers, domain types, skill-level metadata, search-tracking helpers, and development mock data.
-- Basic Next.js, TypeScript, Tailwind CSS, and ESLint setup.
+The following integrations are intentionally incomplete and must not be represented as production-complete:
 
-Not implemented yet:
+- Refunds/payouts: reconciliation/domain helpers exist, but provider refund and payout workflows are not yet complete.
+- Media uploads: provider-neutral signed-upload interfaces and validation exist, but no concrete object-storage adapter is active.
+- External KYC: internal verification works; the external verification adapter is still provider-dependent.
+- External email/SMS/push delivery: the in-app notification system is authoritative; no concrete external delivery adapter is active.
+- Realtime messaging, advanced search/ranking, and production observability/disaster recovery remain future milestones.
 
-- Authentication or user sessions.
-- Database integration, migrations, or production data access.
-- Real worker, job, material, supplier, messaging, payment, membership, advertising, or admin workflows.
-- Production search or analytics persistence.
-- Automated tests beyond lint/typecheck/build checks.
+## Tech stack
 
-## Tech Stack
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- PostgreSQL
+- Prisma 6
+- Auth.js / NextAuth 5 beta with `@auth/prisma-adapter`
+- GitHub Actions CI
+- Vercel deployment
+- Razorpay payment integration boundary
 
-- Next.js App Router
-- React
-- TypeScript with strict mode
-- Tailwind CSS
-- ESLint with Next.js rules
-- npm package management
+## Repository structure
 
-## Local Setup
+```text
+yartong/
+  app/                 Next.js routes, server actions, APIs and protected layouts
+  components/          Shared UI, marketplace, dashboard and layout components
+  lib/                 Authz, marketplace domains, payments, storage and provider adapters
+  prisma/
+    schema.prisma      Canonical Prisma data model
+    migrations/        Production SQL migration history
+    seed.ts            Non-production deterministic QA/demo seed
+  docs/                Architecture and roadmap notes
+  public/              Static assets
+```
 
-Install dependencies from the app directory:
+## Local setup
 
 ```bash
 cd yartong
 npm install
-```
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Open http://localhost:3000 in your browser.
-
-Run project checks:
-
-```bash
-npm run lint
-npm run typecheck
-npm run build
-```
-
-## Project Structure
-
-```text
-yartong/
-  app/          Next.js App Router routes and root layout
-  components/   Planned reusable UI, layout, card, form, messaging, and analytics components
-  lib/          Domain types, constants, permissions, navigation, mock data, and helper utilities
-  public/       Static assets and placeholder images
-```
-
-Many route and component files are intentionally minimal placeholders while the project skeleton is stabilized. Placeholder pages should not be treated as completed product features.
-
-## Mock Data Status
-
-`lib/mock-data.ts` contains development-only sample data for planning and UI work before a database is introduced. It should not contain real personal information and should be replaced or isolated behind a development data layer when persistence is added.
-
-## High-Level Roadmap
-
-1. Stabilize the skeleton, build, typecheck, metadata, package naming, and documentation.
-2. Build the shared design system and public layout components.
-3. Implement public marketplace browsing with mock data.
-4. Add authentication, roles, and route protection.
-5. Add database schema, migrations, seed data, and persistence.
-6. Implement customer job posting and management.
-7. Implement worker, labourer, contractor, and supplier workflows.
-8. Implement messaging, contact sharing, admin moderation, memberships, advertising, and payments.
-9. Add testing, CI, monitoring, security hardening, and production deployment documentation.
-
-## Backend Milestone 1 foundation
-
-Yartong Backend Milestone 1 uses PostgreSQL with Prisma as the production data layer and Auth.js/NextAuth with the Prisma adapter for authentication.
-
-### Required environment variables
-
-Copy `.env.example` to `.env.local` for local development and configure:
-
-- `DATABASE_URL` — PostgreSQL connection string.
-- `AUTH_SECRET` — generated Auth.js secret; never commit a real value.
-- `AUTH_URL` — local or deployed application URL when required by Auth.js hosting.
-- `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` — optional Google OAuth credentials; Google sign-in is enabled only when both are present.
-- `ENABLE_DEV_CREDENTIALS` — set to `true` only in local development to sign in as seeded demo users.
-
-### Local setup
-
-```bash
-npm install
+cp .env.example .env.local
 npm run db:generate
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-The seed script refuses to run when `NODE_ENV=production`. It creates Senapati as initial location data and idempotent demo users for every Yartong role.
+The seed script refuses to run when `NODE_ENV=production`.
 
-### Migration workflow
+## Required environment
 
-Use `npm run db:migrate` for local development migrations. Use `npm run db:deploy` during release deployment after reviewing the generated SQL. Do not run destructive resets against shared or production databases.
+Core:
 
-### Vercel deployment notes
+```text
+DATABASE_URL
+AUTH_SECRET
+AUTH_URL
+```
 
-Configure the same required variables in Vercel project settings, including the production `DATABASE_URL`, `AUTH_SECRET`, and production app URL. Add Google provider credentials only when Google sign-in should be enabled. Keep `ENABLE_DEV_CREDENTIALS=false` in production.
+Authentication providers:
 
-### Release expectations
+```text
+AUTH_GOOGLE_ID
+AUTH_GOOGLE_SECRET
+AUTH_FACEBOOK_ID
+AUTH_FACEBOOK_SECRET
+```
 
-Before release, run Prisma generate, validate the schema, run linting, typechecking, and build. Apply migrations with `prisma migrate deploy` as an explicit release step, not automatically from application startup.
+QA-only seeded email login:
 
-## Backend Milestone 2 authentication and onboarding
+```text
+ENABLE_DEMO_LOGIN=false
+DEMO_LOGIN_PASSWORD=
+```
 
-Yartong uses Auth.js with the Prisma adapter as the single authentication system. Google sign-in is shown only when `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are configured. Development demo login is shown only when `ENABLE_DEV_CREDENTIALS=true` and `NODE_ENV` is not `production`.
+Never use `DEMO_LOGIN_PASSWORD` as a real-user password. Keep demo login disabled in public production unless an explicitly controlled QA deployment requires it.
 
-New OAuth users are created with the safe `ONBOARDING_PENDING` role and `ACTIVE` account status. They receive no role-specific marketplace dashboard access until they complete `/onboarding`, select one public role, choose an active database `Location`, and create the matching role profile. Public onboarding allows Customer, Skilled Provider, Labourer, Contractor and Material Supplier. Admin is not selectable.
+Payments:
 
-For local testing:
+```text
+PAYMENT_PROVIDER=razorpay
+PAYMENT_PROVIDER_PUBLIC_KEY
+PAYMENT_PROVIDER_SECRET_KEY
+PAYMENT_WEBHOOK_SECRET
+```
 
-1. Set `DATABASE_URL` and `AUTH_SECRET`.
-2. Run `npm run db:generate` and apply migrations with your normal Prisma workflow.
-3. Seed demo users with `npm run db:seed`.
-4. Set `ENABLE_DEV_CREDENTIALS=true` in development.
-5. Visit `/login` and use one of the seeded demo emails such as `customer.demo@yartong.local`, or configure Google credentials and sign in with Google.
+Razorpay webhook endpoint:
 
-Blocked accounts with `SUSPENDED`, `REJECTED` or `DEACTIVATED` status are redirected to `/account-blocked` and denied protected dashboard access.
+```text
+https://YOUR_DOMAIN/api/payments/razorpay/webhook
+```
+
+Provider-dependent future integrations are documented in `.env.example`, including media storage, external verification/KYC, and external notification delivery. Do not commit real credentials.
+
+## Authentication flow
+
+New OAuth users enter the safe `ONBOARDING_PENDING` role and must complete:
+
+```text
+Sign in / create account
+→ choose account type
+→ role-specific onboarding
+→ create profile
+→ role dashboard
+```
+
+Public onboarding supports Customer, Skilled Provider, Labourer, Contractor, and Material Supplier. `ADMIN` is never publicly selectable.
+
+Blocked accounts (`SUSPENDED`, `REJECTED`, `DEACTIVATED`) are denied protected marketplace access.
+
+## Demo / QA accounts
+
+`prisma/seed.ts` creates deterministic `isDemo=true` users and marketplace records for non-production testing. Demo login requires both:
+
+```text
+ENABLE_DEMO_LOGIN=true
+DEMO_LOGIN_PASSWORD=<deployment-only QA password>
+```
+
+Seeded demo emails use the reserved `.local` domain and are not real customer identities.
+
+## Database and migrations
+
+Use Prisma migrations as an append-only production history. Do not reset shared or production databases.
+
+Development:
+
+```bash
+npm run db:migrate
+```
+
+Production/release:
+
+```bash
+npm run db:status
+npm run db:deploy
+```
+
+The production build currently runs migration deployment before Prisma generation and the Next.js build. Migration failures therefore fail the deployment closed.
+
+## Quality checks
+
+```bash
+npm run db:generate
+npx prisma format
+npx prisma validate
+npm run lint
+npm run typecheck
+npm run build:ci
+```
+
+GitHub Actions runs these checks for pull requests and pushes to `main`.
+
+## Security boundaries
+
+- Authorization is enforced server-side from the authenticated user, not browser-supplied user IDs.
+- Marketplace ownership checks are applied to customer/provider/supplier/admin mutations.
+- Payment amounts originate from server-owned records; browser callbacks do not mark money as successful.
+- Razorpay webhook signatures are verified before payment-event processing.
+- External provider secrets remain deployment-only.
+- Security headers include CSP, frame denial, MIME protection, referrer policy and permissions policy.
+- Rate-limit storage contains bounded mutation keys rather than private message bodies or credentials.
+
+## Roadmap status
+
+Broadly complete: Backend Milestones 1–2 and Marketplace Milestones 1–22 plus 29 and 31.
+
+Partially complete foundations requiring production adapters/workflows: Marketplace 23 (refunds/payouts), 24 (external notifications), 25 (media storage), and 26 (external KYC).
+
+Next major product milestones after repository/QA consolidation:
+
+1. Marketplace 27 — Search, ranking and discovery V2.
+2. Marketplace 28 — Realtime messaging and communication reliability.
+3. Marketplace 30 — Production observability, backup and disaster recovery.
+
+Repository documentation should describe actual runtime capability rather than treating a merged foundation PR as proof that an external provider integration is live.
