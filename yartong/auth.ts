@@ -71,8 +71,7 @@ export const isFacebookAuthConfigured = !isQaTestAccessEnabled && Boolean(
 );
 
 export const isDemoLoginEnabled =
-  isQaTestAccessEnabled ||
-  (process.env.ENABLE_DEMO_LOGIN === "true" && Boolean(process.env.DEMO_LOGIN_PASSWORD));
+  process.env.ENABLE_DEMO_LOGIN === "true" && Boolean(process.env.DEMO_LOGIN_PASSWORD);
 
 if (isGoogleAuthConfigured) {
   providers.push(
@@ -95,7 +94,7 @@ if (isFacebookAuthConfigured) {
 if (isDemoLoginEnabled) {
   providers.push(
     Credentials({
-      name: isQaTestAccessEnabled ? "QA account" : "Demo email",
+      name: "Demo email",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -103,8 +102,7 @@ if (isDemoLoginEnabled) {
       async authorize(credentials) {
         const email = String(credentials?.email ?? "").trim().toLowerCase();
         const password = String(credentials?.password ?? "");
-        if (!email) return null;
-        if (!isQaTestAccessEnabled && (!password || password !== process.env.DEMO_LOGIN_PASSWORD)) return null;
+        if (!email || !password || password !== process.env.DEMO_LOGIN_PASSWORD) return null;
 
         const user = await prisma.user.findFirst({
           where: { email, isDemo: true, accountStatus: "ACTIVE" },
