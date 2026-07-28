@@ -15,7 +15,13 @@ export async function signInWithFacebook(callbackUrl = "/onboarding") {
 
 export async function signInAsQaUser(email: string, callbackUrl = "/") {
   if (!isQaTestAccessEnabled) redirect("/login");
-  await signIn("credentials", { email, password: "", redirectTo: callbackUrl });
+
+  try {
+    await signIn("credentials", { email, password: "", redirectTo: callbackUrl });
+  } catch (error) {
+    if (error instanceof AuthError) redirect("/login?error=qa-account-unavailable");
+    throw error;
+  }
 }
 
 export async function signInWithDemo(_prev: { error?: string } | undefined, formData: FormData) {
