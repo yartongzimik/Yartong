@@ -105,6 +105,7 @@ export function RoleChoiceButton({ role, label, description }: { role: string; l
       type="submit"
       disabled={pending}
       aria-busy={pending}
+      data-yartong-managed-feedback="true"
       onClick={handlePress}
       className="group relative w-full overflow-hidden rounded-2xl border border-white/12 bg-white/[0.045] px-4 py-4 text-left shadow-sm transition duration-150 active:scale-[0.985] active:border-fuchsia-200/80 active:bg-fuchsia-400/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 disabled:cursor-wait disabled:border-fuchsia-200/45 disabled:bg-fuchsia-400/10"
     >
