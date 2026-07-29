@@ -18,7 +18,7 @@ export default async function JoinPage() {
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.28em] text-fuchsia-200">Join Yartong</p>
             <h1 id="join-title" className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">Choose your account type</h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">{isAuthBypassEnabled ? "Authentication is temporarily disabled while Yartong is being built. Choose a role and complete the real production account setup." : "Select how you want to use Yartong. You can complete your profile after secure sign-in."}</p>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">{isAuthBypassEnabled ? "Testing mode is active. Choose a role and enter its dashboard immediately; profile details can be edited later when needed." : "Select how you want to use Yartong. You can complete your profile after secure sign-in."}</p>
           </div>
           <Link href="/" aria-label="Close join dialog" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-2xl leading-none text-white/55 transition hover:bg-white/10 hover:text-white">×</Link>
         </div>
@@ -34,7 +34,7 @@ export default async function JoinPage() {
         </div>
 
         <div className="mt-5 border-t border-white/10 pt-4 text-center text-xs text-white/45">
-          {isAuthBypassEnabled ? "No seeded account or external login is used in this build phase." : <>Already have an account? <Link href="/login" className="font-bold text-fuchsia-200 underline underline-offset-4">Log in</Link></>}
+          {isAuthBypassEnabled ? <>Already testing another role? <Link href="/login" className="font-bold text-fuchsia-200 underline underline-offset-4">Switch account type</Link></> : <>Already have an account? <Link href="/login" className="font-bold text-fuchsia-200 underline underline-offset-4">Log in</Link></>}
         </div>
       </div>
     </section>
