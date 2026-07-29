@@ -18,7 +18,7 @@ export default async function SupplierDashboardPage() {
     <RoleDashboard
       eyebrow="Material supplier dashboard"
       title={`Welcome back, ${profile?.businessName || dashboard.user.displayName || "Supplier"}`}
-      subtitle={`Manage your supplier profile, product listings and stock${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}. The QA account includes seeded catalog and inventory data for testing.`}
+      subtitle={`Manage your supplier profile, product listings and stock${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}.`}
       metrics={[
         { label: "Product listings", value: listings.length },
         { label: "Inventory records", value: stocks.length },
@@ -26,17 +26,16 @@ export default async function SupplierDashboardPage() {
         { label: "Verification requests", value: dashboard.activeVerificationRequests, helper: dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase() },
       ]}
       actions={[
-        { label: "Edit supplier profile", href: "/account", description: "Edit the seeded supplier's business name, categories, summary and account information." },
-        { label: "Products & listings", href: ROUTES.supplierProducts, description: "Inspect seeded products, change listing state and create additional test products." },
-        { label: "Inventory", href: ROUTES.supplierInventory, description: "Inspect seeded stock, reconcile quantities and add test inventory locations." },
-        { label: "Browse materials", href: ROUTES.materials, description: "See how the seeded supplier products appear in the public materials marketplace." },
-        { label: "Verification", href: "/verification", description: "Submit or review identity and business verification requests." },
-        { label: "Promote your business", href: ROUTES.advertise, description: "Review the future business visibility and promoted-listing direction." },
+        { label: "Edit supplier profile", href: "/account", description: "Edit business name, material categories, delivery options and account information." },
+        { label: "Products & listings", href: ROUTES.supplierProducts, description: "Manage products, prices, listing status and customer-facing catalogue information." },
+        { label: "Inventory", href: ROUTES.supplierInventory, description: "Review available stock, reconcile quantities and manage inventory locations." },
+        { label: "Browse materials", href: ROUTES.materials, description: "See how your products appear to customers in the public materials marketplace." },
+        { label: "Verification", href: "/verification", description: "Manage identity and business verification requests." },
+        { label: "Promote your business", href: ROUTES.advertise, description: "Review advertising and promoted-listing options for your business." },
       ]}
-      activityTitle="Supplier test data"
+      activityTitle="Supplier activity"
       activities={[]}
-      emptyActivity="Use Products & listings and Inventory to test the seeded supplier catalog, prices and stock controls."
-      notice="This preview account uses QA-only seeded data. Product, listing and inventory changes are written to the preview database and can be reset later."
+      emptyActivity="Product, inventory and order activity will appear here as your business uses Yartong."
     />
   );
 }
