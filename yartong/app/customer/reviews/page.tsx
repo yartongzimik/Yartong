@@ -1,0 +1,14 @@
+import { requireUser } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
+
+import { CustomerWorkspaceShell } from "../customer-workspace-shell";
+
+export default async function CustomerReviewsPage() {
+  const user = await requireUser();
+  const reviews = await prisma.review.findMany({ where: { authorId: user.id }, orderBy: { createdAt: "desc" }, take: 30, select: { id: true, rating: true, title: true, comment: true, createdAt: true, subject: { select: { displayName: true, primaryRole: true } } } });
+  const average = reviews.length ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
+  const distribution = [5,4,3,2,1].map((score) => ({ score, count: reviews.filter((review) => review.rating === score).length }));
+  return <CustomerWorkspaceShell active="Reviews" title="Reviews" subtitle="Manage feedback you have given to providers and suppliers.">
+    <section className="grid gap-3 md:grid-cols-[240px_minmax(0,1fr)]"><div className="rounded-2xl border border-white/80 bg-white/94 p-4 shadow-sm"><p className="text-[10px] font-bold uppercase text-slate-400">Average rating given</p><div className="mt-2 flex items-end gap-2"><p className="text-4xl font-black">{reviews.length ? average.toFixed(1) : "—"}</p><span className="pb-1 text-amber-500">★★★★★</span></div><p className="text-xs text-slate-500">{reviews.length} total reviews</p><div className="mt-4 space-y-2">{distribution.map(({ score, count }) => <div key={score} className="grid grid-cols-[24px_1fr_24px] items-center gap-2 text-[10px] font-bold text-slate-500"><span>{score}★</span><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-amber-400" style={{ width: `${reviews.length ? (count / reviews.length) * 100 : 0}%` }} /></div><span>{count}</span></div>)}</div></div><div className="rounded-2xl border border-white/80 bg-white/94 shadow-sm"><div className="border-b border-slate-200 p-3"><h2 className="text-sm font-black">Your feedback</h2></div><div className="divide-y divide-slate-100">{reviews.length ? reviews.map((review) => <article key={review.id} className="p-4"><div className="flex justify-between gap-3"><div><p className="text-sm font-black">{review.subject.displayName || "Yartong member"}</p><p className="text-[10px] text-slate-400">{review.subject.primaryRole.replaceAll("_", " ")}</p></div><time className="text-[10px] text-slate-400">{review.createdAt.toLocaleDateString("en-IN")}</time></div><p className="mt-2 text-xs text-amber-500">{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</p>{review.title ? <p className="mt-2 text-xs font-black">{review.title}</p> : null}{review.comment ? <p className="mt-1 text-xs leading-5 text-slate-600">{review.comment}</p> : null}</article>) : <p className="p-5 text-xs text-slate-500">No reviews written yet.</p>}</div></div></section>
+  </CustomerWorkspaceShell>;
+}
