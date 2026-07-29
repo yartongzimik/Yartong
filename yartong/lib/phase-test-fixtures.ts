@@ -105,7 +105,7 @@ const PROFILE_FIXTURES = {
     deliveryRadiusKm: 30,
     wholesaleAvailable: true,
   },
-} as const;
+};
 
 async function ensureUsersAndProfiles(locationId: string) {
   const users = {} as Record<PublicOnboardingRole, { id: string }>;
@@ -289,10 +289,10 @@ async function ensureProviderActivity(users: Record<PublicOnboardingRole, { id: 
           scope: fixture.completedScope,
           agreedPrice: fixture.proposedPrice,
           proposedTimelineDays: fixture.roleKey === "CONTRACTOR" ? 28 : 3,
-          status: completed ? "COMPLETED" : "IN_PROGRESS",
-          confirmedAt: new Date(Date.now() - (18 - index * 4) * 86_400_000),
-          startedAt: new Date(Date.now() - (17 - index * 4) * 86_400_000),
-          completedAt: completed ? new Date(Date.now() - (12 - index * 4) * 86_400_000) : null,
+          status: completed ? "COMPLETED" : inProgress ? "IN_PROGRESS" : "CONFIRMED",
+          confirmedAt: new Date(Date.now() - (18 - index * 5) * 86_400_000),
+          startedAt: new Date(Date.now() - (17 - index * 5) * 86_400_000),
+          completedAt: completed ? new Date(Date.now() - (15 - index * 5) * 86_400_000) : null,
         },
         create: {
           id: engagementId,
@@ -304,168 +304,109 @@ async function ensureProviderActivity(users: Record<PublicOnboardingRole, { id: 
           scope: fixture.completedScope,
           agreedPrice: fixture.proposedPrice,
           proposedTimelineDays: fixture.roleKey === "CONTRACTOR" ? 28 : 3,
-          status: completed ? "COMPLETED" : "IN_PROGRESS",
-          confirmedAt: new Date(Date.now() - (18 - index * 4) * 86_400_000),
-          startedAt: new Date(Date.now() - (17 - index * 4) * 86_400_000),
-          completedAt: completed ? new Date(Date.now() - (12 - index * 4) * 86_400_000) : null,
+          status: completed ? "COMPLETED" : inProgress ? "IN_PROGRESS" : "CONFIRMED",
+          confirmedAt: new Date(Date.now() - (18 - index * 5) * 86_400_000),
+          startedAt: new Date(Date.now() - (17 - index * 5) * 86_400_000),
+          completedAt: completed ? new Date(Date.now() - (15 - index * 5) * 86_400_000) : null,
         },
       });
 
+      const conversationId = `phase-${fixture.prefix}-conversation-${index + 1}`;
+      await prisma.conversation.upsert({
+        where: { engagementId },
+        update: { customerId, providerId, lastMessageAt: new Date(Date.now() - index * 3_600_000) },
+        create: { id: conversationId, engagementId, customerId, providerId, lastMessageAt: new Date(Date.now() - index * 3_600_000) },
+      });
+
+      const customerMessageId = `phase-${fixture.prefix}-customer-message-${index + 1}`;
+      await prisma.message.upsert({
+        where: { id: customerMessageId },
+        update: { conversationId, senderId: customerId, body: index === 2 ? "Please confirm tomorrow morning's start time and what you need available at the site." : "Thank you. The work looks good and the handover was clear.", readAt: index === 2 ? null : new Date() },
+        create: { id: customerMessageId, conversationId, senderId: customerId, body: index === 2 ? "Please confirm tomorrow morning's start time and what you need available at the site." : "Thank you. The work looks good and the handover was clear.", readAt: index === 2 ? null : new Date() },
+      });
+
       if (completed) {
+        const ratings = fixture.roleKey === "LABOURER" ? [5, 5] : fixture.roleKey === "CONTRACTOR" ? [5, 4] : [5, 5];
+        const reviewId = `phase-${fixture.prefix}-review-${index + 1}`;
         await prisma.review.upsert({
           where: { engagementId_authorId: { engagementId, authorId: customerId } },
-          update: {
-            subjectId: providerId,
-            rating: index === 0 ? 5 : 4,
-            title: index === 0 ? "Reliable and professional" : "Good work and communication",
-            comment: index === 0
-              ? "Arrived as agreed, communicated clearly and completed the work carefully. I would hire this provider again."
-              : "Good quality work and cooperative throughout the job. The final handover was clear and tidy.",
-            status: "PUBLISHED",
-          },
-          create: {
-            id: `phase-${fixture.prefix}-review-${index + 1}`,
-            engagementId,
-            authorId: customerId,
-            subjectId: providerId,
-            rating: index === 0 ? 5 : 4,
-            title: index === 0 ? "Reliable and professional" : "Good work and communication",
-            comment: index === 0
-              ? "Arrived as agreed, communicated clearly and completed the work carefully. I would hire this provider again."
-              : "Good quality work and cooperative throughout the job. The final handover was clear and tidy.",
-            status: "PUBLISHED",
-          },
-        });
-      }
-
-      if (inProgress) {
-        const conversationId = `phase-${fixture.prefix}-conversation`;
-        await prisma.conversation.upsert({
-          where: { engagementId },
-          update: { customerId, providerId, lastMessageAt: new Date() },
-          create: { id: conversationId, engagementId, customerId, providerId, lastMessageAt: new Date() },
-        });
-        await prisma.message.upsert({
-          where: { id: `phase-${fixture.prefix}-message-1` },
-          update: { conversationId, senderId: customerId, body: "Hi, please confirm tomorrow's site timing when you are free.", readAt: null },
-          create: { id: `phase-${fixture.prefix}-message-1`, conversationId, senderId: customerId, body: "Hi, please confirm tomorrow's site timing when you are free.", readAt: null },
-        });
-        await prisma.message.upsert({
-          where: { id: `phase-${fixture.prefix}-message-2` },
-          update: { conversationId, senderId: providerId, body: "Confirmed. I will be there at 8:30 AM and will bring the required tools.", readAt: new Date() },
-          create: { id: `phase-${fixture.prefix}-message-2`, conversationId, senderId: providerId, body: "Confirmed. I will be there at 8:30 AM and will bring the required tools.", readAt: new Date() },
+          update: { subjectId: providerId, rating: ratings[index], title: index === 0 ? "Reliable and professional" : "Good work and communication", comment: index === 0 ? "Arrived as agreed, communicated clearly and completed the work carefully. I would hire again." : "The work was completed properly and the site was left tidy. Good communication throughout.", status: "PUBLISHED" },
+          create: { id: reviewId, engagementId, authorId: customerId, subjectId: providerId, rating: ratings[index], title: index === 0 ? "Reliable and professional" : "Good work and communication", comment: index === 0 ? "Arrived as agreed, communicated clearly and completed the work carefully. I would hire again." : "The work was completed properly and the site was left tidy. Good communication throughout.", status: "PUBLISHED" },
         });
       }
     }
-
-    const openJobId = `phase-${fixture.prefix}-open-job`;
-    await prisma.job.upsert({
-      where: { id: openJobId },
-      update: {
-        customerId,
-        locationId,
-        title: `New ${fixture.category.toLowerCase()} opportunity in Senapati`,
-        description: "Testing fixture for a submitted application that has not yet been accepted.",
-        category: fixture.category,
-        skills: [...fixture.skills],
-        targetProviderRoles: [fixture.jobProviderRole],
-        budgetType: "NEGOTIABLE",
-        urgency: "STANDARD",
-        status: "PUBLISHED",
-        publishedAt: new Date(),
-      },
-      create: {
-        id: openJobId,
-        customerId,
-        locationId,
-        title: `New ${fixture.category.toLowerCase()} opportunity in Senapati`,
-        description: "Testing fixture for a submitted application that has not yet been accepted.",
-        category: fixture.category,
-        skills: [...fixture.skills],
-        targetProviderRoles: [fixture.jobProviderRole],
-        budgetType: "NEGOTIABLE",
-        urgency: "STANDARD",
-        status: "PUBLISHED",
-        publishedAt: new Date(),
-      },
-    });
-    await prisma.jobApplication.upsert({
-      where: { id: `phase-${fixture.prefix}-open-application` },
-      update: {
-        jobId: openJobId,
-        providerId,
-        providerRole: fixture.jobProviderRole,
-        message: "Interested and available to discuss the work.",
-        proposedPrice: fixture.proposedPrice,
-        status: "SUBMITTED",
-      },
-      create: {
-        id: `phase-${fixture.prefix}-open-application`,
-        jobId: openJobId,
-        providerId,
-        providerRole: fixture.jobProviderRole,
-        message: "Interested and available to discuss the work.",
-        proposedPrice: fixture.proposedPrice,
-        status: "SUBMITTED",
-      },
-    });
   }
 }
 
-const supplierProducts = [
-  { key: "cement", category: "Cement", name: "Premium PPC Cement 50 kg", unit: "bag", price: 43000, stock: "145" },
-  { key: "steel", category: "Steel", name: "TMT Steel Bar 12 mm", unit: "piece", price: 78000, stock: "86" },
-  { key: "sand", category: "Sand", name: "Washed River Sand", unit: "cubic ft", price: 6500, stock: "420" },
-  { key: "paint", category: "Paint", name: "Exterior Weather Paint 20 L", unit: "bucket", price: 365000, stock: "32" },
-] as const;
-
-async function ensureSupplierInventory(users: Record<PublicOnboardingRole, { id: string }>, locationId: string) {
+async function ensureSupplierCatalog(users: Record<PublicOnboardingRole, { id: string }>, locationId: string) {
   const supplierId = users.MATERIAL_SUPPLIER.id;
-  const inventoryLocation = await prisma.inventoryLocation.upsert({
-    where: { supplierId_name: { supplierId, name: "Senapati Main Yard" } },
-    update: { locationId, addressLine: "NH-2, Senapati, Manipur", isActive: true },
-    create: { id: "phase-supplier-yard", supplierId, locationId, name: "Senapati Main Yard", addressLine: "NH-2, Senapati, Manipur", isActive: true },
+  const categoryFixtures = [
+    { id: "phase-category-cement", slug: "phase-cement", name: "Cement" },
+    { id: "phase-category-steel", slug: "phase-steel", name: "Steel" },
+    { id: "phase-category-sand", slug: "phase-sand", name: "Sand" },
+    { id: "phase-category-paint", slug: "phase-paint", name: "Paint" },
+  ];
+  const productFixtures = [
+    { key: "cement", category: categoryFixtures[0], product: "Premium PPC Cement", variant: "50 kg bag", sku: "PHASE-CEMENT-50", price: 43000, stock: 240 },
+    { key: "steel", category: categoryFixtures[1], product: "TMT Steel Bar", variant: "12 mm bar", sku: "PHASE-TMT-12", price: 69000, stock: 180 },
+    { key: "sand", category: categoryFixtures[2], product: "Washed River Sand", variant: "1 cubic metre", sku: "PHASE-SAND-M3", price: 320000, stock: 35 },
+    { key: "paint", category: categoryFixtures[3], product: "Exterior Weather Paint", variant: "20 litre bucket", sku: "PHASE-PAINT-20", price: 420000, stock: 24 },
+  ];
+
+  for (const fixture of categoryFixtures) {
+    await prisma.catalogCategory.upsert({
+      where: { id: fixture.id },
+      update: { slug: fixture.slug, name: fixture.name, isActive: true },
+      create: { ...fixture, isActive: true },
+    });
+  }
+
+  const inventoryLocationId = "phase-supplier-yard";
+  await prisma.inventoryLocation.upsert({
+    where: { id: inventoryLocationId },
+    update: { supplierId, locationId, name: "Senapati Main Yard", addressLine: "NH-2, Senapati, Manipur", isActive: true },
+    create: { id: inventoryLocationId, supplierId, locationId, name: "Senapati Main Yard", addressLine: "NH-2, Senapati, Manipur", isActive: true },
   });
 
-  for (const item of supplierProducts) {
-    const category = await prisma.catalogCategory.upsert({
-      where: { slug: `phase-${item.key}` },
-      update: { name: item.category, description: `Testing ${item.category.toLowerCase()} category`, isActive: true },
-      create: { id: `phase-category-${item.key}`, slug: `phase-${item.key}`, name: item.category, description: `Testing ${item.category.toLowerCase()} category`, isActive: true },
+  for (const fixture of productFixtures) {
+    const productId = `phase-product-${fixture.key}`;
+    const variantId = `phase-variant-${fixture.key}`;
+    const listingId = `phase-listing-${fixture.key}`;
+    const stockId = `phase-stock-${fixture.key}`;
+
+    await prisma.catalogProduct.upsert({
+      where: { id: productId },
+      update: { categoryId: fixture.category.id, createdBySupplierId: supplierId, slug: `phase-${fixture.key}`, name: fixture.product, description: `${fixture.product} supplied locally by Senapati BuildMart for Yartong testing.`, status: "ACTIVE", source: "SUPPLIER_SUBMITTED" },
+      create: { id: productId, categoryId: fixture.category.id, createdBySupplierId: supplierId, slug: `phase-${fixture.key}`, name: fixture.product, description: `${fixture.product} supplied locally by Senapati BuildMart for Yartong testing.`, status: "ACTIVE", source: "SUPPLIER_SUBMITTED" },
     });
-    const product = await prisma.catalogProduct.upsert({
-      where: { slug: `phase-${item.key}-product` },
-      update: { categoryId: category.id, createdBySupplierId: supplierId, name: item.name, description: `${item.name} testing catalogue product for supplier marketplace UI.`, status: "ACTIVE", source: "SUPPLIER_SUBMITTED" },
-      create: { id: `phase-product-${item.key}`, categoryId: category.id, createdBySupplierId: supplierId, slug: `phase-${item.key}-product`, name: item.name, description: `${item.name} testing catalogue product for supplier marketplace UI.`, status: "ACTIVE", source: "SUPPLIER_SUBMITTED", attributes: {} as Prisma.InputJsonValue },
+    await prisma.catalogVariant.upsert({
+      where: { id: variantId },
+      update: { productId, sku: fixture.sku, name: fixture.variant, unitName: fixture.variant, unitQuantity: 1, status: "ACTIVE" },
+      create: { id: variantId, productId, sku: fixture.sku, name: fixture.variant, unitName: fixture.variant, unitQuantity: 1, status: "ACTIVE" },
     });
-    const variant = await prisma.catalogVariant.upsert({
-      where: { sku: `PHASE-${item.key.toUpperCase()}-001` },
-      update: { productId: product.id, name: item.name, unitName: item.unit, unitQuantity: "1", status: "ACTIVE" },
-      create: { id: `phase-variant-${item.key}`, productId: product.id, sku: `PHASE-${item.key.toUpperCase()}-001`, name: item.name, unitName: item.unit, unitQuantity: "1", status: "ACTIVE", attributes: {} as Prisma.InputJsonValue },
-    });
-    const listing = await prisma.supplierListing.upsert({
-      where: { supplierId_sellerSku: { supplierId, sellerSku: `SBM-${item.key.toUpperCase()}-001` } },
-      update: { variantId: variant.id, title: item.name, description: `Available from Senapati BuildMart. Testing listing with delivery and inventory enabled.`, price: item.price, deliveryAvailable: true, leadTimeDays: 1, status: "ACTIVE" },
-      create: { id: `phase-listing-${item.key}`, supplierId, variantId: variant.id, sellerSku: `SBM-${item.key.toUpperCase()}-001`, title: item.name, description: `Available from Senapati BuildMart. Testing listing with delivery and inventory enabled.`, price: item.price, deliveryAvailable: true, leadTimeDays: 1, status: "ACTIVE", minOrderQty: "1" },
+    await prisma.supplierListing.upsert({
+      where: { id: listingId },
+      update: { supplierId, variantId, sellerSku: fixture.sku, title: `${fixture.product} — ${fixture.variant}`, description: "In-stock testing listing with local delivery available.", price: fixture.price, deliveryAvailable: true, leadTimeDays: 1, status: "ACTIVE" },
+      create: { id: listingId, supplierId, variantId, sellerSku: fixture.sku, title: `${fixture.product} — ${fixture.variant}`, description: "In-stock testing listing with local delivery available.", price: fixture.price, deliveryAvailable: true, leadTimeDays: 1, status: "ACTIVE" },
     });
     await prisma.inventoryStock.upsert({
-      where: { listingId_inventoryLocationId: { listingId: listing.id, inventoryLocationId: inventoryLocation.id } },
-      update: { onHand: item.stock, reserved: "4", reorderPoint: "20" },
-      create: { id: `phase-stock-${item.key}`, listingId: listing.id, inventoryLocationId: inventoryLocation.id, onHand: item.stock, reserved: "4", reorderPoint: "20" },
+      where: { id: stockId },
+      update: { listingId, inventoryLocationId, onHand: fixture.stock, reserved: Math.max(0, Math.floor(fixture.stock * 0.08)), reorderPoint: Math.max(5, Math.floor(fixture.stock * 0.2)) },
+      create: { id: stockId, listingId, inventoryLocationId, onHand: fixture.stock, reserved: Math.max(0, Math.floor(fixture.stock * 0.08)), reorderPoint: Math.max(5, Math.floor(fixture.stock * 0.2)) },
     });
   }
 }
 
-export async function ensurePhaseTestingFixtures() {
-  const location = await prisma.location.upsert({
-    where: { slug: "senapati" },
-    update: { name: "Senapati", district: "Senapati", state: "Manipur", country: "India", isActive: true, isPrimary: true },
-    create: { slug: "senapati", name: "Senapati", district: "Senapati", state: "Manipur", country: "India", isActive: true, isPrimary: true },
+export async function ensurePhaseTestFixtures(selectedRole: PublicOnboardingRole) {
+  const primaryLocation = await prisma.location.findFirst({
+    where: { isActive: true },
+    orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
     select: { id: true },
   });
+  if (!primaryLocation) throw new Error("Yartong needs at least one active location before phase test accounts can be created.");
 
-  const users = await ensureUsersAndProfiles(location.id);
-  await ensureProviderActivity(users, location.id);
-  await ensureSupplierInventory(users, location.id);
-  return users;
+  const users = await ensureUsersAndProfiles(primaryLocation.id);
+  await ensureProviderActivity(users, primaryLocation.id);
+  await ensureSupplierCatalog(users, primaryLocation.id);
+  return users[selectedRole];
 }
