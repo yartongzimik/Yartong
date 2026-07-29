@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { requireOnboardingUser } from "@/lib/authz";
@@ -51,20 +52,35 @@ export async function completeOnboarding(_prev: OnboardingState | undefined, for
   if (["CONTRACTOR", "MATERIAL_SUPPLIER"].includes(role) && (businessName.length < 2 || businessName.length > 100)) fieldErrors.businessName = "Business name must be 2–100 characters.";
   if (role === "CONTRACTOR" && (teamSize === null || Number.isNaN(teamSize) || teamSize < 1 || teamSize > 500)) fieldErrors.teamSize = "Enter a team size between 1 and 500.";
 
-  const location = locationId ? await prisma.location.findFirst({ where: { id: locationId, isActive: true }, select: { id: true } }) : null;
+  const [location, existingPhoneUser] = await Promise.all([
+    locationId ? prisma.location.findFirst({ where: { id: locationId, isActive: true }, select: { id: true } }) : Promise.resolve(null),
+    phoneNumber ? prisma.user.findFirst({ where: { phoneNumber, id: { not: user.id } }, select: { id: true } }) : Promise.resolve(null),
+  ]);
   if (locationId && !location) fieldErrors.locationId = "Choose an active Yartong location.";
+  if (existingPhoneUser) fieldErrors.phoneNumber = "That phone number is already attached to another Yartong account. Use a different number or leave it blank while testing.";
   if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields." };
 
   const selectedRole = role as PublicOnboardingRole;
 
-  await prisma.$transaction(async (tx) => {
-    await tx.user.update({ where: { id: user.id }, data: { displayName, name: displayName, phoneNumber: phoneNumber || null, primaryLocationId: locationId, primaryRole: selectedRole } });
-    if (role === "CUSTOMER") await tx.customerProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true }, create: { userId: user.id, onboardingComplete: true } });
-    if (role === "SKILLED_PROVIDER") await tx.skilledProviderProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, headline, experienceYears: experienceYears as number, skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, headline, experienceYears: experienceYears as number, skills, availableForWork } });
-    if (role === "LABOURER") await tx.labourerProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, headline: headline || null, experienceYears: experienceYears as number, skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, headline: headline || null, experienceYears: experienceYears as number, skills, availableForWork } });
-    if (role === "CONTRACTOR") await tx.contractorProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, businessName, headline, experienceYears: experienceYears as number, teamSize: teamSize as number, projectTypes: skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, businessName, headline, experienceYears: experienceYears as number, teamSize: teamSize as number, projectTypes: skills, availableForWork } });
-    if (role === "MATERIAL_SUPPLIER") await tx.materialSupplierProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, businessName, headline: clean(formData.get("supplierSummary")) || null, materialCategories, deliveryAvailable }, create: { userId: user.id, onboardingComplete: true, businessName, headline: clean(formData.get("supplierSummary")) || null, materialCategories, deliveryAvailable } });
-  });
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: user.id }, data: { displayName, name: displayName, phoneNumber: phoneNumber || null, primaryLocationId: locationId, primaryRole: selectedRole } });
+      if (role === "CUSTOMER") await tx.customerProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true }, create: { userId: user.id, onboardingComplete: true } });
+      if (role === "SKILLED_PROVIDER") await tx.skilledProviderProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, headline, experienceYears: experienceYears as number, skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, headline, experienceYears: experienceYears as number, skills, availableForWork } });
+      if (role === "LABOURER") await tx.labourerProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, headline: headline || null, experienceYears: experienceYears as number, skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, headline: headline || null, experienceYears: experienceYears as number, skills, availableForWork } });
+      if (role === "CONTRACTOR") await tx.contractorProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, businessName, headline, experienceYears: experienceYears as number, teamSize: teamSize as number, projectTypes: skills, availableForWork }, create: { userId: user.id, onboardingComplete: true, businessName, headline, experienceYears: experienceYears as number, teamSize: teamSize as number, projectTypes: skills, availableForWork } });
+      if (role === "MATERIAL_SUPPLIER") await tx.materialSupplierProfile.upsert({ where: { userId: user.id }, update: { onboardingComplete: true, businessName, headline: clean(formData.get("supplierSummary")) || null, materialCategories, deliveryAvailable }, create: { userId: user.id, onboardingComplete: true, businessName, headline: clean(formData.get("supplierSummary")) || null, materialCategories, deliveryAvailable } });
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      const target = Array.isArray(error.meta?.target) ? error.meta.target.map(String) : [];
+      if (target.includes("phoneNumber")) {
+        return { fieldErrors: { phoneNumber: "That phone number is already attached to another Yartong account." }, error: "Please use a different phone number." };
+      }
+    }
+    console.error("[onboarding-complete]", error);
+    return { error: "We could not complete registration. Your details were not lost; please try again." };
+  }
 
   redirect(getDashboardForRole(selectedRole));
 }
