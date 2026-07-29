@@ -1,127 +1,53 @@
 import Link from "next/link";
 
-import { Container } from "@/components/ui/container";
-import { INITIAL_SERVICE_LOCATIONS, PLATFORM, ROUTES, SEARCH_CONFIG } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 
-const defaultLocation = INITIAL_SERVICE_LOCATIONS[0]?.name ?? SEARCH_CONFIG.defaultLocation;
-
-const popularSearches = [
-  { label: "Contractors", href: ROUTES.trades },
-  { label: "Plumbers", href: ROUTES.workers },
-  { label: "Electricians", href: ROUTES.workers },
-  { label: "Building Materials", href: ROUTES.materials },
-] as const;
-
-const primaryActions = [
-  { label: "Post a Job", href: ROUTES.postJob },
-  { label: "Find Workers", href: ROUTES.workers },
-  { label: "Quick Jobs", href: ROUTES.quickJobs },
-] as const;
-
-const trustSignals = [
-  "Verification and ratings",
-  "Platform-first contact",
-  "Business growth insights",
+const shortcuts = [
+  ["Materials", "Buy quality materials", ROUTES.materials],
+  ["Trades & Services", "Find skilled professionals", ROUTES.trades],
+  ["Yartong Workforce", "Hire local labourers", ROUTES.workers],
 ] as const;
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pb-14 pt-18 sm:pb-20 sm:pt-24">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(225,38,255,0.34),transparent_32%),radial-gradient(circle_at_72%_18%,rgba(155,77,255,0.3),transparent_30%),linear-gradient(135deg,rgba(24,7,34,0.96),rgba(7,5,13,0.98))]" />
-      <div className="absolute left-1/2 top-16 h-64 w-64 -translate-x-1/2 rounded-full bg-fuchsia-500/10 blur-3xl" />
-      <Container className="relative">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <p className="mb-5 inline-flex rounded-full border border-fuchsia-300/25 bg-fuchsia-300/10 px-4 py-2 text-sm font-semibold text-fuchsia-100 shadow-lg shadow-fuchsia-950/20">
-              Senapati-first trusted marketplace
-            </p>
-            <h1 className="text-5xl font-black tracking-tight text-white sm:text-7xl">
-              Build with the right people, skills and materials.
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/72 lg:mx-0">
-              {PLATFORM.name} connects Senapati with trusted workers, contractors, quick jobs, and construction materials in one premium local marketplace.
-            </p>
+    <section className="px-4 pt-4 sm:px-5 sm:pt-5">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#12091d] shadow-2xl shadow-black/25">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,5,13,0.96)_0%,rgba(7,5,13,0.88)_38%,rgba(7,5,13,0.55)_68%,rgba(7,5,13,0.9)_100%),radial-gradient(circle_at_68%_44%,rgba(245,158,11,0.22),transparent_20%),radial-gradient(circle_at_58%_28%,rgba(155,77,255,0.34),transparent_32%)]" />
+        <div className="absolute inset-y-0 right-[24%] hidden w-px bg-white/10 lg:block" />
+        <div className="relative grid min-h-[365px] lg:grid-cols-[1fr_320px]">
+          <div className="flex flex-col justify-between p-6 sm:p-8 lg:p-9">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200/80">Senapati&apos;s construction marketplace</p>
+              <h1 className="mt-4 text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-5xl lg:text-6xl">
+                Senapati&apos;s most <span className="text-fuchsia-300">trusted</span><br />construction marketplace.
+              </h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-white/68 sm:text-lg">Find materials, skilled services, contractors and reliable workforce in one local marketplace.</p>
+            </div>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              {primaryActions.map((action, index) => (
-                <Link
-                  key={action.label}
-                  href={action.href}
-                  className={
-                    index === 0
-                      ? "inline-flex min-h-12 items-center justify-center rounded-full bg-gradient-to-r from-[#9B4DFF] to-[#E126FF] px-6 text-sm font-black text-white shadow-lg shadow-fuchsia-600/30 transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0612]"
-                      : "inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.07] px-6 text-sm font-black text-white transition hover:bg-white/12 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0612]"
-                  }
-                >
-                  {action.label}
+            <div className="mt-8 grid overflow-hidden rounded-2xl border border-white/12 bg-white/95 text-slate-900 sm:grid-cols-3">
+              {shortcuts.map(([title, detail, href], index) => (
+                <Link key={title} href={href} className={`group px-5 py-4 transition hover:bg-fuchsia-50 ${index ? "border-t border-slate-200 sm:border-l sm:border-t-0" : ""}`}>
+                  <p className="font-black">{title}</p>
+                  <p className="mt-1 text-xs text-slate-500">{detail}</p>
+                  <span className="mt-2 block text-xs font-black text-fuchsia-700 opacity-0 transition group-hover:opacity-100">Explore →</span>
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.07] p-3 shadow-2xl shadow-fuchsia-950/30 backdrop-blur">
-            <div className="rounded-[1.5rem] border border-white/10 bg-[#0B0612]/95 p-4 sm:p-5">
-              <div className="flex flex-col gap-3 md:flex-row">
-                <div className="min-w-0 flex-1">
-                  <label htmlFor="hero-search" className="mb-2 block text-sm font-bold text-white/80">
-                    What do you need?
-                  </label>
-                  <input
-                    id="hero-search"
-                    type="search"
-                    placeholder="Search workers, contractors, quick jobs, materials"
-                    className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-5 text-base font-medium text-slate-950 outline-none placeholder:text-slate-500 focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-400/25"
-                  />
-                </div>
-                <div className="md:w-48">
-                  <label htmlFor="hero-location" className="mb-2 block text-sm font-bold text-white/80">
-                    Location
-                  </label>
-                  <select
-                    id="hero-location"
-                    defaultValue={defaultLocation}
-                    className="min-h-14 w-full rounded-2xl border border-white/10 bg-white px-4 text-base font-bold text-slate-950 outline-none focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-400/25"
-                    aria-label="Select service location"
-                  >
-                    <option value={defaultLocation}>{defaultLocation} Town</option>
-                  </select>
-                </div>
-                <div className="flex md:items-end">
-                  <button
-                    type="button"
-                    className="inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#9B4DFF] to-[#E126FF] px-7 text-base font-black text-white shadow-lg shadow-fuchsia-600/30 transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0612] md:w-auto"
-                  >
-                    Search
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <p className="text-sm font-semibold text-white/60">Popular searches</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {popularSearches.map((search) => (
-                    <Link
-                      key={search.label}
-                      href={search.href}
-                      className="inline-flex min-h-10 items-center rounded-full border border-fuchsia-200/15 bg-fuchsia-200/10 px-4 text-sm font-bold text-fuchsia-50 transition hover:bg-fuchsia-200/18 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0612]"
-                    >
-                      {search.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <ul className="mt-6 grid gap-2 text-sm font-semibold text-white/72 sm:grid-cols-3">
-                {trustSignals.map((signal) => (
-                  <li key={signal} className="rounded-2xl border border-white/10 bg-white/[0.06] px-3 py-3">
-                    {signal}
-                  </li>
-                ))}
-              </ul>
+          <aside className="m-4 rounded-2xl border border-white/12 bg-[#0d1020]/90 p-5 backdrop-blur sm:m-6 lg:my-6 lg:ml-0" aria-label="Marketplace intent search">
+            <h2 className="text-xl font-black text-white">What do you need?</h2>
+            <div className="mt-4 space-y-2 text-sm text-white/80">
+              <label className="flex items-center gap-2"><input type="radio" name="intent" defaultChecked /> I want to buy</label>
+              <label className="flex items-center gap-2"><input type="radio" name="intent" /> I want a service</label>
+              <label className="flex items-center gap-2"><input type="radio" name="intent" /> I need workforce</label>
             </div>
-          </div>
+            <input className="mt-5 w-full rounded-xl border border-white/10 bg-white px-4 py-3 text-sm text-slate-900 outline-none placeholder:text-slate-500" placeholder="Search materials, services..." />
+            <Link href={ROUTES.postJob} className="mt-3 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#9B4DFF] to-[#E126FF] px-4 py-3 text-sm font-black text-white">Request a quote</Link>
+            <p className="mt-2 text-center text-[11px] text-white/45">Free to post. Compare local options.</p>
+          </aside>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
