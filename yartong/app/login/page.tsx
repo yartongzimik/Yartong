@@ -13,7 +13,6 @@ const QA_ACCOUNTS = [
   ["Labourer", "labourer.demo@yartong.local", ROUTES.labourerDashboard, "Quick-work applications, engagements and labourer profile editing"],
   ["Contractor", "contractor.demo@yartong.local", ROUTES.contractorDashboard, "Project applications, engagements and contractor profile editing"],
   ["Material Supplier", "supplier.demo@yartong.local", ROUTES.supplierDashboard, "Products, stock inventory and supplier profile editing"],
-  ["Admin", "admin.demo@yartong.local", ROUTES.adminDashboard, "Administration and moderation tools"],
 ] as const;
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string; error?: string }> }) {
@@ -37,14 +36,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               ["3", "Complete your profile"],
             ].map(([step, label]) => <div key={step} className="rounded-2xl border border-white/10 bg-black/20 p-4"><span className="text-xs font-black text-fuchsia-200">STEP {step}</span><p className="mt-2 text-sm font-bold">{label}</p></div>)}
           </div>
-          <Link href="/join#account-types" className="mt-7 inline-flex rounded-full border border-white/15 px-5 py-3 font-bold hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-100">{isSignupFlow ? "Change account type" : "Create a new account"}</Link>
-        </> : <div className="mt-8 rounded-2xl border border-amber-200/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">Testing mode uses a temporary preview-only role switcher for seeded demo accounts. Open this Login page at any time to switch roles. Turn this mode off before launch.</div>}
+          <Link href="/join" className="mt-7 inline-flex rounded-full border border-white/15 px-5 py-3 font-bold hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-100">{isSignupFlow ? "Change account type" : "Create a new account"}</Link>
+        </> : <div className="mt-8 rounded-2xl border border-amber-200/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">Testing mode uses seeded public-role accounts. Administrative access is intentionally kept separate from this public login page.</div>}
       </div>
 
       <div className="rounded-[2rem] border border-white/10 bg-[#12091d] p-6 shadow-xl sm:p-8">
         {isQaTestAccessEnabled ? <>
           <h2 className="text-3xl font-black">Choose a test account</h2>
-          <p className="mt-2 text-sm text-white/55">Tap any role to open that account's Yartong dashboard using the seeded QA data.</p>
+          <p className="mt-2 text-sm text-white/55">Tap a role to open that account's Yartong dashboard using the seeded QA data.</p>
           {params.error ? <p role="alert" className="mt-4 rounded-2xl border border-rose-300/30 bg-rose-500/10 p-3 text-sm text-rose-100">That QA account is not available in this database.</p> : null}
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {QA_ACCOUNTS.map(([label, email, dashboard, detail]) => <form key={email} action={async () => { "use server"; await signInAsQaUser(email, dashboard); }}>
@@ -71,7 +70,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <DemoLoginForm callbackUrl={callbackUrl} />
           </> : <p className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-white/45">Demo email login is disabled. Enable it only in the deployment environment used for QA.</p>}
 
-          <p className="mt-6 text-center text-sm text-white/50">{isSignupFlow ? <>Wrong account type? <Link href="/join#account-types" className="font-bold text-fuchsia-200 underline underline-offset-4">Choose another role</Link></> : <>New to Yartong? <Link href="/join#account-types" className="font-bold text-fuchsia-200 underline underline-offset-4">Sign up and choose your role</Link></>}</p>
+          <p className="mt-6 text-center text-sm text-white/50">{isSignupFlow ? <>Wrong account type? <Link href="/join" className="font-bold text-fuchsia-200 underline underline-offset-4">Choose another role</Link></> : <>New to Yartong? <Link href="/join" className="font-bold text-fuchsia-200 underline underline-offset-4">Sign up and choose your role</Link></>}</p>
         </>}
       </div>
     </section>
