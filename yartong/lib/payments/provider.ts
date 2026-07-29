@@ -1,3 +1,5 @@
+import { isPaymentExecutionEnabled } from "@/lib/phase-flags";
+
 export type PaymentProviderConfiguration = {
   providerName: string | null;
   configured: boolean;
@@ -26,6 +28,10 @@ export interface PaymentGatewayAdapter {
 }
 
 export function getPaymentProviderConfiguration(): PaymentProviderConfiguration {
+  if (!isPaymentExecutionEnabled) {
+    return { providerName: null, configured: false, missing: ["ENABLE_PAYMENTS=true"] };
+  }
+
   const providerName = process.env.PAYMENT_PROVIDER?.trim() || null;
   const required = [
     ["PAYMENT_PROVIDER", providerName],
@@ -33,28 +39,15 @@ export function getPaymentProviderConfiguration(): PaymentProviderConfiguration 
     ["PAYMENT_PROVIDER_SECRET_KEY", process.env.PAYMENT_PROVIDER_SECRET_KEY?.trim()],
     ["PAYMENT_WEBHOOK_SECRET", process.env.PAYMENT_WEBHOOK_SECRET?.trim()],
   ] as const;
-
-  const missing = required
-    .filter(([, value]) => !value)
-    .map(([name]) => name);
-
-  return {
-    providerName,
-    configured: missing.length === 0,
-    missing,
-  };
+  const missing = required.filter(([, value]) => !value).map(([name]) => name);
+  return { providerName, configured: missing.length === 0, missing };
 }
 
 export async function requirePaymentGatewayAdapter(): Promise<PaymentGatewayAdapter> {
+  if (!isPaymentExecutionEnabled) throw new Error("Payment execution is disabled for the current Yartong build phase.");
   const config = getPaymentProviderConfiguration();
-  if (!config.configured) {
-    throw new Error(`Payment provider is not configured. Missing: ${config.missing.join(", ")}.`);
-  }
-
-  if (config.providerName?.toLowerCase() !== "razorpay") {
-    throw new Error(`Unsupported payment provider: ${config.providerName}.`);
-  }
-
+  if (!config.configured) throw new Error(`Payment provider is not configured. Missing: ${config.missing.join(", ")}.`);
+  if (config.providerName?.toLowerCase() !== "razorpay") throw new Error(`Unsupported payment provider: ${config.providerName}.`);
   const { razorpayGatewayAdapter } = await import("./razorpay");
   return razorpayGatewayAdapter;
 }
