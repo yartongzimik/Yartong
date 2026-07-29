@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PaymentStatus } from "@prisma/client";
 
 import { PublicShell } from "@/components/layout/public-shell";
 import { requireUser } from "@/lib/authz";
@@ -21,7 +22,7 @@ function statusLabel(value: string) {
 export default async function CustomerDashboardPage() {
   const user = await requireUser();
 
-  const [dashboard, profile, materialOrders, paidServices, notifications, reviewsWritten, activePayments, recentOrders] = await Promise.all([
+  const [dashboard, profile, materialOrders, paidServiceSpend, paidServiceCount, notifications, reviewsWritten, activePayments, recentOrders] = await Promise.all([
     getCustomerDashboard(user.id),
     prisma.user.findUniqueOrThrow({
       where: { id: user.id },
@@ -37,13 +38,25 @@ export default async function CustomerDashboardPage() {
     }),
     prisma.materialOrder.count({ where: { customerId: user.id } }),
     prisma.paymentOrder.aggregate({
-      where: { customerId: user.id, status: "PAID" },
+      where: { customerId: user.id, status: PaymentStatus.SUCCEEDED },
       _sum: { amount: true },
-      _count: { id: true },
     }),
+    prisma.paymentOrder.count({ where: { customerId: user.id, status: PaymentStatus.SUCCEEDED } }),
     prisma.notification.count({ where: { userId: user.id, readAt: null } }),
     prisma.review.count({ where: { authorId: user.id } }),
-    prisma.paymentOrder.count({ where: { customerId: user.id, status: { in: ["CREATED", "AUTHORIZED"] } } }),
+    prisma.paymentOrder.count({
+      where: {
+        customerId: user.id,
+        status: {
+          in: [
+            PaymentStatus.CREATED,
+            PaymentStatus.PENDING,
+            PaymentStatus.REQUIRES_ACTION,
+            PaymentStatus.PROCESSING,
+          ],
+        },
+      },
+    }),
     prisma.materialOrder.findMany({
       where: { customerId: user.id },
       orderBy: { createdAt: "desc" },
@@ -60,7 +73,7 @@ export default async function CustomerDashboardPage() {
   ]);
 
   const location = profile.primaryLocation;
-  const totalServiceSpend = paidServices._sum.amount ?? 0;
+  const totalServiceSpend = paidServiceSpend._sum.amount ?? 0;
   const completionRate = dashboard.metrics.completedEngagements + dashboard.metrics.activeEngagements > 0
     ? Math.round((dashboard.metrics.completedEngagements / (dashboard.metrics.completedEngagements + dashboard.metrics.activeEngagements)) * 100)
     : 0;
@@ -69,7 +82,7 @@ export default async function CustomerDashboardPage() {
     { label: "Active projects", value: dashboard.metrics.activeEngagements, helper: `${dashboard.metrics.completedEngagements} completed` },
     { label: "Published requests", value: dashboard.metrics.publishedJobs, helper: `${dashboard.metrics.draftJobs} drafts` },
     { label: "Material orders", value: materialOrders, helper: "Across Yartong suppliers" },
-    { label: "Service spend", value: money(totalServiceSpend), helper: `${paidServices._count.id} paid engagements` },
+    { label: "Service spend", value: money(totalServiceSpend), helper: `${paidServiceCount} paid engagements` },
     { label: "Unread messages", value: dashboard.metrics.unreadMessages, helper: "Provider conversations" },
     { label: "Reviews given", value: reviewsWritten, helper: "Marketplace feedback" },
   ];
