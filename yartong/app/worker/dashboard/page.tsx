@@ -18,43 +18,15 @@ export default async function SkilledProviderDashboardPage() {
         { label: "Active applications", value: dashboard.metrics.activeApplications },
         { label: "Accepted applications", value: dashboard.metrics.acceptedApplications },
         { label: "Active engagements", value: dashboard.metrics.activeEngagements },
-        {
-          label: "Unread messages",
-          value: dashboard.metrics.unreadMessages,
-          helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}`,
-        },
+        { label: "Unread messages", value: dashboard.metrics.unreadMessages, helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}` },
       ]}
       actions={[
-        {
-          label: "Find jobs",
-          href: ROUTES.quickJobs,
-          description: "Browse published work opportunities that match marketplace provider roles.",
-        },
-        {
-          label: "My applications",
-          href: "/applications",
-          description: "Review submitted, shortlisted and accepted applications.",
-        },
-        {
-          label: "Work engagements",
-          href: "/engagements",
-          description: "Manage confirmed work, quotes, progress, messaging and payment status.",
-        },
-        {
-          label: "Messages",
-          href: ROUTES.messages,
-          description: "Message customers privately after a legitimate marketplace hire.",
-        },
-        {
-          label: "Public profile",
-          href: ROUTES.workers,
-          description: "Check how active provider profiles appear in public marketplace discovery.",
-        },
-        {
-          label: "Verification",
-          href: "/verification",
-          description: `Current trust status: ${dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase()}.`,
-        },
+        { label: "Edit profile & account", href: "/account", description: "Edit seeded provider details, skills, experience, availability and profile information." },
+        { label: "Find jobs", href: ROUTES.quickJobs, description: "Browse published work opportunities that match marketplace provider roles." },
+        { label: "My applications", href: "/applications", description: "Review submitted, shortlisted and accepted applications." },
+        { label: "Work engagements", href: "/engagements", description: "Manage confirmed work, quotes, progress, messaging and payment status." },
+        { label: "Messages", href: ROUTES.messages, description: "Message customers privately after a legitimate marketplace hire." },
+        { label: "Public profile", href: `/providers/${user.id}`, description: "Open this seeded provider's public marketplace profile." },
       ]}
       activityTitle="Recent work activity"
       activities={dashboard.activities}
