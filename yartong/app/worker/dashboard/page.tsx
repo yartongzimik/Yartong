@@ -11,9 +11,9 @@ export default async function SkilledProviderDashboardPage() {
 
   return (
     <RoleDashboard
-      eyebrow="Skilled provider dashboard"
+      eyebrow="Skilled provider"
       title={`Welcome back, ${dashboard.user.displayName || "Provider"}`}
-      subtitle={`Track applications, hired work and customer conversations${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}.`}
+      subtitle="Manage your work opportunities, applications, customers and professional profile."
       metrics={[
         { label: "Active applications", value: dashboard.metrics.activeApplications },
         { label: "Accepted applications", value: dashboard.metrics.acceptedApplications },
@@ -21,16 +21,16 @@ export default async function SkilledProviderDashboardPage() {
         { label: "Unread messages", value: dashboard.metrics.unreadMessages, helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}` },
       ]}
       actions={[
-        { label: "Edit profile & account", href: "/account", description: "Edit seeded provider details, skills, experience, availability and profile information." },
-        { label: "Find jobs", href: ROUTES.quickJobs, description: "Browse published work opportunities that match marketplace provider roles." },
+        { label: "Edit profile & account", href: "/account", description: "Manage your professional details, skills, experience, availability and account information." },
+        { label: "Find jobs", href: ROUTES.quickJobs, description: "Browse published work opportunities that match your services." },
         { label: "My applications", href: "/applications", description: "Review submitted, shortlisted and accepted applications." },
-        { label: "Work engagements", href: "/engagements", description: "Manage confirmed work, quotes, progress, messaging and payment status." },
-        { label: "Messages", href: ROUTES.messages, description: "Message customers privately after a legitimate marketplace hire." },
-        { label: "Public profile", href: `/providers/${user.id}`, description: "Open this seeded provider's public marketplace profile." },
+        { label: "Work engagements", href: "/engagements", description: "Manage confirmed work, quotes, progress and customer communication." },
+        { label: "Messages", href: ROUTES.messages, description: "Continue conversations with customers connected through Yartong." },
+        { label: "Public profile", href: `/providers/${user.id}`, description: "See how your professional profile appears in the marketplace." },
       ]}
       activityTitle="Recent work activity"
       activities={dashboard.activities}
-      emptyActivity="Applications and engagements will appear here as you participate in the marketplace."
+      emptyActivity="Your applications and work activity will appear here as you use Yartong."
     />
   );
 }
