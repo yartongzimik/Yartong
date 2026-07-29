@@ -26,14 +26,8 @@ export function CustomerDashboardBackground() {
 
     if (slow) return;
 
-    const activate = () => setEnabled(true);
-    const idle = window.requestIdleCallback?.(activate, { timeout: 1800 });
-    const timer = idle ? undefined : window.setTimeout(activate, 900);
-
-    return () => {
-      if (idle) window.cancelIdleCallback?.(idle);
-      if (timer) window.clearTimeout(timer);
-    };
+    const timer = window.setTimeout(() => setEnabled(true), 900);
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (!enabled) return null;
@@ -41,8 +35,8 @@ export function CustomerDashboardBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-100"
-      style={{ backgroundImage: `linear-gradient(rgba(247,249,252,.72),rgba(247,249,252,.78)),url(${BACKGROUND_URL})` }}
+      className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center"
+      style={{ backgroundImage: `linear-gradient(rgba(247,249,252,.70),rgba(247,249,252,.78)),url(${BACKGROUND_URL})` }}
     />
   );
 }
