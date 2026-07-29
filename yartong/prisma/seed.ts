@@ -18,8 +18,11 @@ import {
 
 const prisma = new PrismaClient();
 
-if (process.env.NODE_ENV === "production") {
-  throw new Error("Refusing to seed demo data in production.");
+const allowQaPreviewSeed =
+  process.env.ALLOW_QA_SEED === "true" && process.env.VERCEL_ENV === "preview";
+
+if (process.env.NODE_ENV === "production" && !allowQaPreviewSeed) {
+  throw new Error("Refusing to seed demo data outside an explicitly allowed QA preview build.");
 }
 
 const demoUsers = [
