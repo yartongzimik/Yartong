@@ -18,43 +18,15 @@ export default async function LabourerDashboardPage() {
         { label: "Active applications", value: dashboard.metrics.activeApplications },
         { label: "Accepted applications", value: dashboard.metrics.acceptedApplications },
         { label: "Active engagements", value: dashboard.metrics.activeEngagements },
-        {
-          label: "Unread messages",
-          value: dashboard.metrics.unreadMessages,
-          helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}`,
-        },
+        { label: "Unread messages", value: dashboard.metrics.unreadMessages, helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}` },
       ]}
       actions={[
-        {
-          label: "Find quick work",
-          href: ROUTES.quickJobs,
-          description: "Browse available job listings and apply where your role is eligible.",
-        },
-        {
-          label: "My applications",
-          href: "/applications",
-          description: "Track submitted, shortlisted and accepted job applications.",
-        },
-        {
-          label: "Work engagements",
-          href: "/engagements",
-          description: "See hired work, progress status, messages and agreed terms.",
-        },
-        {
-          label: "Messages",
-          href: ROUTES.messages,
-          description: "Continue private conversations with customers who have hired you.",
-        },
-        {
-          label: "Marketplace profile",
-          href: ROUTES.workers,
-          description: "Review the public worker marketplace where active profiles are discovered.",
-        },
-        {
-          label: "Verification",
-          href: "/verification",
-          description: `Current trust status: ${dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase()}.`,
-        },
+        { label: "Edit labourer profile", href: "/account", description: "Edit seeded skills, experience, availability, headline and account details." },
+        { label: "Find quick work", href: ROUTES.quickJobs, description: "Browse available job listings and apply where your role is eligible." },
+        { label: "My applications", href: "/applications", description: "Track submitted, shortlisted and accepted job applications." },
+        { label: "Work engagements", href: "/engagements", description: "See hired work, progress status, messages and agreed terms." },
+        { label: "Messages", href: ROUTES.messages, description: "Continue private conversations with customers who have hired you." },
+        { label: "Public profile", href: `/providers/${user.id}`, description: "Open this seeded labourer's public marketplace profile." },
       ]}
       activityTitle="Recent work activity"
       activities={dashboard.activities}
