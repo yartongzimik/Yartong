@@ -31,7 +31,6 @@ const publicLocationSelect = {
 const publicProviderSelect = {
   id: true,
   displayName: true,
-  image: true,
   primaryRole: true,
   verificationStatus: true,
   isDemo: true,
@@ -84,7 +83,6 @@ export type PublicLocation = NonNullable<
 export type PublicProviderCard = {
   id: string;
   displayName: string;
-  image?: string;
   role: PublicProviderRole;
   roleLabel: string;
   businessName?: string;
@@ -158,7 +156,6 @@ function basePublicProvider(
 ) {
   return {
     id: user.id,
-    image: user.image ?? undefined,
     role,
     roleLabel: ROLE_LABELS[role],
     verificationStatus: user.verificationStatus,
@@ -336,7 +333,7 @@ function roleWhere(
     and.push({
       OR: [
         { skilledProviderProfile: { is: { skills: { has: skill } } } },
-        { labourerProfile: { is: { skills: { has: skill } } },
+        { labourerProfile: { is: { skills: { has: skill } } } },
       ],
     });
   }
