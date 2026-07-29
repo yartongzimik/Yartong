@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && prisma generate && if [ \"$VERCEL_ENV\" = \"preview\" ]; then ALLOW_QA_SEED=true tsx prisma/seed.ts; fi && next build",
+    "build": "prisma migrate deploy && prisma generate && next build",
     "build:ci": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
