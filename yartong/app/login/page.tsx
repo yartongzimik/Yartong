@@ -43,7 +43,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <div className="rounded-[2rem] border border-white/10 bg-[#12091d] p-6 shadow-xl sm:p-8">
         {isQaTestAccessEnabled ? <>
           <h2 className="text-3xl font-black">Choose a test account</h2>
-          <p className="mt-2 text-sm text-white/55">Tap a role to open that account's Yartong dashboard using the seeded QA data.</p>
+          <p className="mt-2 text-sm text-white/55">Tap a role to open that account&apos;s Yartong dashboard using the seeded QA data.</p>
           {params.error ? <p role="alert" className="mt-4 rounded-2xl border border-rose-300/30 bg-rose-500/10 p-3 text-sm text-rose-100">That QA account is not available in this database.</p> : null}
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {QA_ACCOUNTS.map(([label, email, dashboard, detail]) => <form key={email} action={async () => { "use server"; await signInAsQaUser(email, dashboard); }}>
