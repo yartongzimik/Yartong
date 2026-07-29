@@ -24,6 +24,11 @@ export default async function CustomerDashboardPage() {
       ]}
       actions={[
         {
+          label: "Edit profile & account",
+          href: "/account",
+          description: "Change the demo customer's display details and inspect live seeded account statistics.",
+        },
+        {
           label: "Post a job",
           href: ROUTES.postJob,
           description: "Create a new construction or service job and publish it when ready.",
@@ -47,11 +52,6 @@ export default async function CustomerDashboardPage() {
           label: "Find providers",
           href: ROUTES.workers,
           description: "Discover active skilled providers and labourers in the marketplace.",
-        },
-        {
-          label: "Verification",
-          href: "/verification",
-          description: `Current trust status: ${dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase()}.`,
         },
       ]}
       activityTitle="Recent marketplace activity"
