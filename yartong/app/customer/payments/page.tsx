@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 import { CustomerWorkspaceShell } from "../customer-workspace-shell";
 
+const ACTIVE_PAYMENT_STATUSES: PaymentStatus[] = [PaymentStatus.CREATED, PaymentStatus.PENDING, PaymentStatus.PROCESSING, PaymentStatus.REQUIRES_ACTION];
 function money(value: number) { return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value / 100); }
 
 export default async function CustomerPaymentsPage() {
@@ -12,7 +13,7 @@ export default async function CustomerPaymentsPage() {
   const payments = await prisma.paymentOrder.findMany({ where: { customerId: user.id }, orderBy: { createdAt: "desc" }, take: 20, select: { id: true, amount: true, status: true, createdAt: true, providerName: true } });
   const succeeded = payments.filter((payment) => payment.status === PaymentStatus.SUCCEEDED);
   const total = succeeded.reduce((sum, payment) => sum + payment.amount, 0);
-  const pending = payments.filter((payment) => [PaymentStatus.CREATED, PaymentStatus.PENDING, PaymentStatus.PROCESSING, PaymentStatus.REQUIRES_ACTION].includes(payment.status)).reduce((sum, payment) => sum + payment.amount, 0);
+  const pending = payments.filter((payment) => ACTIVE_PAYMENT_STATUSES.includes(payment.status)).reduce((sum, payment) => sum + payment.amount, 0);
   const refunded = payments.filter((payment) => payment.status === PaymentStatus.REFUNDED).reduce((sum, payment) => sum + payment.amount, 0);
   return <CustomerWorkspaceShell active="Payments" title="Payments" subtitle="View transaction history and payment status. Payment execution remains disabled during testing.">
     <section className="grid grid-cols-2 gap-2 md:grid-cols-4">{[["Total spent", money(total)], ["Transactions", payments.length], ["Pending", money(pending)], ["Refunded", money(refunded)]].map(([label, value]) => <div key={label} className="rounded-xl border border-white/80 bg-white/94 p-3 shadow-sm"><p className="text-[10px] font-bold uppercase text-slate-400">{label}</p><p className="mt-1 text-xl font-black">{value}</p></div>)}</section>
