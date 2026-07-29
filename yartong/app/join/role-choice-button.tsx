@@ -71,10 +71,7 @@ export function RoleChoiceButton({ role, label, description }: { role: string; l
   const [network, setNetwork] = useState<NetworkSnapshot>(() => readNetwork());
 
   useEffect(() => {
-    if (!pending) {
-      setElapsedMs(0);
-      return;
-    }
+    if (!pending) return;
 
     const startedAt = performance.now();
     const update = () => {
@@ -82,7 +79,6 @@ export function RoleChoiceButton({ role, label, description }: { role: string; l
       setNetwork(readNetwork());
     };
 
-    update();
     const timer = window.setInterval(update, 250);
     const handleNetworkChange = () => setNetwork(readNetwork());
     window.addEventListener("online", handleNetworkChange);
@@ -99,11 +95,17 @@ export function RoleChoiceButton({ role, label, description }: { role: string; l
     };
   }, [pending]);
 
+  const handlePress = () => {
+    setElapsedMs(0);
+    setNetwork(readNetwork());
+  };
+
   return (
     <button
       type="submit"
       disabled={pending}
       aria-busy={pending}
+      onClick={handlePress}
       className="group relative w-full overflow-hidden rounded-2xl border border-white/12 bg-white/[0.045] px-4 py-4 text-left shadow-sm transition duration-150 active:scale-[0.985] active:border-fuchsia-200/80 active:bg-fuchsia-400/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 disabled:cursor-wait disabled:border-fuchsia-200/45 disabled:bg-fuchsia-400/10"
     >
       <span className="flex items-center gap-3">
