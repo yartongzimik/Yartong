@@ -62,7 +62,7 @@ function NetworkDetails({ network, elapsedMs }: { network: NetworkSnapshot; elap
   if (network.saveData) details.push("Data Saver");
   details.push(`${(elapsedMs / 1000).toFixed(1)}s`);
 
-  return <span className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] font-bold uppercase tracking-[0.08em] text-fuchsia-100/55">{details.map((detail) => <span key={detail}>{detail}</span>)}</span>;
+  return <span className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] font-bold uppercase tracking-[0.08em] text-blue-700/60">{details.map((detail) => <span key={detail}>{detail}</span>)}</span>;
 }
 
 export function RoleChoiceButton({ role, label, description }: { role: string; label: string; description: string }) {
@@ -107,24 +107,24 @@ export function RoleChoiceButton({ role, label, description }: { role: string; l
       aria-busy={pending}
       data-yartong-managed-feedback="true"
       onClick={handlePress}
-      className="group relative w-full overflow-hidden rounded-2xl border border-white/12 bg-white/[0.045] px-4 py-4 text-left shadow-sm transition duration-150 active:scale-[0.985] active:border-fuchsia-200/80 active:bg-fuchsia-400/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-200 disabled:cursor-wait disabled:border-fuchsia-200/45 disabled:bg-fuchsia-400/10"
+      className="group relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left shadow-sm transition duration-150 hover:border-blue-300 hover:bg-white active:scale-[0.985] active:border-blue-400 active:bg-blue-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100 disabled:cursor-wait disabled:border-blue-300 disabled:bg-blue-50"
     >
       <span className="flex items-center gap-3">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-fuchsia-200/20 bg-fuchsia-300/10 text-lg font-black text-fuchsia-100 transition group-active:scale-95">
-          {pending ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-fuchsia-100/30 border-t-fuchsia-100" /> : ROLE_ICONS[role] ?? "→"}
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-lg font-black text-blue-700 transition group-active:scale-95">
+          {pending ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-700" /> : ROLE_ICONS[role] ?? "→"}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-base font-black text-white">{pending ? `Opening ${label}…` : label}</span>
-          <span className={`mt-1 block text-xs leading-5 ${pending ? "text-white/65" : "line-clamp-2 text-white/52"}`}>
+          <span className="block text-base font-black text-slate-950">{pending ? `Opening ${label}…` : label}</span>
+          <span className={`mt-1 block text-xs leading-5 ${pending ? "text-slate-600" : "line-clamp-2 text-slate-500"}`}>
             {pending ? loadingMessage(elapsedMs, network) : description}
           </span>
           {pending ? <NetworkDetails network={network} elapsedMs={elapsedMs} /> : null}
         </span>
-        <span aria-hidden="true" className={`shrink-0 text-xl font-black text-fuchsia-200 transition ${pending ? "opacity-0" : "group-hover:translate-x-1 group-active:translate-x-1"}`}>→</span>
+        <span aria-hidden="true" className={`shrink-0 text-xl font-black text-blue-600 transition ${pending ? "opacity-0" : "group-hover:translate-x-1 group-active:translate-x-1"}`}>→</span>
       </span>
       {pending ? (
-        <span className="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden bg-white/10">
-          <span className="block h-full w-1/2 animate-pulse bg-fuchsia-300" />
+        <span className="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden bg-blue-100">
+          <span className="block h-full w-1/2 animate-pulse bg-blue-500" />
         </span>
       ) : null}
     </button>
