@@ -47,8 +47,6 @@ export async function CustomerWorkspaceShell({ active, title, subtitle, actions,
             </nav>
             <div className="mt-5 border-t border-slate-200 pt-4 text-xs">
               <Link href="/account" className="block rounded-lg px-3 py-2 font-bold text-slate-600 hover:bg-slate-100">My account</Link>
-              <Link href="/verification" className="block rounded-lg px-3 py-2 font-bold text-slate-600 hover:bg-slate-100">Verification</Link>
-              <Link href="/" className="block rounded-lg px-3 py-2 font-bold text-slate-600 hover:bg-slate-100">Marketplace home</Link>
             </div>
           </aside>
           <main className="min-w-0 p-3 sm:p-4 lg:p-5">
