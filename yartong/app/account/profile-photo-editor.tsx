@@ -12,7 +12,7 @@ type Props = {
 export function ProfilePhotoEditor({ currentImage, displayName }: Props) {
   const [imageValue, setImageValue] = useState(currentImage ?? "");
   const [source, setSource] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -28,8 +28,8 @@ export function ProfilePhotoEditor({ currentImage, displayName }: Props) {
     if (source?.startsWith("blob:")) URL.revokeObjectURL(source);
     setSource(URL.createObjectURL(file));
     setZoom(1);
+    setPreviewOpen(false);
     setEditorOpen(true);
-    setMenuOpen(false);
   }
 
   function applyCrop() {
@@ -59,23 +59,31 @@ export function ProfilePhotoEditor({ currentImage, displayName }: Props) {
   return (
     <div className="relative">
       <input type="hidden" name="image" value={imageValue} />
-      <button type="button" onClick={() => setMenuOpen((value) => !value)} className="group relative grid h-24 w-24 place-items-center overflow-hidden rounded-full border-4 border-white bg-blue-50 text-2xl font-black text-[#0b376f] shadow-md ring-1 ring-slate-200 transition hover:shadow-lg active:scale-[0.98]" aria-label="Edit profile photo">
+      <button type="button" onClick={() => setPreviewOpen(true)} className="group relative grid h-24 w-24 place-items-center overflow-hidden rounded-full border-4 border-white bg-blue-50 text-2xl font-black text-[#0b376f] shadow-md ring-1 ring-slate-200 transition hover:shadow-lg active:scale-[0.98]" aria-label="View and edit profile photo">
         {imageValue ? <span className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${imageValue})` }} /> : initials}
-        <span className="absolute inset-x-0 bottom-0 bg-slate-950/70 py-1.5 text-center text-[10px] font-bold text-white opacity-0 transition group-hover:opacity-100">Edit photo</span>
+        <span className="absolute inset-x-0 bottom-0 bg-slate-950/70 py-1.5 text-center text-[10px] font-bold text-white opacity-0 transition group-hover:opacity-100">View photo</span>
       </button>
-
-      {menuOpen ? <div className="absolute left-0 top-28 z-30 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-        <button type="button" onClick={() => cameraRef.current?.click()} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-slate-50"><span>◉</span> Take a photo</button>
-        <button type="button" onClick={() => galleryRef.current?.click()} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-slate-50"><span>▧</span> Choose from gallery</button>
-        <button type="button" onClick={() => { setImageValue(""); setMenuOpen(false); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-600 hover:bg-rose-50"><span>×</span> Delete profile photo</button>
-      </div> : null}
 
       <input ref={cameraRef} hidden type="file" accept="image/*" capture="user" onChange={(event) => chooseFile(event.target.files?.[0])} />
       <input ref={galleryRef} hidden type="file" accept="image/*" onChange={(event) => chooseFile(event.target.files?.[0])} />
 
-      {editorOpen && source ? <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/70 p-4 backdrop-blur-sm">
+      {previewOpen ? <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/65 p-4 backdrop-blur-sm" onClick={() => setPreviewOpen(false)}>
+        <div className="w-full max-w-sm rounded-3xl bg-white p-5 text-slate-950 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+          <div className="flex items-center justify-between"><div><h2 className="text-lg font-black">Profile photo</h2><p className="mt-1 text-xs text-slate-500">Preview, replace or remove your photo.</p></div><button type="button" onClick={() => setPreviewOpen(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-lg">×</button></div>
+          <div className="mx-auto mt-5 grid h-52 w-52 place-items-center overflow-hidden rounded-full bg-blue-50 text-5xl font-black text-[#0b376f] ring-4 ring-slate-100 shadow-lg">
+            {imageValue ? <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${imageValue})` }} /> : initials}
+          </div>
+          <div className="mt-6 grid gap-2">
+            <button type="button" onClick={() => cameraRef.current?.click()} className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#0b1b36] px-4 py-3 text-sm font-black text-white active:scale-[0.99]"><span>◉</span> Take a photo</button>
+            <button type="button" onClick={() => galleryRef.current?.click()} className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 active:scale-[0.99]"><span>▧</span> Change from gallery</button>
+            <button type="button" onClick={() => { setImageValue(""); setPreviewOpen(false); }} disabled={!imageValue} className="flex w-full items-center justify-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-black text-rose-600 disabled:cursor-not-allowed disabled:opacity-40"><span>×</span> Delete profile photo</button>
+          </div>
+        </div>
+      </div> : null}
+
+      {editorOpen && source ? <div className="fixed inset-0 z-[110] grid place-items-center bg-slate-950/70 p-4 backdrop-blur-sm">
         <div className="w-full max-w-md rounded-3xl bg-white p-5 text-slate-950 shadow-2xl">
-          <div className="flex items-center justify-between"><div><h2 className="text-lg font-black">Adjust profile photo</h2><p className="mt-1 text-xs text-slate-500">Move the zoom slider until the photo fits the circle.</p></div><button type="button" onClick={() => setEditorOpen(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-lg">×</button></div>
+          <div className="flex items-center justify-between"><div><h2 className="text-lg font-black">Adjust profile photo</h2><p className="mt-1 text-xs text-slate-500">Use the zoom control to fit the photo inside the circle.</p></div><button type="button" onClick={() => setEditorOpen(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-lg">×</button></div>
           <div className="relative mx-auto mt-5 h-72 w-72 overflow-hidden rounded-full bg-slate-100 ring-4 ring-slate-200">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={imageRef} src={source} alt="Crop preview" className="h-full w-full object-cover" style={{ transform: `scale(${zoom})` }} />
