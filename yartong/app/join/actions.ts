@@ -3,13 +3,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { getDashboardForRole, isPublicOnboardingRole, type PublicOnboardingRole } from "@/lib/onboarding";
+import { isPublicOnboardingRole, type PublicOnboardingRole } from "@/lib/onboarding";
 import { isAuthBypassEnabled } from "@/lib/phase-flags";
 import { ensurePhaseTestFixtures } from "@/lib/phase-test-fixtures";
 
 export async function startRegistrationWithoutAuth(role: string) {
-  if (!isAuthBypassEnabled) redirect(`/login?callbackUrl=${encodeURIComponent(`/onboarding?role=${role}`)}`);
-  if (!isPublicOnboardingRole(role)) redirect("/join");
+  if (!isAuthBypassEnabled) redirect(`/login?role=${encodeURIComponent(role)}`);
+  if (!isPublicOnboardingRole(role)) redirect("/login");
 
   const selectedRole = role as PublicOnboardingRole;
   const user = await ensurePhaseTestFixtures(selectedRole);
@@ -23,5 +23,5 @@ export async function startRegistrationWithoutAuth(role: string) {
     maxAge: 60 * 60 * 24 * 30,
   });
 
-  redirect(getDashboardForRole(selectedRole));
+  redirect("/");
 }
