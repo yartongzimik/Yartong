@@ -61,10 +61,7 @@ export async function Header() {
               </form>
             </>
           ) : (
-            <>
-              <Link className="hidden text-xs font-bold text-slate-700 transition hover:text-slate-950 lg:inline" href={ROUTES.join}>Become a Provider</Link>
-              <Link className="rounded-xl bg-amber-400 px-3.5 py-2.5 text-xs font-black text-slate-950 shadow-sm transition hover:bg-amber-300 active:scale-[0.97] sm:px-4" href={ROUTES.join}>Register / Login</Link>
-            </>
+            <Link className="rounded-xl bg-amber-400 px-3.5 py-2.5 text-xs font-black text-slate-950 shadow-sm transition hover:bg-amber-300 active:scale-[0.97] sm:px-4" href="/login">Register / Login</Link>
           )}
         </div>
       </div>
