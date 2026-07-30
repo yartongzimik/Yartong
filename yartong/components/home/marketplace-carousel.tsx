@@ -24,17 +24,17 @@ function InfiniteRow({ items, compact = false }: { items: Item[]; compact?: bool
     return () => node.removeEventListener("scroll", onScroll);
   }, []);
 
-  const move = (direction: number) => ref.current?.scrollBy({ left: direction * Math.max(280, (ref.current?.clientWidth ?? 600) * 0.78), behavior: "smooth" });
+  const move = (direction: number) => ref.current?.scrollBy({ left: direction * Math.max(240, (ref.current?.clientWidth ?? 600) * 0.72), behavior: "smooth" });
 
   return <div className="relative">
-    <button type="button" aria-label="Scroll left" onClick={() => move(-1)} className="absolute -left-2 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white/95 text-xl font-black text-slate-700 shadow-md active:scale-95">‹</button>
-    <div ref={ref} className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-2 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {loop.map((item, index) => <Link key={`${item.name}-${index}`} href={item.href} className={`${compact ? "w-[220px]" : "w-[300px] sm:w-[330px]"} shrink-0 snap-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg`}>
-        <div className={`${compact ? "h-28" : "h-40"} relative bg-cover bg-center`} style={{ backgroundImage: `url(${item.image})` }}>{item.tier ? <span className="absolute left-3 top-3 rounded-md bg-[#0b1b36] px-2 py-1 text-[10px] font-black text-white">{item.tier}</span> : null}</div>
-        <div className="p-3.5"><h3 className="text-sm font-black text-slate-950">{item.name}</h3><p className="mt-1 min-h-8 text-[11px] leading-4 text-slate-600">{item.detail}</p><div className="mt-3 flex items-center justify-between gap-2 text-[11px]"><span className="font-black text-amber-500">{item.rating ? `★★★★★ ${item.rating} (${item.reviews})` : item.price}</span><span className="text-slate-500">⌖ Senapati</span></div></div>
+    <button type="button" aria-label="Scroll left" onClick={() => move(-1)} className="absolute -left-1 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white/95 text-lg font-black text-slate-700 shadow-md active:scale-95 sm:grid">‹</button>
+    <div ref={ref} className="flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-0.5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {loop.map((item, index) => <Link key={`${item.name}-${index}`} href={item.href} className={`${compact ? "w-[164px] sm:w-[190px] lg:w-[205px]" : "w-[190px] sm:w-[220px] lg:w-[235px] xl:w-[250px]"} shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.99]`}>
+        <div className={`${compact ? "h-24 sm:h-28" : "h-28 sm:h-32"} relative bg-cover bg-center`} style={{ backgroundImage: `url(${item.image})` }}>{item.tier ? <span className="absolute left-2 top-2 rounded-md bg-[#0b1b36]/95 px-2 py-1 text-[9px] font-black text-white">{item.tier}</span> : null}</div>
+        <div className="p-2.5 sm:p-3"><h3 className="truncate text-xs font-black text-slate-950 sm:text-sm">{item.name}</h3><p className="mt-1 line-clamp-2 min-h-7 text-[10px] leading-3.5 text-slate-600 sm:text-[11px]">{item.detail}</p><div className="mt-2.5 flex items-center justify-between gap-1 text-[9px] sm:text-[10px]"><span className="truncate font-black text-amber-500">{item.rating ? `★★★★★ ${item.rating} (${item.reviews})` : item.price}</span><span className="shrink-0 text-slate-500">⌖ Senapati</span></div></div>
       </Link>)}
     </div>
-    <button type="button" aria-label="Scroll right" onClick={() => move(1)} className="absolute -right-2 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-[#0b1b36] text-xl font-black text-white shadow-md active:scale-95">›</button>
+    <button type="button" aria-label="Scroll right" onClick={() => move(1)} className="absolute -right-1 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[#0b1b36] text-lg font-black text-white shadow-md active:scale-95 sm:grid">›</button>
   </div>;
 }
 
@@ -63,14 +63,14 @@ const services: Item[] = [
   { name: "Painting Works", detail: "Interior, exterior and textures", image: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=82", href: ROUTES.workers },
 ];
 
-function Heading({ title, href, label }: { title: string; href: string; label: string }) { return <div className="mb-3 mt-7 flex items-center justify-between gap-3"><h2 className="text-lg font-black text-slate-950 sm:text-xl">{title}</h2><Link href={href} className="text-xs font-black text-[#0b376f]">{label} →</Link></div>; }
+function Heading({ title, href, label }: { title: string; href: string; label: string }) { return <div className="mb-2.5 mt-5 flex items-center justify-between gap-3 sm:mt-6"><h2 className="text-base font-black text-slate-950 sm:text-lg">{title}</h2><Link href={href} className="shrink-0 text-[10px] font-black text-[#0b376f] sm:text-xs">{label} →</Link></div>; }
 
 export function MarketplaceCarousel() {
-  return <section className="bg-white px-4 pb-8 pt-1 text-slate-950 sm:px-5">
+  return <section className="bg-white px-3 pb-7 pt-1 text-slate-950 sm:px-5 lg:px-6">
     <Heading title="Top Rated Trades & Services" href={ROUTES.workers} label="View all trades" /><InfiniteRow items={trades} />
     <Heading title="Top Rated Material Providers" href={ROUTES.materials} label="View all providers" /><InfiniteRow items={suppliers} />
     <Heading title="Popular Materials" href={ROUTES.materials} label="View all materials" /><InfiniteRow items={products} compact />
     <Heading title="Popular Services Showcase" href={ROUTES.workers} label="View all services" /><InfiniteRow items={services} compact />
-    <div className="mt-6 grid overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm sm:grid-cols-2 xl:grid-cols-4">{[["⬡","Quality Assured","Quality across products and services"],["♙","Managed Workforce","Skilled and reliable local workers"],["▣","Secure Transactions","Payment features activate in a later phase"],["◉","24/7 Support","Platform help when you need it"]].map(([icon,title,detail],i)=><div key={title} className={`flex items-center gap-3 p-4 ${i?"border-t border-slate-200 sm:border-l sm:border-t-0":""}`}><span className="text-2xl text-[#0b376f]">{icon}</span><div><p className="text-sm font-black">{title}</p><p className="mt-1 text-[11px] text-slate-600">{detail}</p></div></div>)}</div>
+    <div className="mt-5 grid overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm sm:grid-cols-2 xl:grid-cols-4">{[["⬡","Quality Assured","Quality across products and services"],["♙","Managed Workforce","Skilled and reliable local workers"],["▣","Secure Transactions","Payment features activate in a later phase"],["◉","24/7 Support","Platform help when you need it"]].map(([icon,title,detail],i)=><div key={title} className={`flex items-center gap-3 p-3.5 ${i?"border-t border-slate-200 sm:border-l sm:border-t-0":""}`}><span className="text-xl text-[#0b376f]">{icon}</span><div><p className="text-xs font-black sm:text-sm">{title}</p><p className="mt-0.5 text-[10px] text-slate-600 sm:text-[11px]">{detail}</p></div></div>)}</div>
   </section>;
 }
