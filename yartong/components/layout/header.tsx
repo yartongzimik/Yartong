@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/auth";
+import { AccountAccessMenu } from "@/components/layout/account-access-menu";
 import { getCurrentUser } from "@/lib/authz";
 import { ROUTES } from "@/lib/constants";
 import { getDashboardForRole } from "@/lib/onboarding";
@@ -61,7 +62,7 @@ export async function Header() {
               </form>
             </>
           ) : (
-            <Link className="rounded-xl bg-amber-400 px-3.5 py-2.5 text-xs font-black text-slate-950 shadow-sm transition hover:bg-amber-300 active:scale-[0.97] sm:px-4" href="/login">Register / Login</Link>
+            <AccountAccessMenu isPreviewAccess={isAuthBypassEnabled} />
           )}
         </div>
       </div>
