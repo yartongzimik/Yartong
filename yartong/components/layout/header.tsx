@@ -5,11 +5,13 @@ import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { getCurrentUser } from "@/lib/authz";
 import { ROUTES } from "@/lib/constants";
+import { getDashboardForRole } from "@/lib/onboarding";
 import { isAuthBypassEnabled } from "@/lib/phase-flags";
 
 export async function Header() {
   const user = await getCurrentUser();
   const hasAccount = Boolean(user && user.primaryRole !== "ONBOARDING_PENDING");
+  const accountHref = user && hasAccount ? getDashboardForRole(user.primaryRole) : "/account";
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 text-slate-950 shadow-[0_1px_12px_rgba(15,23,42,0.06)] backdrop-blur-xl">
@@ -36,9 +38,9 @@ export async function Header() {
           {hasAccount ? (
             <>
               <Link
-                href="/account"
-                title="Open my account"
-                aria-label="Open my account"
+                href={accountHref}
+                title="Open my workspace"
+                aria-label="Open my workspace"
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#0b1b36] shadow-sm transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.96]"
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
