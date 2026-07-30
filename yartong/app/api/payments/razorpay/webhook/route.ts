@@ -3,6 +3,7 @@ import { PaymentStatus, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { recordTrustedPaymentProviderEvent } from "@/lib/payments/events";
+import { isPaymentExecutionEnabled } from "@/lib/phase-flags";
 import { prisma } from "@/lib/prisma";
 
 function verifySignature(rawBody: string, signature: string, secret: string) {
@@ -22,40 +23,29 @@ function getEntity(payload: Record<string, unknown>, key: string): Record<string
 }
 
 export async function POST(request: Request) {
+  if (!isPaymentExecutionEnabled) return NextResponse.json({ error: "Payments are disabled for the current build phase." }, { status: 503 });
   const secret = process.env.PAYMENT_WEBHOOK_SECRET?.trim();
   if (!secret) return NextResponse.json({ error: "Webhook secret is not configured." }, { status: 503 });
 
   const rawBody = await request.text();
   const signature = request.headers.get("x-razorpay-signature") || "";
-  if (!signature || !verifySignature(rawBody, signature, secret)) {
-    return NextResponse.json({ error: "Invalid webhook signature." }, { status: 401 });
-  }
+  if (!signature || !verifySignature(rawBody, signature, secret)) return NextResponse.json({ error: "Invalid webhook signature." }, { status: 401 });
 
   let payload: Record<string, unknown>;
-  try {
-    payload = JSON.parse(rawBody) as Record<string, unknown>;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
-  }
+  try { payload = JSON.parse(rawBody) as Record<string, unknown>; } catch { return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 }); }
 
   const eventType = String(payload.event || "unknown");
   const paymentEntity = getEntity(payload, "payment");
   const orderEntity = getEntity(payload, "order");
   const providerOrderId = String(orderEntity?.id || paymentEntity?.order_id || "");
   const eventId = request.headers.get("x-razorpay-event-id") || createHash("sha256").update(rawBody).digest("hex");
-
-  const paymentOrder = providerOrderId
-    ? await prisma.paymentOrder.findFirst({ where: { providerName: "razorpay", providerPaymentRef: providerOrderId }, select: { id: true } })
-    : null;
+  const paymentOrder = providerOrderId ? await prisma.paymentOrder.findFirst({ where: { providerName: "razorpay", providerPaymentRef: providerOrderId }, select: { id: true } }) : null;
 
   let nextStatus: PaymentStatus | null = null;
   if (eventType === "order.paid" || eventType === "payment.captured") nextStatus = PaymentStatus.SUCCEEDED;
   if (eventType === "payment.authorized") nextStatus = PaymentStatus.PROCESSING;
   if (eventType === "payment.failed") nextStatus = PaymentStatus.FAILED;
   if (eventType === "refund.processed" || eventType === "refund.created") nextStatus = PaymentStatus.REFUNDED;
-
-  const errorCode = paymentEntity?.error_code ? String(paymentEntity.error_code) : null;
-  const errorDescription = paymentEntity?.error_description ? String(paymentEntity.error_description) : null;
 
   await recordTrustedPaymentProviderEvent({
     providerName: "razorpay",
@@ -65,8 +55,8 @@ export async function POST(request: Request) {
     paymentOrderId: paymentOrder?.id ?? null,
     nextStatus,
     providerPaymentRef: providerOrderId || null,
-    failureCode: errorCode,
-    failureMessage: errorDescription,
+    failureCode: paymentEntity?.error_code ? String(paymentEntity.error_code) : null,
+    failureMessage: paymentEntity?.error_description ? String(paymentEntity.error_description) : null,
   });
 
   return NextResponse.json({ received: true });

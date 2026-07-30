@@ -1,0 +1,18 @@
+import Link from "next/link";
+
+import { requireUser } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
+
+import { CustomerWorkspaceShell } from "../customer-workspace-shell";
+
+function money(value: number) { return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value / 100); }
+
+export default async function CustomerMaterialsPage() {
+  await requireUser();
+  const listings = await prisma.supplierListing.findMany({ where: { status: "ACTIVE" }, orderBy: { updatedAt: "desc" }, take: 12, select: { id: true, title: true, price: true, deliveryAvailable: true, leadTimeDays: true, supplier: { select: { displayName: true, materialSupplierProfile: { select: { businessName: true } } } }, variant: { select: { name: true, product: { select: { name: true, category: { select: { name: true } } } } } } } });
+  const categories = [...new Set(listings.map((item) => item.variant.product.category.name))].slice(0, 6);
+  return <CustomerWorkspaceShell active="Materials" title="Materials" subtitle="Browse and compare local construction materials." actions={<Link href="/materials" className="rounded-lg bg-violet-600 px-3 py-2 text-xs font-black text-white">Open Marketplace</Link>}>
+    <section className="rounded-2xl border border-white/80 bg-white/94 p-3 shadow-sm backdrop-blur-xl"><div className="flex gap-2"><input placeholder="Search materials..." className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs" /><button type="button" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-black">Categories</button></div><div className="mt-3 flex gap-2 overflow-x-auto">{["All", ...categories].map((item, index) => <span key={item} className={`rounded-full px-3 py-1.5 text-[10px] font-black ${index === 0 ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-600"}`}>{item}</span>)}</div></section>
+    <section className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{listings.map((listing, index) => <article key={listing.id} className="overflow-hidden rounded-2xl border border-white/80 bg-white/94 shadow-sm backdrop-blur-xl"><div className={`h-28 bg-gradient-to-br ${index % 3 === 0 ? "from-amber-50 to-orange-100" : index % 3 === 1 ? "from-slate-100 to-slate-200" : "from-stone-50 to-stone-200"} grid place-items-center text-3xl font-black text-slate-300`}>{listing.variant.product.category.name.slice(0, 2).toUpperCase()}</div><div className="p-3"><p className="text-[10px] font-bold uppercase text-violet-600">{listing.variant.product.category.name}</p><h2 className="mt-1 text-sm font-black">{listing.title}</h2><p className="mt-1 text-[10px] text-slate-500">{listing.supplier.materialSupplierProfile?.businessName || listing.supplier.displayName || "Yartong supplier"}</p><div className="mt-3 flex items-end justify-between"><div><p className="text-lg font-black">{money(listing.price)}</p><p className="text-[9px] text-slate-400">{listing.deliveryAvailable ? `Delivery${listing.leadTimeDays ? ` · ${listing.leadTimeDays} day` : ""}` : "Pickup"}</p></div><button type="button" className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-[10px] font-black text-violet-700">+ Order</button></div></div></article>)}{!listings.length ? <p className="text-xs text-slate-500">No active material listings.</p> : null}</section>
+  </CustomerWorkspaceShell>;
+}

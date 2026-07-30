@@ -1,37 +1,48 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "../auth";
 import { getDashboardForRole } from "./onboarding";
 import { hasPermission } from "./permissions";
+import { isAuthBypassEnabled } from "./phase-flags";
 import { prisma } from "./prisma";
 import { getProfileRelationForRole } from "./role-profiles";
 import type { Permission, UserRole } from "./types";
 
+const currentUserSelect = {
+  id: true,
+  displayName: true,
+  email: true,
+  image: true,
+  primaryRole: true,
+  accountStatus: true,
+  verificationStatus: true,
+  primaryLocationId: true,
+  isDemo: true,
+  customerProfile: { select: { onboardingComplete: true } },
+  skilledProviderProfile: { select: { onboardingComplete: true } },
+  labourerProfile: { select: { onboardingComplete: true } },
+  contractorProfile: { select: { onboardingComplete: true } },
+  materialSupplierProfile: { select: { onboardingComplete: true } },
+} as const;
+
 export async function getCurrentUser() {
+  if (isAuthBypassEnabled) {
+    const cookieStore = await cookies();
+    const phaseUserId = cookieStore.get("yartong_phase_user")?.value;
+    if (phaseUserId) {
+      const phaseUser = await prisma.user.findFirst({
+        where: { id: phaseUserId, isDemo: false, accountStatus: "ACTIVE" },
+        select: currentUserSelect,
+      });
+      if (phaseUser) return phaseUser;
+    }
+  }
+
   const session = await auth();
   const userId = session?.user?.id;
-
   if (!userId) return null;
-
-  return prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      displayName: true,
-      email: true,
-      image: true,
-      primaryRole: true,
-      accountStatus: true,
-      verificationStatus: true,
-      primaryLocationId: true,
-      isDemo: true,
-      customerProfile: { select: { onboardingComplete: true } },
-      skilledProviderProfile: { select: { onboardingComplete: true } },
-      labourerProfile: { select: { onboardingComplete: true } },
-      contractorProfile: { select: { onboardingComplete: true } },
-      materialSupplierProfile: { select: { onboardingComplete: true } },
-    },
-  });
+  return prisma.user.findUnique({ where: { id: userId }, select: currentUserSelect });
 }
 
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
@@ -44,20 +55,16 @@ export function isOnboardingComplete(user: CurrentUser): boolean {
 
 export async function requireUser() {
   const user = await getCurrentUser();
-
-  if (!user) redirect("/login");
+  if (!user) redirect(isAuthBypassEnabled ? "/join" : "/login");
   if (user.accountStatus !== "ACTIVE") redirect("/account-blocked");
   if (!isOnboardingComplete(user)) redirect("/onboarding");
-
   return user;
 }
 
 export async function requireOnboardingUser() {
   const user = await getCurrentUser();
-
-  if (!user) redirect("/login?callbackUrl=/onboarding");
+  if (!user) redirect(isAuthBypassEnabled ? "/join" : "/login?callbackUrl=/onboarding");
   if (user.accountStatus !== "ACTIVE") redirect("/account-blocked");
-
   return user;
 }
 
@@ -72,16 +79,12 @@ export async function redirectAuthenticatedUser() {
 export async function requireRole(role: UserRole | UserRole[]) {
   const user = await requireUser();
   const allowedRoles = Array.isArray(role) ? role : [role];
-
   if (!allowedRoles.includes(user.primaryRole)) redirect(getDashboardForRole(user.primaryRole));
-
   return user;
 }
 
 export async function requirePermission(permission: Permission) {
   const user = await requireUser();
-
   if (!hasPermission(user.primaryRole, permission)) redirect(getDashboardForRole(user.primaryRole));
-
   return user;
 }

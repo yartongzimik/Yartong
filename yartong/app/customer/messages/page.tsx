@@ -1,17 +1,17 @@
-const pageTitle = "Customer / Messages";
-const routePath = "/customer/messages";
+import { requireUser } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
 
-export default function PlaceholderPage() {
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
-        Yartong milestone 0 placeholder
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-gray-950">{pageTitle}</h1>
-      <p className="mt-4 max-w-2xl text-gray-600">
-        The {routePath} route is reserved for a future Yartong workflow.
-        Product features for this page have not been implemented yet.
-      </p>
-    </main>
-  );
+import { CustomerWorkspaceShell } from "../customer-workspace-shell";
+
+export default async function CustomerMessagesPage() {
+  const user = await requireUser();
+  const conversations = await prisma.conversation.findMany({ where: { customerId: user.id }, orderBy: { lastMessageAt: "desc" }, take: 12, select: { id: true, lastMessageAt: true, provider: { select: { displayName: true, image: true, primaryRole: true } }, messages: { orderBy: { createdAt: "desc" }, take: 8, select: { id: true, senderId: true, body: true, createdAt: true, readAt: true } } } });
+  const selected = conversations[0];
+
+  return <CustomerWorkspaceShell active="Messages" title="Messages" subtitle="Communicate with providers, contractors and suppliers connected to your work.">
+    <section className="grid min-h-[620px] overflow-hidden rounded-2xl border border-white/80 bg-white/94 shadow-sm backdrop-blur-xl lg:grid-cols-[320px_minmax(0,1fr)]">
+      <aside className="border-r border-slate-200"><div className="border-b border-slate-200 p-3"><input aria-label="Search messages" placeholder="Search messages..." className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-violet-400" /></div><div className="divide-y divide-slate-100">{conversations.length ? conversations.map((conversation, index) => { const last = conversation.messages[0]; return <div key={conversation.id} className={`flex gap-3 p-3 ${index === 0 ? "bg-violet-50" : ""}`}><div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-slate-200 text-xs font-black">{conversation.provider.image ? <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${conversation.provider.image})` }} /> : (conversation.provider.displayName || "P").slice(0, 1)}</div><div className="min-w-0 flex-1"><div className="flex justify-between gap-2"><p className="truncate text-xs font-black">{conversation.provider.displayName || "Yartong provider"}</p><span className="text-[9px] text-slate-400">{conversation.lastMessageAt?.toLocaleDateString("en-IN")}</span></div><p className="mt-1 truncate text-[10px] text-slate-500">{last?.body || "Conversation started"}</p></div></div>; }) : <p className="p-4 text-xs text-slate-500">No conversations yet.</p>}</div></aside>
+      <div className="flex min-h-0 flex-col">{selected ? <><header className="border-b border-slate-200 px-4 py-3"><p className="text-sm font-black">{selected.provider.displayName || "Yartong provider"}</p><p className="text-[10px] text-slate-400">{selected.provider.primaryRole.replaceAll("_", " ")}</p></header><div className="flex-1 space-y-3 overflow-y-auto bg-slate-50/60 p-4">{selected.messages.slice().reverse().map((message) => <div key={message.id} className={`flex ${message.senderId === user.id ? "justify-end" : "justify-start"}`}><div className={`max-w-[75%] rounded-2xl px-3 py-2 text-xs leading-5 ${message.senderId === user.id ? "bg-violet-600 text-white" : "border border-slate-200 bg-white text-slate-700"}`}><p>{message.body}</p><p className={`mt-1 text-[9px] ${message.senderId === user.id ? "text-white/60" : "text-slate-400"}`}>{message.createdAt.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}</p></div></div>)}</div><div className="border-t border-slate-200 bg-white p-3"><div className="flex gap-2"><input placeholder="Type a message..." className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-xs" /><button type="button" className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-black text-white">Send</button></div></div></> : <div className="grid flex-1 place-items-center p-8 text-center text-xs text-slate-500">Choose a conversation after you connect with a provider.</div>}</div>
+    </section>
+  </CustomerWorkspaceShell>;
 }

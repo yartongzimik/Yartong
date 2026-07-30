@@ -1,9 +1,19 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
-import { signIn } from "@/auth";
+import { isQaTestAccessEnabled, signIn } from "@/auth";
+
+const QA_ACCOUNT_EMAILS = new Set([
+  "customer.demo@yartong.local",
+  "provider.demo@yartong.local",
+  "labourer.demo@yartong.local",
+  "contractor.demo@yartong.local",
+  "supplier.demo@yartong.local",
+  "admin.demo@yartong.local",
+]);
 
 export async function signInWithGoogle(callbackUrl = "/onboarding") {
   await signIn("google", { redirectTo: callbackUrl });
@@ -11,6 +21,24 @@ export async function signInWithGoogle(callbackUrl = "/onboarding") {
 
 export async function signInWithFacebook(callbackUrl = "/onboarding") {
   await signIn("facebook", { redirectTo: callbackUrl });
+}
+
+export async function signInAsQaUser(email: string, callbackUrl = "/") {
+  if (!isQaTestAccessEnabled) redirect("/login");
+
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!QA_ACCOUNT_EMAILS.has(normalizedEmail)) redirect("/login?error=qa-account-unavailable");
+
+  const cookieStore = await cookies();
+  cookieStore.set("yartong_qa_user", normalizedEmail, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 12,
+  });
+
+  redirect(callbackUrl);
 }
 
 export async function signInWithDemo(_prev: { error?: string } | undefined, formData: FormData) {

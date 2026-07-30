@@ -18,43 +18,15 @@ export default async function ContractorDashboardPage() {
         { label: "Active applications", value: dashboard.metrics.activeApplications },
         { label: "Accepted applications", value: dashboard.metrics.acceptedApplications },
         { label: "Active engagements", value: dashboard.metrics.activeEngagements },
-        {
-          label: "Unread messages",
-          value: dashboard.metrics.unreadMessages,
-          helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}`,
-        },
+        { label: "Unread messages", value: dashboard.metrics.unreadMessages, helper: `${dashboard.metrics.completedEngagements} completed engagement${dashboard.metrics.completedEngagements === 1 ? "" : "s"}` },
       ]}
       actions={[
-        {
-          label: "Find projects",
-          href: ROUTES.quickJobs,
-          description: "Browse published jobs seeking contractors and qualified providers.",
-        },
-        {
-          label: "My applications",
-          href: "/applications",
-          description: "Track project applications from submission through hiring.",
-        },
-        {
-          label: "Project engagements",
-          href: "/engagements",
-          description: "Manage agreed scope, quotes, project progress, messages and payments.",
-        },
-        {
-          label: "Messages",
-          href: ROUTES.messages,
-          description: "Continue private conversations with customers after a marketplace hire.",
-        },
-        {
-          label: "Contractor marketplace",
-          href: ROUTES.trades,
-          description: "Review public contractor discovery and marketplace positioning.",
-        },
-        {
-          label: "Verification",
-          href: "/verification",
-          description: `Current trust status: ${dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase()}.`,
-        },
+        { label: "Edit contractor profile", href: "/account", description: "Edit seeded business details, team size, project types, experience and availability." },
+        { label: "Find projects", href: ROUTES.quickJobs, description: "Browse published jobs seeking contractors and qualified providers." },
+        { label: "My applications", href: "/applications", description: "Track project applications from submission through hiring." },
+        { label: "Project engagements", href: "/engagements", description: "Manage agreed scope, quotes, project progress, messages and payments." },
+        { label: "Messages", href: ROUTES.messages, description: "Continue private conversations with customers after a marketplace hire." },
+        { label: "Public profile", href: `/providers/${user.id}`, description: "Open this seeded contractor's public marketplace profile." },
       ]}
       activityTitle="Recent project activity"
       activities={dashboard.activities}

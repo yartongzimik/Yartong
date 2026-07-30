@@ -7,13 +7,7 @@ import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 
 const clean = (value: FormDataEntryValue | null) => String(value ?? "").trim();
-const splitList = (value: FormDataEntryValue | null) =>
-  clean(value)
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .slice(0, 20);
-
+const splitList = (value: FormDataEntryValue | null) => clean(value).split(",").map((item) => item.trim()).filter(Boolean).slice(0, 20);
 const optionalInt = (value: FormDataEntryValue | null) => {
   const text = clean(value);
   if (!text) return null;
@@ -34,88 +28,18 @@ export async function updateAccountProfileAction(formData: FormData) {
   const serviceRadiusKm = optionalInt(formData.get("serviceRadiusKm"));
   const availableForWork = formData.get("availableForWork") === "on";
 
-  if (displayName.length < 2 || displayName.length > 80) {
-    redirect("/account?error=invalid-name");
-  }
-  if (image && !/^https:\/\//i.test(image)) {
-    redirect("/account?error=invalid-image");
-  }
-  if (headline.length > 140 || bio.length > 800) {
-    redirect("/account?error=invalid-profile");
-  }
+  if (displayName.length < 2 || displayName.length > 80) redirect("/account?error=invalid-name");
+  const validImage = !image || /^https:\/\//i.test(image) || /^data:image\/(jpeg|png|webp);base64,/i.test(image);
+  if (!validImage || image.length > 900_000) redirect("/account?error=invalid-image");
+  if (headline.length > 140 || bio.length > 800) redirect("/account?error=invalid-profile");
 
   await prisma.$transaction(async (tx) => {
-    await tx.user.update({
-      where: { id: user.id },
-      data: {
-        displayName,
-        name: displayName,
-        image: image || null,
-      },
-    });
-
-    if (user.primaryRole === "CUSTOMER") {
-      await tx.customerProfile.update({
-        where: { userId: user.id },
-        data: { bio: bio || null },
-      });
-    }
-
-    if (user.primaryRole === "SKILLED_PROVIDER") {
-      await tx.skilledProviderProfile.update({
-        where: { userId: user.id },
-        data: {
-          businessName: businessName || null,
-          headline: headline || null,
-          bio: bio || null,
-          experienceYears,
-          skills,
-          serviceRadiusKm,
-          availableForWork,
-        },
-      });
-    }
-
-    if (user.primaryRole === "LABOURER") {
-      await tx.labourerProfile.update({
-        where: { userId: user.id },
-        data: {
-          headline: headline || null,
-          bio: bio || null,
-          experienceYears,
-          skills,
-          availableForWork,
-        },
-      });
-    }
-
-    if (user.primaryRole === "CONTRACTOR") {
-      await tx.contractorProfile.update({
-        where: { userId: user.id },
-        data: {
-          businessName: businessName || null,
-          headline: headline || null,
-          bio: bio || null,
-          experienceYears,
-          teamSize,
-          projectTypes: skills,
-          serviceRadiusKm,
-          availableForWork,
-        },
-      });
-    }
-
-    if (user.primaryRole === "MATERIAL_SUPPLIER") {
-      await tx.materialSupplierProfile.update({
-        where: { userId: user.id },
-        data: {
-          businessName: businessName || null,
-          headline: headline || null,
-          bio: bio || null,
-          materialCategories: skills,
-        },
-      });
-    }
+    await tx.user.update({ where: { id: user.id }, data: { displayName, name: displayName, image: image || null } });
+    if (user.primaryRole === "CUSTOMER") await tx.customerProfile.update({ where: { userId: user.id }, data: { bio: bio || null } });
+    if (user.primaryRole === "SKILLED_PROVIDER") await tx.skilledProviderProfile.update({ where: { userId: user.id }, data: { businessName: businessName || null, headline: headline || null, bio: bio || null, experienceYears, skills, serviceRadiusKm, availableForWork } });
+    if (user.primaryRole === "LABOURER") await tx.labourerProfile.update({ where: { userId: user.id }, data: { headline: headline || null, bio: bio || null, experienceYears, skills, availableForWork } });
+    if (user.primaryRole === "CONTRACTOR") await tx.contractorProfile.update({ where: { userId: user.id }, data: { businessName: businessName || null, headline: headline || null, bio: bio || null, experienceYears, teamSize, projectTypes: skills, serviceRadiusKm, availableForWork } });
+    if (user.primaryRole === "MATERIAL_SUPPLIER") await tx.materialSupplierProfile.update({ where: { userId: user.id }, data: { businessName: businessName || null, headline: headline || null, bio: bio || null, materialCategories: skills } });
   });
 
   revalidatePath("/account");

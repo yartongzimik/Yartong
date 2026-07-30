@@ -2,70 +2,40 @@ import { RoleDashboard } from "@/components/dashboard/role-dashboard";
 import { ROUTES } from "@/lib/constants";
 import { getSupplierDashboard } from "@/lib/dashboard";
 import { requireUser } from "@/lib/authz";
+import { getSupplierInventoryStocks, getSupplierListings } from "@/lib/marketplace/catalog";
 
 export default async function SupplierDashboardPage() {
   const user = await requireUser();
-  const dashboard = await getSupplierDashboard(user.id);
+  const [dashboard, listings, stocks] = await Promise.all([
+    getSupplierDashboard(user.id),
+    getSupplierListings(user.id),
+    getSupplierInventoryStocks(user.id),
+  ]);
   const profile = dashboard.user.materialSupplierProfile;
-  const categories = profile?.materialCategories.length ?? 0;
+  const totalAvailable = stocks.reduce((sum, stock) => sum + stock.available, 0);
 
   return (
     <RoleDashboard
       eyebrow="Material supplier dashboard"
       title={`Welcome back, ${profile?.businessName || dashboard.user.displayName || "Supplier"}`}
-      subtitle={`Manage your supplier presence and trust status${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}. Product catalog and inventory workflows remain the next supplier-facing build area.`}
+      subtitle={`Manage your supplier profile, product listings and stock${dashboard.user.primaryLocation ? ` around ${dashboard.user.primaryLocation.name}` : ""}.`}
       metrics={[
-        { label: "Material categories", value: categories },
-        {
-          label: "Delivery",
-          value: profile?.deliveryAvailable ? "Enabled" : "Not set",
-        },
-        {
-          label: "Wholesale",
-          value: profile?.wholesaleAvailable ? "Enabled" : "Not set",
-        },
-        {
-          label: "Verification requests",
-          value: dashboard.activeVerificationRequests,
-          helper: dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase(),
-        },
+        { label: "Product listings", value: listings.length },
+        { label: "Inventory records", value: stocks.length },
+        { label: "Available units", value: totalAvailable },
+        { label: "Verification requests", value: dashboard.activeVerificationRequests, helper: dashboard.user.verificationStatus.replaceAll("_", " ").toLowerCase() },
       ]}
       actions={[
-        {
-          label: "Supplier profile",
-          href: ROUTES.supplierProfile,
-          description: "Review the business information associated with your supplier account.",
-        },
-        {
-          label: "Verification",
-          href: "/verification",
-          description: "Submit or review identity and business verification requests.",
-        },
-        {
-          label: "Browse materials",
-          href: ROUTES.materials,
-          description: "Review the public materials marketplace experience and category structure.",
-        },
-        {
-          label: "Products",
-          href: ROUTES.supplierProducts,
-          description: "Open the reserved supplier product area as catalog workflows are built out.",
-        },
-        {
-          label: "Inventory",
-          href: ROUTES.supplierInventory,
-          description: "Open the reserved inventory area for the upcoming supplier operations milestone.",
-        },
-        {
-          label: "Promote your business",
-          href: ROUTES.advertise,
-          description: "Review the future business visibility and promoted-listing direction.",
-        },
+        { label: "Edit supplier profile", href: "/account", description: "Edit business name, material categories, delivery options and account information." },
+        { label: "Products & listings", href: ROUTES.supplierProducts, description: "Manage products, prices, listing status and customer-facing catalogue information." },
+        { label: "Inventory", href: ROUTES.supplierInventory, description: "Review available stock, reconcile quantities and manage inventory locations." },
+        { label: "Browse materials", href: ROUTES.materials, description: "See how your products appear to customers in the public materials marketplace." },
+        { label: "Verification", href: "/verification", description: "Manage identity and business verification requests." },
+        { label: "Promote your business", href: ROUTES.advertise, description: "Review advertising and promoted-listing options for your business." },
       ]}
-      activityTitle="Supplier readiness"
+      activityTitle="Supplier activity"
       activities={[]}
-      emptyActivity="Your supplier catalog, inventory updates and material enquiries will appear here once those marketplace workflows are implemented."
-      notice="Yartong does not yet expose live supplier product or inventory persistence. This dashboard intentionally shows only real account/profile state and links to the next supplier workflows rather than fabricating stock or sales data."
+      emptyActivity="Product, inventory and order activity will appear here as your business uses Yartong."
     />
   );
 }

@@ -1,16 +1,7 @@
-import { DiscoveryRecommendations } from "@/components/home/discovery-recommendations";
 import { Hero } from "@/components/home/hero";
-import { IntentPathways } from "@/components/home/intent-pathways";
-import { TrustAndGrowth } from "@/components/home/trust-and-growth";
+import { MarketplaceCarousel } from "@/components/home/marketplace-carousel";
 import { PublicShell } from "@/components/layout/public-shell";
 
 export default function Home() {
-  return (
-    <PublicShell>
-      <Hero />
-      <DiscoveryRecommendations />
-      <IntentPathways />
-      <TrustAndGrowth />
-    </PublicShell>
-  );
+  return <PublicShell><main className="bg-[#f7f8fa]"><div className="mx-auto w-full max-w-[1600px]"><Hero /><MarketplaceCarousel /></div></main></PublicShell>;
 }
