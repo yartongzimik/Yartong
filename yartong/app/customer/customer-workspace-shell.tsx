@@ -29,7 +29,7 @@ export async function CustomerWorkspaceShell({ active, title, subtitle, actions,
   ]);
 
   return (
-    <PublicShell>
+    <PublicShell workspace>
       <div className="relative min-h-screen overflow-hidden bg-[#eef3f8] text-slate-950">
         <CustomerDashboardBackground />
         <div className="relative mx-auto grid w-full max-w-[1680px] md:grid-cols-[205px_minmax(0,1fr)]">
