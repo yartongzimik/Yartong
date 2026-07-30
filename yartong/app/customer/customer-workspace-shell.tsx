@@ -18,6 +18,7 @@ const NAV = [
   ["Alerts", "/customer/alerts"],
   ["Saved Items", "/customer/saved"],
   ["Settings", "/customer/settings"],
+  ["My account", "/account"],
 ] as const;
 
 export async function CustomerWorkspaceShell({ active, title, subtitle, actions, children }: { active: string; title: string; subtitle: string; actions?: ReactNode; children: ReactNode }) {
@@ -34,20 +35,17 @@ export async function CustomerWorkspaceShell({ active, title, subtitle, actions,
         <CustomerDashboardBackground />
         <div className="relative mx-auto grid w-full max-w-[1680px] md:grid-cols-[205px_minmax(0,1fr)]">
           <aside className="min-h-[calc(100vh-80px)] border-r border-white/80 bg-white/94 p-3 shadow-sm backdrop-blur-xl">
-            <div className="mb-3 flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white p-2">
+            <Link href="/account" className="mb-3 flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white p-2 transition hover:border-blue-200 hover:bg-blue-50 active:scale-[0.99]" aria-label="Open My Account">
               <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-violet-100 text-xs font-black text-violet-700">{profile.image ? <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${profile.image})` }} /> : (profile.displayName || "C").slice(0, 1)}</div>
-              <div className="min-w-0"><p className="truncate text-xs font-black">{profile.displayName || "Customer"}</p><p className="text-[10px] text-slate-400">Customer workspace</p></div>
-            </div>
+              <div className="min-w-0"><p className="truncate text-xs font-black">{profile.displayName || "Customer"}</p><p className="text-[10px] text-slate-400">View and edit account</p></div>
+            </Link>
             <nav className="space-y-1">
-              {NAV.map(([label, href]) => {
+              {NAV.map(([label, href], index) => {
                 const selected = active === label;
                 const badge = label === "Messages" ? unreadMessages : label === "Alerts" ? unreadAlerts : 0;
-                return <Link key={label} href={href} className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-bold transition ${selected ? "bg-violet-600 text-white shadow-sm" : "text-slate-600 hover:bg-violet-50 hover:text-violet-800"}`}><span>{label}</span>{badge ? <span className={`rounded-full px-1.5 py-0.5 text-[9px] ${selected ? "bg-white/20 text-white" : "bg-violet-100 text-violet-700"}`}>{badge}</span> : null}</Link>;
+                return <div key={label} className={index === NAV.length - 1 ? "mt-4 border-t border-slate-200 pt-4" : ""}><Link href={href} className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-bold transition ${selected ? "bg-violet-600 text-white shadow-sm" : "text-slate-600 hover:bg-violet-50 hover:text-violet-800"}`}><span>{label}</span>{badge ? <span className={`rounded-full px-1.5 py-0.5 text-[9px] ${selected ? "bg-white/20 text-white" : "bg-violet-100 text-violet-700"}`}>{badge}</span> : null}</Link></div>;
               })}
             </nav>
-            <div className="mt-5 border-t border-slate-200 pt-4 text-xs">
-              <Link href="/account" className="block rounded-lg px-3 py-2 font-bold text-slate-600 hover:bg-slate-100">My account</Link>
-            </div>
           </aside>
           <main className="min-w-0 p-3 sm:p-4 lg:p-5">
             <header className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/80 bg-white/94 px-4 py-3 shadow-sm backdrop-blur-xl">
