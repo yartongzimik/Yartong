@@ -34,7 +34,7 @@ export default async function AccountPage({ searchParams }: Props) {
   const stats = user.primaryRole === "CUSTOMER" ? await Promise.all([
     prisma.job.count({ where: { customerId: user.id } }), prisma.engagement.count({ where: { customerId: user.id } }), prisma.materialOrder.count({ where: { customerId: user.id } }), prisma.review.count({ where: { authorId: user.id } }),
   ]) : await Promise.all([
-    prisma.jobApplication.count({ where: { providerId: user.id } }), prisma.engagement.count({ where: { providerId: user.id } }), prisma.review.count({ where: { subjectUserId: user.id } }), prisma.message.count({ where: { senderId: user.id } }),
+    prisma.jobApplication.count({ where: { providerId: user.id } }), prisma.engagement.count({ where: { providerId: user.id } }), prisma.review.count({ where: { subjectId: user.id } }), prisma.message.count({ where: { senderId: user.id } }),
   ]);
   const statLabels = user.primaryRole === "CUSTOMER" ? ["Projects", "Engagements", "Orders", "Reviews"] : ["Applications", "Engagements", "Reviews", "Messages"];
 
