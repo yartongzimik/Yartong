@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { requireOnboardingUser } from "@/lib/authz";
-import { getDashboardForRole, isPublicOnboardingRole, type PublicOnboardingRole } from "@/lib/onboarding";
+import { isPublicOnboardingRole, type PublicOnboardingRole } from "@/lib/onboarding";
 import { prisma } from "@/lib/prisma";
 
 export type OnboardingState = { error?: string; fieldErrors?: Record<string, string> };
@@ -82,5 +82,5 @@ export async function completeOnboarding(_prev: OnboardingState | undefined, for
     return { error: "We could not complete registration. Your details were not lost; please try again." };
   }
 
-  redirect(getDashboardForRole(selectedRole));
+  redirect("/");
 }
