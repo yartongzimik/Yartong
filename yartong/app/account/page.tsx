@@ -31,20 +31,13 @@ export default async function AccountPage({ searchParams }: Props) {
   const serviceRadiusKm = user.skilledProviderProfile?.serviceRadiusKm ?? user.contractorProfile?.serviceRadiusKm ?? "";
   const availableForWork = user.skilledProviderProfile?.availableForWork ?? user.labourerProfile?.availableForWork ?? user.contractorProfile?.availableForWork ?? false;
   const roleLabel = user.primaryRole in ROLE_LABELS ? ROLE_LABELS[user.primaryRole as keyof typeof ROLE_LABELS] : user.primaryRole;
-  const stats = user.primaryRole === "CUSTOMER" ? await Promise.all([
-    prisma.job.count({ where: { customerId: user.id } }), prisma.engagement.count({ where: { customerId: user.id } }), prisma.materialOrder.count({ where: { customerId: user.id } }), prisma.review.count({ where: { authorId: user.id } }),
-  ]) : await Promise.all([
-    prisma.jobApplication.count({ where: { providerId: user.id } }), prisma.engagement.count({ where: { providerId: user.id } }), prisma.review.count({ where: { subjectId: user.id } }), prisma.message.count({ where: { senderId: user.id } }),
-  ]);
-  const statLabels = user.primaryRole === "CUSTOMER" ? ["Projects", "Engagements", "Orders", "Reviews"] : ["Applications", "Engagements", "Reviews", "Messages"];
 
   const content = <div className="space-y-4">
     {params.saved ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">Profile saved successfully.</p> : null}
     {params.error ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">Profile could not be saved. Check the image size and account information, then try again.</p> : null}
-    <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">{stats.map((value,index)=><div key={statLabels[index]} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-black uppercase text-slate-400">{statLabels[index]}</p><p className="mt-2 text-2xl font-black">{value}</p><div className="mt-3 h-1.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" style={{width:`${Math.min(100,20+value*8)}%`}} /></div></div>)}</section>
     <form action={updateAccountProfileAction} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-        <div className="flex items-center gap-4"><ProfilePhotoEditor currentImage={user.image} displayName={user.displayName} /><div><h2 className="text-lg font-black">Profile information</h2><p className="mt-1 max-w-lg text-xs leading-5 text-slate-500">Tap your profile photo to take a new photo, choose one from your gallery, crop it, or remove it.</p></div></div>
+        <div className="flex items-center gap-4"><ProfilePhotoEditor currentImage={user.image} displayName={user.displayName} /><div><h1 className="text-xl font-black">Edit profile</h1><p className="mt-1 max-w-lg text-xs leading-5 text-slate-500">Tap your photo to preview, take a new photo, choose one from your gallery, crop it, or remove it.</p></div></div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600">Member since {user.createdAt.toLocaleDateString("en-IN",{month:"short",year:"numeric"})}</span>
       </div>
       <div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-xs font-bold">Display name<input name="displayName" defaultValue={user.displayName} className={`${field} mt-1.5`} required /></label><label className="text-xs font-bold">Email<input value={user.email ?? "Not available"} className={`${field} mt-1.5`} disabled /></label><label className="text-xs font-bold">Phone<input value={user.phoneNumber ?? "Not set"} className={`${field} mt-1.5`} disabled /></label><label className="text-xs font-bold">Location<input value={user.primaryLocation?.name ?? "Not set"} className={`${field} mt-1.5`} disabled /></label></div>
@@ -61,7 +54,7 @@ export default async function AccountPage({ searchParams }: Props) {
   </div>;
 
   if (user.primaryRole === "CUSTOMER") {
-    return <CustomerWorkspaceShell active="My account" title="My account" subtitle="Edit your profile photo, personal information and account preferences.">{content}</CustomerWorkspaceShell>;
+    return <CustomerWorkspaceShell active="" title="" subtitle="" hidePageHeader>{content}</CustomerWorkspaceShell>;
   }
 
   return <PublicShell workspace><main className="min-h-screen bg-[#f4f7fb] px-3 py-5 text-slate-950 sm:px-5"><div className="mx-auto max-w-5xl space-y-4"><header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-600">My account</p><h1 className="mt-1 text-2xl font-black sm:text-3xl">Profile, information and access</h1><p className="mt-1 text-xs text-slate-500">{user.displayName} · {roleLabel}</p></header>{content}</div></main></PublicShell>;
