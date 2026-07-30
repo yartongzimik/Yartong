@@ -34,17 +34,30 @@ export async function Header() {
 
         <div className="ml-auto flex items-center gap-2 text-sm">
           {hasAccount ? (
-            <form action={async () => {
-              "use server";
-              if (isAuthBypassEnabled) {
-                const store = await cookies();
-                store.delete("yartong_phase_user");
-                redirect(ROUTES.home);
-              }
-              await signOut({ redirectTo: ROUTES.home });
-            }}>
-              <button className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 active:scale-[0.97]">Log out</button>
-            </form>
+            <>
+              <Link
+                href="/account"
+                title="Open my account"
+                aria-label="Open my account"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#0b1b36] shadow-sm transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.96]"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4.5 20c.8-4.1 3.3-6.2 7.5-6.2s6.7 2.1 7.5 6.2" />
+                </svg>
+              </Link>
+              <form action={async () => {
+                "use server";
+                if (isAuthBypassEnabled) {
+                  const store = await cookies();
+                  store.delete("yartong_phase_user");
+                  redirect(ROUTES.home);
+                }
+                await signOut({ redirectTo: ROUTES.home });
+              }}>
+                <button className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 active:scale-[0.97]">Log out</button>
+              </form>
+            </>
           ) : (
             <>
               <Link className="hidden text-xs font-bold text-slate-700 transition hover:text-slate-950 lg:inline" href={ROUTES.join}>Become a Provider</Link>
